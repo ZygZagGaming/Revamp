@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "iron_ingot",
+  "ingredients": [
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    },
+    {
+      "item": "revamp:raw_iridium"
+    }
+  ],
+  "result": {
+    "item": "revamp:raw_iridium_block",
+    "count": 1
+  }
+}

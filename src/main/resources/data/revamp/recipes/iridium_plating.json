@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "revamp:raw_iridium_block"
+  },
+  "result": "revamp:iridium_plating",
+  "experience": 1,
+  "cookingtime": 100
+}

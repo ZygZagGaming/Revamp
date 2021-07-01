@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="All rights reserved"
+[[mods]]
+modId="revamp"
+version="${file.jarVersion}"
+displayName="Revamp Mod"
+logoFile="revamp.png"
+credits="Thanks for this example mod goes to Java"
+authors="ZygZag"
+description='''
+Revamps some existing features of Minecraft.
+'''
+[[dependencies.revamp]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.revamp]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="BOTH"

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "revamp:item/shovel/iridium_shovel"
+  }
+}

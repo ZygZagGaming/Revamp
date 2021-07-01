@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "revamp:partial_iridium_chestplate_7"
+  },
+  "addition": {
+    "item": "revamp:iridium_plating"
+  },
+  "result": {
+    "item": "revamp:iridium_chestplate"
+  }
+}

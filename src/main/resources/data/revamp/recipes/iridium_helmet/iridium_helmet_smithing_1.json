@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "minecraft:netherite_helmet"
+  },
+  "addition": {
+    "item": "revamp:iridium_plating"
+  },
+  "result": {
+    "item": "revamp:partial_iridium_helmet_1"
+  }
+}

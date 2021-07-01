@@ -1,0 +1,14 @@
+{
+  "type": "revamp:crafting_special_enrichment",
+  "base": {
+    "item": "minecraft:netherite_sword"
+  },
+  "addition": {
+    "item": "revamp:damage_enrichment"
+  },
+  "attribute": "minecraft:generic.attack_damage",
+  "name": "attack",
+  "amount": 0.2,
+  "operation": "addition",
+  "slot": "mainhand"
+}

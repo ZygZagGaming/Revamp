@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "minecraft:netherite_boots"
+  },
+  "addition": {
+    "item": "revamp:iridium_plating"
+  },
+  "result": {
+    "item": "revamp:partial_iridium_boots_1"
+  }
+}
