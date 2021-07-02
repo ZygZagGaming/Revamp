@@ -1,5 +1,8 @@
 package com.zygzag.revamp.item;
 
+import com.zygzag.revamp.Registry;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -24,12 +27,11 @@ public class DamageEnrichmentItem extends Item implements IEnrichment {
 
     @Override
     public ItemStack apply(ItemStack item, float amount, AttributeModifier.Operation operation) {
-        ItemStack stack = new ItemStack(item.getItem(), item.getCount());
+        ItemStack stack = item.copy();
         boolean flag = false;
-        for (Map.Entry<Attribute, AttributeModifier> entry : stack.getAttributeModifiers(EquipmentSlotType.MAINHAND).entries()) {
-            System.out.println(entry.getValue());
+        for (Map.Entry<Attribute, AttributeModifier> entry : item.getAttributeModifiers(EquipmentSlotType.MAINHAND).entries()) {
             if (entry.getKey().equals(Attributes.ATTACK_DAMAGE) && entry.getValue().getOperation().equals(operation)) {
-                stack.addAttributeModifier(entry.getKey(), new AttributeModifier(entry.getValue().getName(), (entry.getValue().getAmount() + (amount * 2)), entry.getValue().getOperation()), EquipmentSlotType.MAINHAND);
+                stack.addAttributeModifier(entry.getKey(), new AttributeModifier(entry.getValue().getName(), (entry.getValue().getAmount() + amount), entry.getValue().getOperation()), EquipmentSlotType.MAINHAND);
                 flag = true;
             }
             else stack.addAttributeModifier(entry.getKey(), entry.getValue(), EquipmentSlotType.MAINHAND);

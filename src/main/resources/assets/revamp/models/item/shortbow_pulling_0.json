@@ -1,0 +1,6 @@
+{
+  "parent": "revamp:item/shortbow",
+  "textures": {
+    "layer0": "item/bow_pulling_0"
+  }
+}

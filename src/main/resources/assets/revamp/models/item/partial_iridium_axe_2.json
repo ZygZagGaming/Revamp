@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "revamp:item/shovel/iridium_shovel"
+    "layer0": "revamp:item/axe/iridium_axe_0"
   }
 }

@@ -21,6 +21,7 @@ import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,11 +44,11 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public static void playerTickEvent(TickEvent.PlayerTickEvent event) {
-        if (event.player.getItemInHand(Hand.MAIN_HAND).getItem().equals(Items.NETHERITE_SWORD)) {
-            for (Map.Entry<Attribute, AttributeModifier> entry : event.player.getItemInHand(Hand.MAIN_HAND).getAttributeModifiers(EquipmentSlotType.MAINHAND).entries()) {
-                System.out.println(entry.getValue());
-            }
+    public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
+        int length = event.getPlayer().getTicksUsingItem();
+        System.out.println(length);
+        if (length >= 32) {
+            event.getPlayer().setItemInHand(event.getHand(), event.getItemStack().copy());
         }
     }
 

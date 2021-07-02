@@ -1,5 +1,5 @@
 {
-  "parent": "item/generated",
+  "parent": "item/handheld",
   "textures": {
     "layer0": "revamp:item/axe/iridium_axe"
   }

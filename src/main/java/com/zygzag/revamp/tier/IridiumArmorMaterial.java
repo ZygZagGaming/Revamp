@@ -17,64 +17,64 @@ public enum IridiumArmorMaterial implements IArmorMaterial {
     IRIDIUM("iridium", 42, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _4_1("iridium_4_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _4_1("iridium_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _4_2("iridium_4_2", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _4_2("iridium_2", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _4_3("iridium_4_3", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _4_3("iridium_3", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _5_1("iridium_5_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _5_1("iridium_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _5_2("iridium_5_2", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _5_2("iridium_2", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _5_3("iridium_5_3", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _5_3("iridium_3", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _5_4("iridium_5_4", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _5_4("iridium_4", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_1("iridium_7_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_1("iridium_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_2("iridium_7_2", 39, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_2("iridium_2", 39, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_3("iridium_7_3", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_3("iridium_3", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_4("iridium_7_4", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_4("iridium_4", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_5("iridium_7_5", 40, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_5("iridium_5", 40, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _7_6("iridium_7_6", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _7_6("iridium_6", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_1("iridium_8_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_1("iridium_1", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_2("iridium_8_2", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_2("iridium_2", 38, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_3("iridium_8_3", 39, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_3("iridium_3", 39, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_4("iridium_8_4", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_4("iridium_4", 39, new int[]{3, 6, 8, 3}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_5("iridium_8_5", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_5("iridium_5", 40, new int[]{4, 7, 9, 4}, 16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_6("iridium_8_6", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_6("iridium_6", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    _8_7("iridium_8_7", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
+    _8_7("iridium_7", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     });
 
