@@ -93,7 +93,6 @@ public class EnrichmentRecipe extends SmithingRecipe implements IRecipe<IInvento
                     ),
                     EquipmentSlotType.byName(JSONUtils.getAsString(json, "slot"))
             );
-            System.out.println("amount: " + recipe.modifier.getAmount());
             return recipe;
         }
 

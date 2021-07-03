@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.zygzag.revamp.block.CustomCauldronBlock;
 import com.zygzag.revamp.block.IridiumOreBlock;
 import com.zygzag.revamp.block.tile.CustomCauldronTileEntity;
+import com.zygzag.revamp.entity.CustomIronGolemEntity;
 import com.zygzag.revamp.item.*;
 import com.zygzag.revamp.recipe.EnrichmentRecipe;
 import com.zygzag.revamp.tier.IridiumArmorMaterial;
@@ -16,6 +17,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.enchantment.DamageEnchantment;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.BannerDuplicateRecipe;
@@ -43,6 +48,7 @@ public class Registry {
     public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Revamp.MODID);
     public static final DeferredRegister<Enchantment> ENCHANTMENT_REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Revamp.MODID);
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Revamp.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, Revamp.MODID);
 
     public static void register(IEventBus bus) {
         ITEM_REGISTER.register(bus);
@@ -50,15 +56,19 @@ public class Registry {
         RECIPE_REGISTER.register(bus);
         ENCHANTMENT_REGISTER.register(bus);
         TILE_ENTITY_REGISTER.register(bus);
+        ENTITY_REGISTER.register(bus);
     }
 
     public static RegistryObject<Item> registerItem(String name, Supplier<Item> supplier) {
         return ITEM_REGISTER.register(name, supplier);
     }
 
+    // Entities
+    public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.<CustomIronGolemEntity>of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
+
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
-    public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
     public static final RegistryObject<Block> CUSTOM_CAULDRON = BLOCK_REGISTER.register("custom_cauldron", CustomCauldronBlock::new);
 
     // Block Items
