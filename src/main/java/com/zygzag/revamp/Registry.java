@@ -1,8 +1,10 @@
 package com.zygzag.revamp;
 
 import com.google.common.collect.Sets;
+import com.zygzag.revamp.block.AlchemyTableBlock;
 import com.zygzag.revamp.block.CustomCauldronBlock;
 import com.zygzag.revamp.block.IridiumOreBlock;
+import com.zygzag.revamp.block.tile.AlchemyTableTileEntity;
 import com.zygzag.revamp.block.tile.CustomCauldronTileEntity;
 import com.zygzag.revamp.item.*;
 import com.zygzag.revamp.recipe.EnrichmentRecipe;
@@ -10,30 +12,19 @@ import com.zygzag.revamp.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.tier.IridiumToolTier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.PortalInfo;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.enchantment.DamageEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
-import net.minecraft.item.crafting.BannerDuplicateRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Util;
-import net.minecraft.util.datafix.TypeReferences;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.imageio.spi.RegisterableService;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -56,25 +47,32 @@ public class Registry {
         return ITEM_REGISTER.register(name, supplier);
     }
 
+    public static RegistryObject<Item> registerBlockItem(RegistryObject<Block> block, Item.Properties properties) {
+        return ITEM_REGISTER.register(block.getId().getPath(), () -> new BlockItem(block.get(), properties));
+    }
+
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL)));
     public static final RegistryObject<Block> CUSTOM_CAULDRON = BLOCK_REGISTER.register("custom_cauldron", CustomCauldronBlock::new);
+    public static final RegistryObject<Block> ALCHEMY_TABLE_BLOCK = BLOCK_REGISTER.register("alchemy_table", AlchemyTableBlock::new);
 
     // Block Items
-    public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = ITEM_REGISTER.register("iridium_ore", () -> new BlockItem(IRIDIUM_ORE.get(), new Item.Properties().tab(Revamp.TAB)));
-    public static final RegistryObject<Item> RAW_IRIDIUM_ITEM = ITEM_REGISTER.register("raw_iridium_block", () -> new BlockItem(RAW_IRIDIUM_BLOCK.get(), new Item.Properties().tab(Revamp.TAB)));
-    public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = ITEM_REGISTER.register("custom_cauldron", () -> new BlockItem(CUSTOM_CAULDRON.get(), new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(Revamp.TAB));
+    public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.TAB));
+    public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
 
     // Items
-    public static final RegistryObject<Item> IRIDIUM_PLATING = ITEM_REGISTER.register("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
-    public static final RegistryObject<Item> RAW_IRIDIUM = ITEM_REGISTER.register("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> RAW_IRIDIUM = registerItem("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> DAMAGE_ENRICHMENT = ITEM_REGISTER.register("damage_enrichment", () -> new DamageEnrichmentItem(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> SHULKER_BOWL = ITEM_REGISTER.register("shulker_bowl", () -> new ShulkerBowlItem(new Item.Properties().tab(Revamp.TAB).durability(16)));
-    public static final RegistryObject<Item> EMPTY_SHULKER_BOWL = ITEM_REGISTER.register("empty_shulker_bowl", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> EMPTY_SHULKER_BOWL = registerItem("empty_shulker_bowl", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> EMPOWERMENT_STAR = registerItem("empowerment_star", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
 
     // Tile Entities
     public static final RegistryObject<TileEntityType<CustomCauldronTileEntity>> CUSTOM_CAULDRON_TILE_ENTITY = TILE_ENTITY_REGISTER.register("custom_cauldron", () -> new TileEntityType<>(CustomCauldronTileEntity::new, Sets.newHashSet(CUSTOM_CAULDRON.get()), null));
+    public static final RegistryObject<TileEntityType<AlchemyTableTileEntity>> ALCHEMY_TABLE_TILE_ENTITY = TILE_ENTITY_REGISTER.register("alchemy_table", () -> new TileEntityType<>(AlchemyTableTileEntity::new, Sets.newHashSet(ALCHEMY_TABLE_BLOCK.get()), null));
 
     // Tool Items
     // public static final RegistryObject<Item> SHORTBOW = registerItem("shortbow", () -> new ShortbowItem(new Item.Properties().tab(ItemGroup.TAB_COMBAT).durability(384)));
