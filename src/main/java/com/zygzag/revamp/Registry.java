@@ -54,6 +54,10 @@ public class Registry {
         return ITEM_REGISTER.register(name, supplier);
     }
 
+    public static RegistryObject<Item> registerBlockItem(RegistryObject<Block> block, Item.Properties properties) {
+        return ITEM_REGISTER.register(block.getId().getPath(), () -> new BlockItem(block.get(), properties));
+    }
+
     // Entities
     public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.<CustomIronGolemEntity>of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
 
