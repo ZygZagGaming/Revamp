@@ -8,11 +8,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.Feature;
@@ -47,10 +49,19 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
-        int length = event.getPlayer().getTicksUsingItem();
-        System.out.println(length);
-        if (length >= 32) {
-            event.getPlayer().setItemInHand(event.getHand(), event.getItemStack().copy());
+        Item item = event.getItemStack().getItem();
+        PlayerEntity player = event.getPlayer();
+        if (player instanceof ServerPlayerEntity) {
+            ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
+            if (item.equals(Registry.SHULKER_BOWL.get())) {
+                int length = event.getPlayer().getTicksUsingItem();
+                System.out.println(length);
+                if (length >= 32) {
+                    event.getPlayer().setItemInHand(event.getHand(), event.getItemStack().copy());
+                }
+            } else if (sPlayer.pick(20.0, 0.0f, false).getType() == RayTraceResult.Type.ENTITY) {
+
+            }
         }
     }
 

@@ -3,12 +3,14 @@ package com.zygzag.revamp.entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeMod;
 
 public class CustomIronGolemEntity extends IronGolemEntity {
     public CustomIronGolemEntity(EntityType<? extends IronGolemEntity> type, World world) {

@@ -6,6 +6,7 @@ import com.zygzag.revamp.block.CustomCauldronBlock;
 import com.zygzag.revamp.block.IridiumOreBlock;
 import com.zygzag.revamp.block.tile.AlchemyTableTileEntity;
 import com.zygzag.revamp.block.tile.CustomCauldronTileEntity;
+import com.zygzag.revamp.entity.AbominationWitherEntity;
 import com.zygzag.revamp.entity.CustomIronGolemEntity;
 import com.zygzag.revamp.item.*;
 import com.zygzag.revamp.recipe.EnrichmentRecipe;
@@ -13,14 +14,13 @@ import com.zygzag.revamp.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.tier.IridiumToolTier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -59,7 +59,8 @@ public class Registry {
     }
 
     // Entities
-    public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.<CustomIronGolemEntity>of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
+    public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
+    public static final RegistryObject<EntityType<AbominationWitherEntity>> ABOMINATION_WITHER = ENTITY_REGISTER.register("abomination_wither",() -> EntityType.Builder.of(AbominationWitherEntity::new, EntityClassification.MONSTER).fireImmune().immuneTo(Blocks.WITHER_ROSE).sized(0.7F, 2.4F).clientTrackingRange(8).build("abomination_wither"));
 
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
