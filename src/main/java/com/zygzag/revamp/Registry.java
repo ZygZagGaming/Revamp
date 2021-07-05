@@ -6,6 +6,7 @@ import com.zygzag.revamp.block.CustomCauldronBlock;
 import com.zygzag.revamp.block.IridiumOreBlock;
 import com.zygzag.revamp.block.tile.AlchemyTableTileEntity;
 import com.zygzag.revamp.block.tile.CustomCauldronTileEntity;
+import com.zygzag.revamp.effect.EmpowermentEffect;
 import com.zygzag.revamp.entity.AbominationWitherEntity;
 import com.zygzag.revamp.entity.CustomIronGolemEntity;
 import com.zygzag.revamp.item.*;
@@ -24,7 +25,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -40,6 +44,7 @@ public class Registry {
     public static final DeferredRegister<Enchantment> ENCHANTMENT_REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Revamp.MODID);
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Revamp.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, Revamp.MODID);
+    public static final DeferredRegister<Effect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
 
     public static void register(IEventBus bus) {
         ITEM_REGISTER.register(bus);
@@ -48,6 +53,7 @@ public class Registry {
         ENCHANTMENT_REGISTER.register(bus);
         TILE_ENTITY_REGISTER.register(bus);
         ENTITY_REGISTER.register(bus);
+        EFFECT_REGISTER.register(bus);
     }
 
     public static RegistryObject<Item> registerItem(String name, Supplier<Item> supplier) {
@@ -135,4 +141,7 @@ public class Registry {
 
     // Recipes
     public static final RegistryObject<IRecipeSerializer<?>> ENRICHMENT_RECIPE = RECIPE_REGISTER.register("crafting_special_enrichment", EnrichmentRecipe.Serializer::new);
+
+    // Effects
+    public static final RegistryObject<Effect> EMPOWERMENT = EFFECT_REGISTER.register("empowerment", EmpowermentEffect::new);
 }
