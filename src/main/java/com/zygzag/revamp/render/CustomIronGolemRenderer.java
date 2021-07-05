@@ -9,8 +9,8 @@ import net.minecraft.util.ResourceLocation;
 public class CustomIronGolemRenderer extends MobRenderer<CustomIronGolemEntity, IronGolemModel<CustomIronGolemEntity>> {
     private static final ResourceLocation GOLEM_LOCATION = new ResourceLocation("textures/entity/iron_golem/iron_golem.png");
 
-    public CustomIronGolemRenderer(EntityRendererManager manager, IronGolemModel<CustomIronGolemEntity> model, float shadowRadius) {
-        super(manager, model, shadowRadius);
+    public CustomIronGolemRenderer(EntityRendererManager manager) {
+        super(manager, new IronGolemModel<>(), 0.7F);
     }
 
     @Override

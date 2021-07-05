@@ -3,10 +3,10 @@ package com.zygzag.revamp.entity;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.world.World;
 
 import java.util.EnumSet;
@@ -39,6 +39,9 @@ public class AbominationWitherEntity extends WitherEntity {
         public boolean canUse() {
             return AbominationWitherEntity.this.getInvulnerableTicks() > 0;
         }
+    }
+
+    public void performRangedAttack(LivingEntity entity, float amount) {
     }
 
 }

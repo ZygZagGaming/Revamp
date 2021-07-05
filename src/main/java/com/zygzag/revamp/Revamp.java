@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.zygzag.revamp.entity.AbominationWitherEntity;
 import com.zygzag.revamp.entity.CustomIronGolemEntity;
+import com.zygzag.revamp.render.AbominationWitherRenderer;
+import com.zygzag.revamp.render.CustomIronGolemRenderer;
 import com.zygzag.revamp.util.EmpowermentData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;
@@ -62,7 +64,8 @@ public class Revamp {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        RenderingRegistry.registerEntityRenderingHandler(Registry.CUSTOM_IRON_GOLEM.get(), IronGolemRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(Registry.ABOMINATION_WITHER.get(), AbominationWitherRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) { }
