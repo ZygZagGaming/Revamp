@@ -9,6 +9,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
@@ -24,7 +25,7 @@ public class AlchemyTableTileEntity extends LockableTileEntity implements ITicka
     private NonNullList<ItemStack> items = NonNullList.withSize(5, ItemStack.EMPTY);
 
     public AlchemyTableTileEntity() {
-        super(Registry.ALCHEMY_TABLE_TILE_ENTITY.get());
+        super(TileEntityType.BREWING_STAND);
     }
 
     @Override
