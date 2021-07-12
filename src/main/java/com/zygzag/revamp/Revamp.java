@@ -52,7 +52,7 @@ public class Revamp {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerAttributes);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerAttributes);
 
         Registry.register(FMLJavaModLoadingContext.get().getModEventBus());
 
@@ -60,12 +60,12 @@ public class Revamp {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        this.readJsonFiles();
+        // this.readJsonFiles();
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        RenderingRegistry.registerEntityRenderingHandler(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(Registry.ABOMINATION_WITHER.get(), AbominationWitherRenderer::new);
+        // RenderingRegistry.registerEntityRenderingHandler(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemRenderer::new);
+        // RenderingRegistry.registerEntityRenderingHandler(Registry.ABOMINATION_WITHER.get(), AbominationWitherRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) { }
@@ -73,8 +73,8 @@ public class Revamp {
     private void processIMC(final InterModProcessEvent event) { }
 
     private void registerAttributes(final EntityAttributeCreationEvent event) {
-        event.put(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemEntity.createAttributes().build());
-        event.put(Registry.ABOMINATION_WITHER.get(), AbominationWitherEntity.createAttributes().build());
+        // event.put(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemEntity.createAttributes().build());
+        // event.put(Registry.ABOMINATION_WITHER.get(), AbominationWitherEntity.createAttributes().build());
     }
 
     public static final ItemGroup TAB = new ItemGroup("main_tab") {
@@ -85,7 +85,7 @@ public class Revamp {
     };
 
     private void readJsonFiles() {
-        try {
+        /*try {
             ArrayList<EmpowermentData> list = new ArrayList<>();
             Gson gson = new Gson();
             ResourceLocation loc = new ResourceLocation("revamp", "misc/empowerables.json");
@@ -112,6 +112,6 @@ public class Revamp {
         } catch (IOException ex) {
             ex.printStackTrace();
             LOGGER.warn("Empowerables json not found. Assuming intentional, treating as empty file");
-        }
+        }*/
     }
 }

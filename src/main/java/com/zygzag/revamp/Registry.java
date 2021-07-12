@@ -65,31 +65,31 @@ public class Registry {
     }
 
     // Entities
-    public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
-    public static final RegistryObject<EntityType<AbominationWitherEntity>> ABOMINATION_WITHER = ENTITY_REGISTER.register("abomination_wither",() -> EntityType.Builder.of(AbominationWitherEntity::new, EntityClassification.MONSTER).fireImmune().immuneTo(Blocks.WITHER_ROSE).sized(0.7F, 2.4F).clientTrackingRange(8).build("abomination_wither"));
+    // public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
+    // public static final RegistryObject<EntityType<AbominationWitherEntity>> ABOMINATION_WITHER = ENTITY_REGISTER.register("abomination_wither",() -> EntityType.Builder.of(AbominationWitherEntity::new, EntityClassification.MONSTER).fireImmune().immuneTo(Blocks.WITHER_ROSE).sized(0.7F, 2.4F).clientTrackingRange(8).build("abomination_wither"));
 
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
-    public static final RegistryObject<Block> CUSTOM_CAULDRON = BLOCK_REGISTER.register("custom_cauldron", CustomCauldronBlock::new);
-    public static final RegistryObject<Block> ALCHEMY_TABLE_BLOCK = BLOCK_REGISTER.register("alchemy_table", AlchemyTableBlock::new);
+    // public static final RegistryObject<Block> CUSTOM_CAULDRON = BLOCK_REGISTER.register("custom_cauldron", CustomCauldronBlock::new);
+    // public static final RegistryObject<Block> ALCHEMY_TABLE_BLOCK = BLOCK_REGISTER.register("alchemy_table", AlchemyTableBlock::new);
 
     // Block Items
     public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(Revamp.TAB));
     public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.TAB));
-    public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
+    // public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
 
     // Items
     public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> RAW_IRIDIUM = registerItem("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
-    public static final RegistryObject<Item> DAMAGE_ENRICHMENT = ITEM_REGISTER.register("damage_enrichment", () -> new DamageEnrichmentItem(new Item.Properties().tab(Revamp.TAB)));
+    /*public static final RegistryObject<Item> DAMAGE_ENRICHMENT = ITEM_REGISTER.register("damage_enrichment", () -> new DamageEnrichmentItem(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> SHULKER_BOWL = ITEM_REGISTER.register("shulker_bowl", () -> new ShulkerBowlItem(new Item.Properties().tab(Revamp.TAB).durability(16)));
     public static final RegistryObject<Item> EMPTY_SHULKER_BOWL = registerItem("empty_shulker_bowl", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
-    public static final RegistryObject<Item> EMPOWERMENT_STAR = registerItem("empowerment_star", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> EMPOWERMENT_STAR = registerItem("empowerment_star", () -> new Item(new Item.Properties().tab(Revamp.TAB)));*/
 
     // Tile Entities
-    public static final RegistryObject<TileEntityType<CustomCauldronTileEntity>> CUSTOM_CAULDRON_TILE_ENTITY = TILE_ENTITY_REGISTER.register("custom_cauldron", () -> new TileEntityType<>(CustomCauldronTileEntity::new, Sets.newHashSet(CUSTOM_CAULDRON.get()), null));
-    public static final RegistryObject<TileEntityType<AlchemyTableTileEntity>> ALCHEMY_TABLE_TILE_ENTITY = TILE_ENTITY_REGISTER.register("alchemy_table", () -> new TileEntityType<>(AlchemyTableTileEntity::new, Sets.newHashSet(ALCHEMY_TABLE_BLOCK.get()), null));
+    /*public static final RegistryObject<TileEntityType<CustomCauldronTileEntity>> CUSTOM_CAULDRON_TILE_ENTITY = TILE_ENTITY_REGISTER.register("custom_cauldron", () -> new TileEntityType<>(CustomCauldronTileEntity::new, Sets.newHashSet(CUSTOM_CAULDRON.get()), null));
+    public static final RegistryObject<TileEntityType<AlchemyTableTileEntity>> ALCHEMY_TABLE_TILE_ENTITY = TILE_ENTITY_REGISTER.register("alchemy_table", () -> new TileEntityType<>(AlchemyTableTileEntity::new, Sets.newHashSet(ALCHEMY_TABLE_BLOCK.get()), null));*/
 
     // Tool Items
     // public static final RegistryObject<Item> SHORTBOW = registerItem("shortbow", () -> new ShortbowItem(new Item.Properties().tab(ItemGroup.TAB_COMBAT).durability(384)));
@@ -140,8 +140,8 @@ public class Registry {
     // endregion
 
     // Recipes
-    public static final RegistryObject<IRecipeSerializer<?>> ENRICHMENT_RECIPE = RECIPE_REGISTER.register("crafting_special_enrichment", EnrichmentRecipe.Serializer::new);
+    // public static final RegistryObject<IRecipeSerializer<?>> ENRICHMENT_RECIPE = RECIPE_REGISTER.register("crafting_special_enrichment", EnrichmentRecipe.Serializer::new);
 
     // Effects
-    public static final RegistryObject<Effect> EMPOWERMENT = EFFECT_REGISTER.register("empowerment", EmpowermentEffect::new);
+    // public static final RegistryObject<Effect> EMPOWERMENT = EFFECT_REGISTER.register("empowerment", EmpowermentEffect::new);
 }

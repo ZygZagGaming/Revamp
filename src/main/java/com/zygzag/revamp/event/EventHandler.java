@@ -56,7 +56,7 @@ public class EventHandler {
                 Feature.ORE.configured(new OreFeatureConfig(test, state, size)).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(min, 0, max)).squared().range(count)));
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
         Item item = event.getItemStack().getItem();
         PlayerEntity player = event.getPlayer();
@@ -96,6 +96,6 @@ public class EventHandler {
                 }
             }
         }
-    }
+    }*/
 
 }
