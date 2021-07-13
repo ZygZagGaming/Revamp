@@ -4,7 +4,7 @@
 
 Revamp is a vanilla+ mod aiming to expand on vanilla's concepts while adding more unique content.
 
-This mod is currently in ALPHA.
+This mod is currently in ALPHA, and only supports Forge 1.16.5.
 
 Read about the features on the wiki: https://github.com/ZygZagGaming/Revamp/wiki
 
