@@ -1,1 +1,0 @@
-Curseforge page: https://www.curseforge.com/minecraft/mc-mods/progression-revamp
