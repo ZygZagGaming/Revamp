@@ -24,7 +24,7 @@ public class DrifterEggModel<T extends DrifterEggEntity> extends EntityModel<T> 
 
 	@Override
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
-			this.body.zRot = entity.yRot * ((float)Math.PI / 180F);
+		this.body.zRot = entity.yRot * ((float)Math.PI / 180F);
 		this.body.xRot = headPitch * ((float)Math.PI / 180F);
 	}
 

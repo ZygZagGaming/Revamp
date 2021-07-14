@@ -1,5 +1,6 @@
 package com.zygzag.revamp.common.entity;
 
+import com.zygzag.revamp.common.Registry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.MobEntity;
@@ -7,9 +8,14 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class DrifterEggEntity extends  MobEntity {
     public DrifterEggEntity(EntityType<? extends MobEntity> type, World world) {
@@ -37,6 +43,15 @@ public class DrifterEggEntity extends  MobEntity {
         return true;
     }
 
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return Registry.DRIFTER_EGG_HIT.get();
+    }
+    @Nullable
+    protected SoundEvent getDeathSound() {
+        return Registry.DRIFTER_EGG_POP.get();
+    }
+
     class MoveRandomGoal extends Goal {
         private final DrifterEggEntity egg;
         private float timeUntilDirectionSwitch;
@@ -58,7 +73,7 @@ public class DrifterEggEntity extends  MobEntity {
         public void tick() {
            timeUntilDirectionSwitch--;
            if (timeUntilDirectionSwitch < 1){
-               timeUntilDirectionSwitch = 15 + (egg.getRandom().nextFloat() * 10);
+               timeUntilDirectionSwitch = (egg.getRandom().nextFloat() * 200);
                 float f = this.egg.getRandom().nextFloat() * ((float)Math.PI * 2F);
                 float f1 = MathHelper.cos(f) * speed;
                 float f2 = (-speed) + this.egg.getRandom().nextFloat() * speed * 2;

@@ -21,6 +21,8 @@ import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.potion.Effect;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -37,6 +39,7 @@ public class Registry {
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Revamp.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, Revamp.MODID);
     public static final DeferredRegister<Effect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_REGISTER = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Revamp.MODID);
 
     public static void register(IEventBus bus) {
         ITEM_REGISTER.register(bus);
@@ -46,6 +49,7 @@ public class Registry {
         TILE_ENTITY_REGISTER.register(bus);
         ENTITY_REGISTER.register(bus);
         EFFECT_REGISTER.register(bus);
+        SOUND_REGISTER.register(bus);
     }
 
     public static RegistryObject<Item> registerItem(String name, Supplier<Item> supplier) {
@@ -55,6 +59,16 @@ public class Registry {
     public static RegistryObject<Item> registerBlockItem(RegistryObject<Block> block, Item.Properties properties) {
         return ITEM_REGISTER.register(block.getId().getPath(), () -> new BlockItem(block.get(), properties));
     }
+
+    public static RegistryObject<SoundEvent> registerSound(String name) {
+        return SOUND_REGISTER.register(name, () -> new SoundEvent(new ResourceLocation(Revamp.MODID, name)));
+    }
+
+    //Sounds
+    public static final RegistryObject<SoundEvent> DRIFTER_EGG_HIT = registerSound("entity.drifter_egg.hit");
+    public static final RegistryObject<SoundEvent> DRIFTER_EGG_POP = registerSound("entity.drifter_egg.pop");
+    public static final RegistryObject<SoundEvent> DRIFTER_EGG_SPAWN = registerSound("entity.drifter_egg.spawn");
+
 
     // Entities
     // public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
@@ -73,9 +87,9 @@ public class Registry {
     // public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
 
     // Items
-      public static final RegistryObject<Item> GLOID_BUCKET = registerItem("gloid_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
-        public static final RegistryObject<Item> DRIFTER_EGG_BUCKET = registerItem("drifter_egg_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
-      public static final RegistryObject<Item> GLOID_BALL = registerItem("gloid_ball", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> GLOID_BUCKET = registerItem("gloid_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> DRIFTER_EGG_BUCKET = registerItem("drifter_egg_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> GLOID_BALL = registerItem("gloid_ball", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> RAW_IRIDIUM = registerItem("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> SOCKET_TEST = registerItem("socket_test", () -> new SocketItem(new Item.Properties().tab(Revamp.TAB)));

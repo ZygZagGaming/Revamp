@@ -41,5 +41,9 @@
   "item.revamp.partial_iridium_hoe_1": "Iridium-Plated Netherite Hoe",
   "item.revamp.gloid_ball": "Gloid Ball",
   "item.revamp.gloid_bucket": "Gloid Bucket",
-  "item.revamp.drifter_egg_bucket": "Drifter Egg Bucket"
+  "item.revamp.drifter_egg_bucket": "Drifter Egg Bucket",
+
+  "sub.entity.drifter_egg.hit": "Drifter Egg Squishes",
+  "sub.entity.drifter_egg.pop": "Drifter Egg Pops",
+  "sub.entity.drifter_egg.spawn": "Drifter Egg Squelches"
 }
