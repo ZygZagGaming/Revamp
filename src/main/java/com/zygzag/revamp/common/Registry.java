@@ -3,6 +3,9 @@ package com.zygzag.revamp.common;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.entity.DrifterEggEntity;
 import com.zygzag.revamp.common.item.*;
+import com.zygzag.revamp.common.item.socketables.*;
+import com.zygzag.revamp.common.recipe.EnrichmentRecipe;
+import com.zygzag.revamp.common.recipe.SocketRecipe;
 import com.zygzag.revamp.common.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.common.tier.IridiumToolTier;
 import net.minecraft.block.AbstractBlock;
@@ -75,6 +78,7 @@ public class Registry {
       public static final RegistryObject<Item> GLOID_BALL = registerItem("gloid_ball", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> RAW_IRIDIUM = registerItem("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> SOCKET_TEST = registerItem("socket_test", () -> new SocketItem(new Item.Properties().tab(Revamp.TAB)));
     /*public static final RegistryObject<Item> DAMAGE_ENRICHMENT = ITEM_REGISTER.register("damage_enrichment", () -> new DamageEnrichmentItem(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> SHULKER_BOWL = ITEM_REGISTER.register("shulker_bowl", () -> new ShulkerBowlItem(new Item.Properties().tab(Revamp.TAB).durability(16)));
     public static final RegistryObject<Item> EMPTY_SHULKER_BOWL = registerItem("empty_shulker_bowl", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
@@ -88,14 +92,14 @@ public class Registry {
     // public static final RegistryObject<Item> SHORTBOW = registerItem("shortbow", () -> new ShortbowItem(new Item.Properties().tab(ItemGroup.TAB_COMBAT).durability(384)));
     // public static final RegistryObject<Item> LONGBOW = registerItem("longbow", () -> new LongbowItem(new Item.Properties().tab(ItemGroup.TAB_COMBAT).durability(384)));
 
-    public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new SwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
-    public static final RegistryObject<Item> IRIDIUM_SHOVEL = registerItem("iridium_shovel", () -> new ShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
-    public static final RegistryObject<Item> IRIDIUM_PICKAXE = registerItem("iridium_pickaxe", () -> new PickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
-    public static final RegistryObject<Item> IRIDIUM_AXE = registerItem("iridium_axe", () -> new AxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
-    public static final RegistryObject<Item> IRIDIUM_HOE = registerItem("iridium_hoe", () -> new HoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_SHOVEL = registerItem("iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_PICKAXE = registerItem("iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_AXE = registerItem("iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_HOE = registerItem("iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(ItemGroup.TAB_TOOLS).fireResistant()));
 
     public static final RegistryObject<Item> IRIDIUM_HELMET = registerItem("iridium_helmet", () -> new ArmorItem(IridiumArmorMaterial.IRIDIUM, EquipmentSlotType.HEAD, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
-    public static final RegistryObject<Item> IRIDIUM_CHESTPLATE = registerItem("iridium_chestplate", () -> new ArmorItem(IridiumArmorMaterial.IRIDIUM, EquipmentSlotType.CHEST, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
+    public static final RegistryObject<Item> IRIDIUM_CHESTPLATE = registerItem("iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
     public static final RegistryObject<Item> IRIDIUM_LEGGINGS = registerItem("iridium_leggings", () -> new ArmorItem(IridiumArmorMaterial.IRIDIUM, EquipmentSlotType.LEGS, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
     public static final RegistryObject<Item> IRIDIUM_BOOTS = registerItem("iridium_boots", () -> new ArmorItem(IridiumArmorMaterial.IRIDIUM, EquipmentSlotType.FEET, (new Item.Properties()).tab(ItemGroup.TAB_COMBAT).fireResistant()));
 
@@ -134,6 +138,7 @@ public class Registry {
 
     // Recipes
     // public static final RegistryObject<IRecipeSerializer<?>> ENRICHMENT_RECIPE = RECIPE_REGISTER.register("crafting_special_enrichment", EnrichmentRecipe.Serializer::new);
+    public static final RegistryObject<IRecipeSerializer<?>> SOCKET_RECIPE = RECIPE_REGISTER.register("crafting_special_socket", SocketRecipe.Serializer::new);
 
     // Effects
     // public static final RegistryObject<Effect> EMPOWERMENT = EFFECT_REGISTER.register("empowerment", EmpowermentEffect::new);
