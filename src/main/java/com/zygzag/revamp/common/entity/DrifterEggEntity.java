@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 public class DrifterEggEntity extends  MobEntity {
     public DrifterEggEntity(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
-        setNoGravity(true);
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
@@ -19,5 +18,11 @@ public class DrifterEggEntity extends  MobEntity {
 
     public boolean canBreatheUnderwater() {
         return true;
+    }
+    public boolean isNoGravity() {
+        return true;
+    }
+    public boolean isPersistenceRequired() {
+        return false;
     }
 }
