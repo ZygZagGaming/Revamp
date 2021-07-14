@@ -22,7 +22,6 @@ public class SocketRecipe extends SmithingRecipe implements IRecipe<IInventory> 
 
     @Override
     public boolean matches(IInventory inv, World world) {
-        System.out.println(inv.getItem(0).getItem() instanceof ISocketable && ((ISocketable) inv.getItem(0).getItem()).canApplySocket(inv.getItem(0), inv.getItem(1)));
         return inv.getItem(0)
                 .getItem() instanceof ISocketable &&
                 item.test(

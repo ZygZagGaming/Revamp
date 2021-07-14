@@ -3,6 +3,7 @@ package com.zygzag.revamp.common.event;
 import com.zygzag.revamp.common.Registry;
 import com.zygzag.revamp.common.Revamp;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Hand;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.Feature;
@@ -11,9 +12,11 @@ import net.minecraft.world.gen.feature.template.RuleTest;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.core.pattern.PlainTextRenderer;
 
 @Mod.EventBusSubscriber(modid = Revamp.MODID)
 public class EventHandler {
@@ -71,5 +74,10 @@ public class EventHandler {
             }
         }
     }*/
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent evt) {
+        // System.out.println(evt.player.getItemInHand(Hand.MAIN_HAND).getOrCreateTag());
+    }
 
 }

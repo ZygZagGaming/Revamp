@@ -1,12 +1,15 @@
 package com.zygzag.revamp.common.item;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 
 public interface ISocketable {
     default boolean canApplySocket(ItemStack item, ItemStack socketItem) {
         if (item.getItem() instanceof ISocketable && socketItem.getItem() instanceof SocketItem) {
-            return ItemStack.of(item.getOrCreateTag().getCompound("SocketItem")) == ItemStack.EMPTY;
+            System.out.println(ItemStack.of(item.getOrCreateTag().getCompound("SocketItem")).getItem());
+            System.out.println(Items.AIR);
+            return ItemStack.of(item.getOrCreateTag().getCompound("SocketItem")).getItem().equals(Items.AIR);
         }
         return false;
     }
