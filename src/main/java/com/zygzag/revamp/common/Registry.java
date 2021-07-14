@@ -2,6 +2,7 @@ package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.entity.DrifterEggEntity;
+import com.zygzag.revamp.common.entity.DrifterEntity;
 import com.zygzag.revamp.common.item.*;
 import com.zygzag.revamp.common.item.socketables.*;
 import com.zygzag.revamp.common.recipe.EnrichmentRecipe;
@@ -74,7 +75,7 @@ public class Registry {
     // public static final RegistryObject<EntityType<CustomIronGolemEntity>> CUSTOM_IRON_GOLEM = ENTITY_REGISTER.register("custom_iron_golem",() -> EntityType.Builder.of(CustomIronGolemEntity::new, EntityClassification.MISC).sized(1.4F, 2.7F).clientTrackingRange(10).build("custom_iron_golem"));
     // public static final RegistryObject<EntityType<AbominationWitherEntity>> ABOMINATION_WITHER = ENTITY_REGISTER.register("abomination_wither",() -> EntityType.Builder.of(AbominationWitherEntity::new, EntityClassification.MONSTER).fireImmune().immuneTo(Blocks.WITHER_ROSE).sized(0.7F, 2.4F).clientTrackingRange(8).build("abomination_wither"));
     public static final RegistryObject<EntityType<DrifterEggEntity>> DRIFTER_EGG = ENTITY_REGISTER.register("drifter_egg",() -> EntityType.Builder.of(DrifterEggEntity::new, EntityClassification.MISC).sized(0.5F, 0.5F).build("drifter_egg"));
-
+    public static final RegistryObject<EntityType<DrifterEntity>> DRIFTER = ENTITY_REGISTER.register("drifter",() -> EntityType.Builder.of(DrifterEntity::new, EntityClassification.MISC).sized(0.6F, 0.6F).build("drifter"));
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));

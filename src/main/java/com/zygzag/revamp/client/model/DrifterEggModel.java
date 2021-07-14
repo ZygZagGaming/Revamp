@@ -6,7 +6,6 @@ import com.zygzag.revamp.common.entity.DrifterEggEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import org.lwjgl.opengl.GL11;
 
 public class DrifterEggModel<T extends DrifterEggEntity> extends EntityModel<T> {
 	private final ModelRenderer body;
@@ -31,14 +30,5 @@ public class DrifterEggModel<T extends DrifterEggEntity> extends EntityModel<T> 
 	@Override
 	public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 		body.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-	}
-
-
-
-
-	public void setRotationAngles(ModelRenderer modelRenderer, float x, float y, float z) {
-		modelRenderer.xRot = x;
-		modelRenderer.yRot = y;
-		modelRenderer.zRot = z;
 	}
 }

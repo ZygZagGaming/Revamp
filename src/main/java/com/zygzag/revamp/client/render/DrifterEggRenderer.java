@@ -21,16 +21,14 @@ public class DrifterEggRenderer extends MobRenderer<DrifterEggEntity, DrifterEgg
         super(manager, new DrifterEggModel<>(), 0.3f);
     }
 
-
-
     @Override
-    public ResourceLocation getTextureLocation(DrifterEggEntity p_110775_1_) {
+    public ResourceLocation getTextureLocation(DrifterEggEntity drifterEgg) {
         return TEXTURE;
     }
 
     @Override
-    public void render(DrifterEggEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-        super.render(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+    public void render(DrifterEggEntity drifterEgg, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
+        super.render(drifterEgg, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
     }
 
 
