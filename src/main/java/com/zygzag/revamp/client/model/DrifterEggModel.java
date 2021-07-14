@@ -3,6 +3,7 @@ package com.zygzag.revamp.client.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.zygzag.revamp.common.entity.DrifterEggEntity;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +12,7 @@ public class DrifterEggModel<T extends DrifterEggEntity> extends EntityModel<T> 
 	private final ModelRenderer bb_main;
 
 	public DrifterEggModel() {
+		super(RenderType::entityTranslucent);
 		texWidth = 32;
 		texHeight = 32;
 

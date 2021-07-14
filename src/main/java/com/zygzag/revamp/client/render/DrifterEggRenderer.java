@@ -24,11 +24,7 @@ public class DrifterEggRenderer extends MobRenderer<DrifterEggEntity, DrifterEgg
 
     @Override
     public void render(DrifterEggEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-        GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         super.render(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
-        GL11.glPopAttrib();
     }
 
 
