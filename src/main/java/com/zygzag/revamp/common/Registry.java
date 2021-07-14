@@ -70,6 +70,9 @@ public class Registry {
     // public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
 
     // Items
+      public static final RegistryObject<Item> GLOID_BUCKET = registerItem("gloid_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+        public static final RegistryObject<Item> DRIFTER_EGG_BUCKET = registerItem("drifter_egg_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+      public static final RegistryObject<Item> GLOID_BALL = registerItem("gloid_ball", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> RAW_IRIDIUM = registerItem("raw_iridium", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     /*public static final RegistryObject<Item> DAMAGE_ENRICHMENT = ITEM_REGISTER.register("damage_enrichment", () -> new DamageEnrichmentItem(new Item.Properties().tab(Revamp.TAB)));

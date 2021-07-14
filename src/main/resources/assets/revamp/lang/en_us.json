@@ -38,5 +38,8 @@
   "block.revamp.iridium_ore": "Iridium Ore",
   "item.revamp.raw_iridium": "Raw Iridium",
   "block.revamp.raw_iridium_block": "Raw Iridium Block",
-  "item.revamp.partial_iridium_hoe_1": "Iridium-Plated Netherite Hoe"
+  "item.revamp.partial_iridium_hoe_1": "Iridium-Plated Netherite Hoe",
+  "item.revamp.gloid_ball": "Gloid Ball",
+  "item.revamp.gloid_bucket": "Gloid Bucket",
+  "item.revamp.drifter_egg_bucket": "Drifter Egg Bucket"
 }
