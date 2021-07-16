@@ -43,7 +43,7 @@
   "item.revamp.gloid_bucket": "Gloid Bucket",
   "item.revamp.drifter_egg_bucket": "Drifter Egg Bucket",
 
-  "sub.entity.drifter_egg.hit": "Drifter Egg Squishes",
-  "sub.entity.drifter_egg.pop": "Drifter Egg Pops",
-  "sub.entity.drifter_egg.spawn": "Drifter Egg Squelches"
+  "sub.entity.drifter_egg.hit": "Drifter Egg squishes",
+  "sub.entity.drifter_egg.pop": "Drifter Egg pops",
+  "sub.entity.drifter_egg.spawn": "Drifter Egg squelches"
 }

@@ -13,23 +13,15 @@ import net.minecraft.util.ResourceLocation;
 
 public class DrifterRenderer extends MobRenderer<DrifterEntity, DrifterModel<DrifterEntity>> {
 
+    private static ResourceLocation TEXTURE = new ResourceLocation(Revamp.MODID, "textures/entity/drifter/drifter.png");
     public DrifterRenderer(EntityRendererManager manager) {
         super(manager, new DrifterModel<>(), 0.3f);
     }
 
+
     @Override
     public ResourceLocation getTextureLocation(DrifterEntity drifter) {
-        String texture = "";
-        switch (drifter.age){
-            case 0:
-                texture = "textures/entity/drifter/drifter_larva.png";
-            case 2:
-                texture = "textures/entity/drifter/drifter_baby.png";
-            case 3:
-                texture = "textures/entity/drifter/drifter_adult.png";
-
-        }
-        return new ResourceLocation(Revamp.MODID, texture);
+        return TEXTURE;
     }
 
     @Override

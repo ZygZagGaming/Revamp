@@ -17,8 +17,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class DrifterEggEntity extends  MobEntity {
+public class DrifterEggEntity extends MobEntity {
     public DrifterEggEntity(EntityType<? extends MobEntity> type, World world) {
+
         super(type, world);
     }
 
@@ -33,12 +34,16 @@ public class DrifterEggEntity extends  MobEntity {
 
     }
 
+
+
     public boolean canBreatheUnderwater() {
         return true;
     }
+
     public boolean isNoGravity() {
         return true;
     }
+
     public boolean isPersistenceRequired() {
         return true;
     }

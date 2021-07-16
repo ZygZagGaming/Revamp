@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common;
 
+import com.zygzag.revamp.client.render.DrifterRenderer;
 import com.zygzag.revamp.common.entity.DrifterEggEntity;
 import com.zygzag.revamp.client.render.DrifterEggRenderer;
+import com.zygzag.revamp.common.entity.DrifterEntity;
 import com.zygzag.revamp.common.util.EmpowermentData;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -46,6 +48,7 @@ public class Revamp {
         // RenderingRegistry.registerEntityRenderingHandler(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemRenderer::new);
         // RenderingRegistry.registerEntityRenderingHandler(Registry.ABOMINATION_WITHER.get(), AbominationWitherRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(Registry.DRIFTER_EGG.get(), DrifterEggRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(Registry.DRIFTER.get(), DrifterRenderer::new);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) { }
@@ -56,6 +59,7 @@ public class Revamp {
         // event.put(Registry.CUSTOM_IRON_GOLEM.get(), CustomIronGolemEntity.createAttributes().build());
         // event.put(Registry.ABOMINATION_WITHER.get(), AbominationWitherEntity.createAttributes().build());
         event.put(Registry.DRIFTER_EGG.get(), DrifterEggEntity.createAttributes().build());
+        event.put(Registry.DRIFTER.get(), DrifterEntity.createAttributes().build());
     }
 
     public static final ItemGroup TAB = new ItemGroup("main_tab") {

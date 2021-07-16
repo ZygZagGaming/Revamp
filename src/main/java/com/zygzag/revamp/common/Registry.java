@@ -78,6 +78,7 @@ public class Registry {
     public static final RegistryObject<EntityType<DrifterEntity>> DRIFTER = ENTITY_REGISTER.register("drifter",() -> EntityType.Builder.of(DrifterEntity::new, EntityClassification.MISC).sized(0.6F, 0.6F).build("drifter"));
     // Blocks
     public static final RegistryObject<Block> IRIDIUM_ORE = BLOCK_REGISTER.register("iridium_ore", IridiumOreBlock::new);
+    public static final RegistryObject<Block> GLOID_BLOCK = BLOCK_REGISTER.register("gloid", () -> new Block(AbstractBlock.Properties.of(Material.CLAY, MaterialColor.COLOR_GRAY)));
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = BLOCK_REGISTER.register("raw_iridium_block", () -> new Block(AbstractBlock.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
     // public static final RegistryObject<Block> CUSTOM_CAULDRON = BLOCK_REGISTER.register("custom_cauldron", CustomCauldronBlock::new);
     // public static final RegistryObject<Block> ALCHEMY_TABLE_BLOCK = BLOCK_REGISTER.register("alchemy_table", AlchemyTableBlock::new);
@@ -88,7 +89,7 @@ public class Registry {
     // public static final RegistryObject<Item> CUSTOM_CAULDRON_ITEM = registerBlockItem(CUSTOM_CAULDRON, new Item.Properties().tab(Revamp.TAB));
 
     // Items
-    public static final RegistryObject<Item> GLOID_BUCKET = registerItem("gloid_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
+    public static final RegistryObject<Item> GLOID_BUCKET = registerItem("gloid_bucket", () -> new BlockBucketItem(new Item.Properties().stacksTo(1).tab(Revamp.TAB), GLOID_BLOCK.get()));
     public static final RegistryObject<Item> DRIFTER_EGG_BUCKET = registerItem("drifter_egg_bucket", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> GLOID_BALL = registerItem("gloid_ball", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = registerItem("iridium_plating", () -> new Item(new Item.Properties().tab(Revamp.TAB)));
