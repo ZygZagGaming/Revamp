@@ -22,13 +22,13 @@ public class DrifterEggModel<T extends DrifterEggEntity> extends EntityModel<T> 
 	}
 
 	@Override
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
+	public void func_225597_a_(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
 		this.body.zRot = entity.yRot * ((float)Math.PI / 180F);
 		this.body.xRot = headPitch * ((float)Math.PI / 180F);
 	}
 
 	@Override
-	public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+	public void func_225598_a_(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 		body.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
 	}
 }
