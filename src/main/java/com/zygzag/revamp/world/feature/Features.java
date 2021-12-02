@@ -13,9 +13,9 @@ import java.util.List;
 public class Features {
     public static final Lazy<List<OreConfiguration.TargetBlockState>> ORE_IRIDIUM_TARGET_LIST = Lazy.of(() -> List.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, Registry.IRIDIUM_ORE.get().defaultBlockState()), OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, Registry.DEEPSLATE_IRIDIUM_ORE.get().defaultBlockState())));
 
-    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_SMALL = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 24));
-    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_LARGE = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 36));
-    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_BURIED = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 18, 1f));
+    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_SMALL = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 16, 0.4f));
+    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_LARGE = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 24, 0.6f));
+    public static final Lazy<ConfiguredFeature<?, ?>> IRIDIUM_BURIED = Lazy.of(() -> ore(ORE_IRIDIUM_TARGET_LIST.get(), 20, 1f));
 
     private static ConfiguredFeature<OreConfiguration, ?> ore(List<OreConfiguration.TargetBlockState> test, int size) {
         return Feature.ORE.configured(new OreConfiguration(test, size));
