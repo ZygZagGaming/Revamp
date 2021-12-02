@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "group": "iron_ingot",
   "ingredients": [
     {
       "item": "revamp:raw_iridium"

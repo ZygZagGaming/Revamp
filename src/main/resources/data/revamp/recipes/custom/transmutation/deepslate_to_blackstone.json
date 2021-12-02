@@ -1,0 +1,8 @@
+{
+  "type": "revamp:transmutation",
+  "input": {
+    "item": "minecraft:deepslate"
+  },
+  "output": "minecraft:blackstone",
+  "rate": "0.95"
+}

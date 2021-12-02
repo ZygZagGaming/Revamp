@@ -1,0 +1,20 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "  O",
+    " R ",
+    "R  "
+  ],
+  "key": {
+    "O": {
+      "item": "revamp:iridium_orb"
+    },
+    "R": {
+      "tag": "forge:rods/iridium"
+    }
+  },
+  "result": {
+    "item": "revamp:iridium_scepter",
+    "count": 1
+  }
+}

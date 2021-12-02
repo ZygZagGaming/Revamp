@@ -1,0 +1,8 @@
+{
+  "type": "revamp:empowerment",
+  "base": "minecraft:wither",
+  "item": {
+    "item": "revamp:empowerment_star"
+  },
+  "out": "revamp:abomination_wither"
+}

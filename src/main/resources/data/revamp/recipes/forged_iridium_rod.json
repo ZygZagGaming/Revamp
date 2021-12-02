@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "revamp:raw_iridium_rod"
+  },
+  "result": "revamp:forged_iridium_rod",
+  "experience": 1,
+  "cookingtime": 100
+}

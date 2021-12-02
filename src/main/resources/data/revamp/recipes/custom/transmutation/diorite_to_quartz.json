@@ -1,0 +1,8 @@
+{
+  "type": "revamp:transmutation",
+  "input": {
+    "item": "minecraft:diorite"
+  },
+  "output": "minecraft:quartz",
+  "rate": "0.25"
+}

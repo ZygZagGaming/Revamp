@@ -1,8 +1,0 @@
-{
-  "minecraft:wither": {
-    "threshold": 64,
-    "multiplier": 4,
-    "abominate": true,
-    "abomination": "revamp:abomination_wither"
-  }
-}

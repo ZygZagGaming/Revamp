@@ -1,0 +1,17 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " P ",
+    "P P",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/iridium"
+    }
+  },
+  "result": {
+    "item": "revamp:iridium_orb",
+    "count": 1
+  }
+}

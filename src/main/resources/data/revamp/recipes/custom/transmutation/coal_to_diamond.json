@@ -1,0 +1,8 @@
+{
+  "type": "revamp:transmutation",
+  "input": {
+    "tag": "forge:gems/coal"
+  },
+  "output": "minecraft:diamond",
+  "rate": 0.01
+}

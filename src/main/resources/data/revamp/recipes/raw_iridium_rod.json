@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "minecraft:stick"
+  },
+  "addition": {
+    "item": "revamp:raw_iridium"
+  },
+  "result": {
+    "item": "revamp:raw_iridium_rod"
+  }
+}
