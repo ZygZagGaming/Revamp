@@ -217,7 +217,8 @@ public class EmpoweredWither extends WitherBoss {
         public void tick() {
             --this.attackTime;
             if (level.getBlockState(blockPosition().below()).isAir()) {
-                moveTo(position().a6dd(new Vec3(0, -1, 0)));
+                if (attackTime >= 80) moveTo(position().add(new Vec3(0, 0.5, 0)));
+                else moveTo(position().add(new Vec3(0, 1, 0)));
             } else {
                 cancel();
                 List<Mob> mobs = level.getEntitiesOfClass(Mob.class, getBoundingBox().inflate(7d, 2d, 7d));
