@@ -1,7 +1,7 @@
 {
   "passive.revamp": "Passive",
   "socketed.revamp": "Socketed",
-  "itemGroup.main_tab": "Revamp",
+  "itemGroup.revamp_main_tab": "Revamp",
   "enchantment.revamp.cooldown": "Cooldown",
   "revamp.recipe.transmutation": "Transmutation",
   "item.minecraft.potion.effect.rage": "Potion of Rage",
