@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 public class EmpoweredWither extends WitherBoss {
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
     private int attackCooldown = 0;
+    private int noGravTime = 0;
 
     public static final DamageSource SLAM = new DamageSource("slam").damageHelmet();
 
@@ -33,6 +34,16 @@ public class EmpoweredWither extends WitherBoss {
     public void tick() {
         super.tick();
         if (attackCooldown > 0) attackCooldown--;
+        if (noGravTime > 0) noGravTime--;
+    }
+
+    @Override
+    public boolean isNoGravity() {
+        return noGravTime > 0;
+    }
+
+    public void setNoGravity(int noGravTime) {
+        this.noGravTime = noGravTime;
     }
 
     @Override
@@ -41,30 +52,6 @@ public class EmpoweredWither extends WitherBoss {
         goalSelector.addGoal(0, new SlamGoal());
         //targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
-    }
-
-    private double getHeadX(int p_31515_) {
-        if (p_31515_ <= 0) {
-            return this.getX();
-        } else {
-            float f = (this.yBodyRot + (float)(180 * (p_31515_ - 1))) * ((float)Math.PI / 180F);
-            float f1 = Mth.cos(f);
-            return this.getX() + (double)f1 * 1.3D;
-        }
-    }
-
-    private double getHeadY(int p_31517_) {
-        return p_31517_ <= 0 ? this.getY() + 3.0D : this.getY() + 2.2D;
-    }
-
-    private double getHeadZ(int p_31519_) {
-        if (p_31519_ <= 0) {
-            return this.getZ();
-        } else {
-            float f = (this.yBodyRot + (float)(180 * (p_31519_ - 1))) * ((float)Math.PI / 180F);
-            float f1 = Mth.sin(f);
-            return this.getZ() + (double)f1 * 1.3D;
-        }
     }
 
     @Override
@@ -205,25 +192,26 @@ public class EmpoweredWither extends WitherBoss {
             if (target == null) return false;
             Vec3 targetPos = target.position();
             Vec3 pos = position();
-            return pos.distanceTo(targetPos) <= 10 && pos.y - targetPos.y > 0;
+            return pos.distanceTo(targetPos) <= 15 && pos.y - targetPos.y > 0;
         }
 
         @Override
         public void start() {
             super.start();
-            System.out.println("slam attack start");
         }
 
         public void tick() {
-            --this.attackTime;
-            if (level.getBlockState(blockPosition().below()).isAir()) {
-                if (attackTime >= 80) moveTo(position().add(new Vec3(0, 0.5, 0)));
-                else moveTo(position().add(new Vec3(0, 1, 0)));
+            attackTime--;
+            if (level.getBlockState(blockPosition().above(3)).isAir() && attackTime > 90) {
+                moveTo(position().add(new Vec3(0, 0.5, 0)));
+            } else if (level.getBlockState(blockPosition().below()).isAir() && attackTime <= 90) {
+                if (!isNoGravity()) setNoGravity(90);
+                moveTo(position().add(new Vec3(0, -2, 0)));
             } else {
                 cancel();
                 List<Mob> mobs = level.getEntitiesOfClass(Mob.class, getBoundingBox().inflate(7d, 2d, 7d));
                 for (Mob mob : mobs) if (mob != EmpoweredWither.this) {
-                    mob.hurt(SLAM, 6f);
+                    mob.hurt(SLAM, 12f);
                     mob.knockback((float)3 * 0.5F, Mth.sin(getYRot() * ((float)Math.PI / 180F)), -Mth.cos(getYRot() * ((float)Math.PI / 180F)));
                 }
             }

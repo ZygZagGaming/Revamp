@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -41,8 +42,12 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public ItemStack assemble(ItemAndEntityHolder holder) {
+        Vec3 pos = holder.entity.position();
         holder.entity = outEntity.create(holder.entity.level);
-        holder.stack.shrink(1);
+        if (holder.entity != null) {
+            holder.entity.moveTo(pos);
+            holder.stack.shrink(1);
+        }
         return holder.stack;
     }
 

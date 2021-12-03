@@ -103,6 +103,7 @@ public class EventHandler {
         for (EmpowermentRecipe recipe : recipes) {
             if (recipe.matches(holder, world)) {
                 recipe.assemble(holder);
+                System.out.println(recipe.getId());
                 evt.getTarget().remove(Entity.RemovalReason.CHANGED_DIMENSION);
                 world.addFreshEntity(holder.entity);
                 break;
