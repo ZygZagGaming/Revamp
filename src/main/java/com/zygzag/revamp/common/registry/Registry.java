@@ -4,6 +4,7 @@ import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.block.GrateBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
+import com.zygzag.revamp.common.entity.HomingWitherSkull;
 import com.zygzag.revamp.common.entity.ThrownTransmutationBottle;
 import com.zygzag.revamp.common.item.EmpowermentStar;
 import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
@@ -225,10 +226,11 @@ public class Registry {
                     .fireImmune()
                     .immuneTo(Blocks.WITHER_ROSE)
                     .sized(0.9F, 3.5F)
-                    .clientTrackingRange(10)
-                    .build("empowered_wither"));
+                    .clientTrackingRange(10));
 
-    public static final RegistryObject<EntityType<ThrownTransmutationBottle>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.<ThrownTransmutationBottle>of(ThrownTransmutationBottle::new, MobCategory.MISC).build("transmutation_bottle"));
+    public static final RegistryObject<EntityType<HomingWitherSkull>> HOMING_WITHER_SKULL = registerEntity("homing_wither_skull", () -> EntityType.Builder.<HomingWitherSkull>of(HomingWitherSkull::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4));
+
+    public static final RegistryObject<EntityType<ThrownTransmutationBottle>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationBottle::new, MobCategory.MISC));
     // endregion
 
     // region potions
@@ -270,8 +272,8 @@ public class Registry {
         return RECIPE_REGISTER.register(id, supplier);
     }
 
-    public static <T extends Entity> RegistryObject<EntityType<T>> registerEntity(String id, Supplier<EntityType<T>> supplier) {
-        return ENTITY_REGISTER.register(id, supplier);
+    public static <T extends Entity> RegistryObject<EntityType<T>> registerEntity(String id, Supplier<EntityType.Builder<T>> supplier) {
+        return ENTITY_REGISTER.register(id, () -> supplier.get().build(id));
     }
 
     public static RegistryObject<Potion> registerPotion(String id, Supplier<Potion> supplier) {

@@ -1,8 +1,9 @@
 package com.zygzag.revamp.common;
 
+import com.zygzag.revamp.client.render.EmpoweredWitherRenderer;
+import com.zygzag.revamp.client.render.HomingWitherSkullRenderer;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.registry.Registry;
-import com.zygzag.revamp.client.render.EmpoweredWitherRenderer;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -28,7 +29,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-// import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -173,6 +173,7 @@ public class Revamp {
     private void doClientStuff(final FMLClientSetupEvent event) {
         EntityRenderers.register(Registry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
         EntityRenderers.register(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
+        EntityRenderers.register(Registry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {

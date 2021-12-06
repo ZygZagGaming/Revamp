@@ -1,5 +1,6 @@
 package com.zygzag.revamp.common.entity;
 
+import com.zygzag.revamp.common.entity.goal.boss.RevampGoalSelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.EntityTypeTags;
@@ -8,6 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.level.Level;
@@ -19,8 +21,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+@SuppressWarnings({"FieldMayBeFinal", "unused", "FieldCanBeLocal"})
 public class EmpoweredWither extends WitherBoss {
-    private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
+    // region fields and constructors
+    public static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
     private int attackCooldown = 0;
     private int noGravTime = 0;
 
@@ -29,7 +33,9 @@ public class EmpoweredWither extends WitherBoss {
     public EmpoweredWither(EntityType<? extends EmpoweredWither> type, Level world) {
         super(type, world);
     }
+    // endregion
 
+    // region methods
     @Override
     public void tick() {
         super.tick();
@@ -45,15 +51,9 @@ public class EmpoweredWither extends WitherBoss {
     public void setNoGravity(int noGravTime) {
         this.noGravTime = noGravTime;
     }
+    // endregion
 
-    @Override
-    protected void registerGoals() {
-        //goalSelector.addGoal(0, new EmpoweredWitherDoNothingGoal());
-        goalSelector.addGoal(0, new SlamGoal());
-        //targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
-    }
-
+    // region boiler code to override default behavior
     @Override
     public void aiStep() {
         mobAiStep();
@@ -136,91 +136,7 @@ public class EmpoweredWither extends WitherBoss {
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
     }
 
-    static class EmpoweredWitherDoNothingGoal extends Goal {
-        public EmpoweredWitherDoNothingGoal() {
-            setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
-        }
-
-        public boolean canUse() {
-            return true;
-        }
-    }
-
-    abstract class AttackGoal extends Goal {
-        public int attackTime;
-        public int totalAttackTime;
-        private boolean isCanceled = false;
-
-        public AttackGoal(int totalAttackTime) {
-            setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
-            this.totalAttackTime = totalAttackTime;
-        }
-
-        @Override
-        public void start() {
-            super.start();
-            isCanceled = false;
-            attackTime = totalAttackTime;
-        }
-
-        public boolean canUse() {
-            return attackCooldown <= 0;
-        }
-
-        public boolean canContinueToUse() {
-            boolean flag = this.attackTime >= 0 && !isCanceled;
-            if (flag) end();
-            return flag;
-        }
-
-        public void cancel() {
-            isCanceled = true;
-        }
-
-        private void end() {
-            attackCooldown += 500;
-        }
-    }
-
-    class SlamGoal extends AttackGoal {
-        public SlamGoal() {
-            super(100);
-        }
-
-        public boolean canUse() {
-            LivingEntity target = getTarget();
-            if (target == null) return false;
-            Vec3 targetPos = target.position();
-            Vec3 pos = position();
-            return pos.distanceTo(targetPos) <= 15 && pos.y - targetPos.y > 0;
-        }
-
-        @Override
-        public void start() {
-            super.start();
-        }
-
-        public void tick() {
-            attackTime--;
-            if (level.getBlockState(blockPosition().above(3)).isAir() && attackTime > 90) {
-                moveTo(position().add(new Vec3(0, 0.5, 0)));
-            } else if (level.getBlockState(blockPosition().below()).isAir() && attackTime <= 90) {
-                if (!isNoGravity()) setNoGravity(90);
-                moveTo(position().add(new Vec3(0, -2, 0)));
-            } else {
-                cancel();
-                List<Mob> mobs = level.getEntitiesOfClass(Mob.class, getBoundingBox().inflate(7d, 2d, 7d));
-                for (Mob mob : mobs) if (mob != EmpoweredWither.this) {
-                    mob.hurt(SLAM, 12f);
-                    mob.knockback((float)3 * 0.5F, Mth.sin(getYRot() * ((float)Math.PI / 180F)), -Mth.cos(getYRot() * ((float)Math.PI / 180F)));
-                }
-            }
-        }
-    }
-
-
     public void mobAiStep() {
-
         if (this.isControlledByLocalInstance()) {
             this.lerpSteps = 0;
             this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
@@ -335,6 +251,174 @@ public class EmpoweredWither extends WitherBoss {
         if (!this.level.isClientSide && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) {
             this.hurt(DamageSource.DROWN, 1.0F);
         }
-
     }
+    // endregion
+
+    // region goals
+    @Override
+    protected void registerGoals() {
+        goalSelector = new RevampGoalSelector(level.getProfilerSupplier()); // replace goalSelector with custom
+        //goalSelector.addGoal(0, new EmpoweredWitherDoNothingGoal());
+        goalSelector.addGoal(0, new SlamGoal());
+        goalSelector.addGoal(1, new ShootAttackGoal(1, 20));
+        goalSelector.addGoal(1, new ShootVolleyAttackGoal());
+        targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+    }
+
+    static class EmpoweredWitherDoNothingGoal extends Goal {
+        public EmpoweredWitherDoNothingGoal() {
+            setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            return true;
+        }
+    }
+
+    abstract class AttackGoal extends Goal {
+        public int attackTime;
+        public int totalAttackTime;
+        private boolean isCanceled = false;
+
+        public AttackGoal(int totalAttackTime) {
+            setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.LOOK));
+            this.totalAttackTime = totalAttackTime;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            isCanceled = false;
+            attackTime = totalAttackTime;
+        }
+
+        public boolean canUse() {
+            return attackCooldown <= 0;
+        }
+
+        public boolean canContinueToUse() {
+            boolean flag = this.attackTime >= 0 && !isCanceled;
+            if (flag) end();
+            return flag;
+        }
+
+        public void cancel() {
+            isCanceled = true;
+        }
+
+        private void end() {
+            attackCooldown += totalAttackTime;
+        }
+    }
+
+    class SlamGoal extends AttackGoal {
+        public SlamGoal() {
+            super(100);
+        }
+
+        public boolean canUse() {
+            LivingEntity target = getTarget();
+            if (target == null) return false;
+            Vec3 targetPos = target.position();
+            Vec3 pos = position();
+            Vec3 diff = targetPos.subtract(pos);
+            return diff.normalize().y <= -0.75;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        public void tick() {
+            attackTime--;
+            if (level.getBlockState(blockPosition().above(3)).isAir() && attackTime > 90) {
+                moveTo(position().add(new Vec3(0, 0.5, 0)));
+            } else if (level.getBlockState(blockPosition().below()).isAir() && attackTime <= 90) {
+                if (!isNoGravity()) setNoGravity(90);
+                moveTo(position().add(new Vec3(0, -2, 0)));
+            } else {
+                cancel();
+                List<LivingEntity> mobs = level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(7d, 2d, 7d));
+                for (LivingEntity mob : mobs) if (mob != EmpoweredWither.this) {
+                    mob.hurt(SLAM, 12f);
+                    mob.knockback((float)3 * 0.5F, Mth.sin(getYRot() * ((float)Math.PI / 180F)), -Mth.cos(getYRot() * ((float)Math.PI / 180F)));
+                }
+            }
+        }
+    }
+
+    class ShootAttackGoal extends AttackGoal {
+        private int numShots;
+        private int endLag;
+        public ShootAttackGoal(int numShots, int endLag) {
+            super(20 * numShots + endLag + 20);
+            this.endLag = endLag;
+            this.numShots = numShots;
+        }
+
+        public boolean canUse() {
+            LivingEntity target = getTarget();
+            if (target == null) return false;
+            Vec3 targetPos = target.position();
+            Vec3 pos = position();
+            return pos.distanceTo(targetPos) <= 40 && Math.random() < 0.75;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        public void tick() {
+            attackTime--;
+            if ((attackTime - endLag) % 20 == 0 && attackTime > endLag) {
+                LivingEntity target = getTarget();
+                if (target != null) {
+                    Vec3 targetPos = getTarget().position().subtract(position());
+                    HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPos.x, targetPos.y, targetPos.z);
+                    level.addFreshEntity(skull);
+                    if (!isSilent()) {
+                        level.levelEvent(null, 1024, blockPosition(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    class ShootVolleyAttackGoal extends AttackGoal {
+        public ShootVolleyAttackGoal() {
+            super(80);
+        }
+
+        public boolean canUse() {
+            LivingEntity target = getTarget();
+            if (target == null) return false;
+            Vec3 targetPos = target.position();
+            Vec3 pos = position();
+            return pos.distanceTo(targetPos) <= 40;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        public void tick() {
+            attackTime--;
+            if (attackTime >= 66 && attackTime % 6 == 0) { // fires at 78, 72, 66
+                LivingEntity target = getTarget();
+                if (target != null) {
+                    Vec3 targetPos = getTarget().position().subtract(position());
+                    HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPos.x, targetPos.y, targetPos.z);
+                    level.addFreshEntity(skull);
+                    if (!isSilent()) {
+                        level.levelEvent(null, 1024, blockPosition(), 0);
+                    }
+                }
+            }
+        }
+    }
+    // endregion
 }
