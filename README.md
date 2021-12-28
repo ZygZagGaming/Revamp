@@ -2,9 +2,10 @@
 
 A mod for Minecraft Forge 1.18 that adds more vanilla-style progression on top of existing progression.
 
-Known Issues:
-Most socketed Iridium Tools aren't fully implemented yet.
-The unimplemented Essence items aren't textured.
+Known Issues:<br />
+Most socketed Iridium Tools aren't fully implemented yet.<br />
+The unimplemented Essence items aren't textured.<br />
+The wiki is outdated.
 
 <details>
 <summary>Features:</summary>
