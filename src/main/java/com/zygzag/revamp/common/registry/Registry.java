@@ -53,7 +53,7 @@ public class Registry {
     public static DeferredRegister<Potion> POTION_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
 
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
-    public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", IridiumOreBlock::new);
+    public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", () -> new IridiumOreBlock(BlockBehaviour.Properties.copy(IRIDIUM_ORE.get()).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = registerBlock("raw_iridium_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
     //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
 
@@ -82,18 +82,18 @@ public class Registry {
                             .build())));
     public static final RegistryObject<Item> TRANSMUTATION_CHARGE = registerItem("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(Revamp.MAIN_TAB)));
 
-    public static final RegistryObject<Item> ROT_ESSENCE = basicFireImmuneItem("rot_essence");
-    public static final RegistryObject<Item> BONE_ESSENCE = basicFireImmuneItem("bone_essence");
-    public static final RegistryObject<Item> SAND_ESSENCE = basicFireImmuneItem("sand_essence");
-    public static final RegistryObject<Item> WATER_ESSENCE = basicFireImmuneItem("water_essence");
-    public static final RegistryObject<Item> ICE_ESSENCE = basicFireImmuneItem("ice_essence");
-    public static final RegistryObject<Item> NIGHTMARE_ESSENCE = basicFireImmuneItem("nightmare_essence");
-    public static final RegistryObject<Item> GREED_ESSENCE = basicFireImmuneItem("greed_essence");
-    public static final RegistryObject<Item> POWER_ESSENCE = basicFireImmuneItem("power_essence");
-    public static final RegistryObject<Item> DECAY_ESSENCE = basicFireImmuneItem("decay_essence");
-    public static final RegistryObject<Item> ALLYSHIP_ESSENCE = basicFireImmuneItem("allyship_essence");
-    public static final RegistryObject<Item> FERAL_ESSENCE = basicFireImmuneItem("feral_essence");
-    public static final RegistryObject<Item> FIRE_ESSENCE = basicFireImmuneItem("fire_essence");
+    public static final RegistryObject<Item> ROT_ESSENCE = basicEssenceItem("rot_essence");
+    public static final RegistryObject<Item> BONE_ESSENCE = basicEssenceItem("bone_essence");
+    public static final RegistryObject<Item> SAND_ESSENCE = basicEssenceItem("sand_essence");
+    public static final RegistryObject<Item> WATER_ESSENCE = basicEssenceItem("water_essence");
+    public static final RegistryObject<Item> ICE_ESSENCE = basicEssenceItem("ice_essence");
+    public static final RegistryObject<Item> NIGHTMARE_ESSENCE = basicEssenceItem("nightmare_essence");
+    public static final RegistryObject<Item> GREED_ESSENCE = basicEssenceItem("greed_essence");
+    public static final RegistryObject<Item> POWER_ESSENCE = basicEssenceItem("power_essence");
+    public static final RegistryObject<Item> DECAY_ESSENCE = basicEssenceItem("decay_essence");
+    public static final RegistryObject<Item> ALLYSHIP_ESSENCE = basicEssenceItem("allyship_essence");
+    public static final RegistryObject<Item> FERAL_ESSENCE = basicEssenceItem("feral_essence");
+    public static final RegistryObject<Item> FIRE_ESSENCE = basicEssenceItem("fire_essence");
 
     public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
     public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
@@ -244,6 +244,10 @@ public class Registry {
 
     private static RegistryObject<Item> basicFireImmuneItem(String id) {
         return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(Revamp.MAIN_TAB).fireResistant()));
+    }
+
+    private static RegistryObject<Item> basicEssenceItem(String id) {
+        return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().fireResistant()));
     }
 
     private static RegistryObject<Item> registerItem(String id, Supplier<Item> supplier) {
