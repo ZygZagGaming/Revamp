@@ -1,15 +1,14 @@
 package com.zygzag.revamp.common.registry;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.block.GrateBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.HomingWitherSkull;
-import com.zygzag.revamp.common.entity.ThrownTransmutationBottle;
+import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
 import com.zygzag.revamp.common.item.EmpowermentStar;
 import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
 import com.zygzag.revamp.common.item.ShulkerBowlItem;
-import com.zygzag.revamp.common.item.TransmutationBottle;
+import com.zygzag.revamp.common.item.TransmutationCharge;
 import com.zygzag.revamp.common.item.enchant.CooldownEnchantment;
 import com.zygzag.revamp.common.item.iridium.*;
 import com.zygzag.revamp.common.item.iridium.partial.*;
@@ -56,14 +55,14 @@ public class Registry {
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = registerBlock("raw_iridium_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
-    public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
+    //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
 
     public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
     public static final RegistryObject<Item> RAW_IRIDIUM = basicItem("raw_iridium");
     public static final RegistryObject<Item> RAW_IRIDIUM_ROD = basicItem("raw_iridium_rod");
     public static final RegistryObject<Item> FORGED_IRIDIUM_ROD = basicItem("forged_iridium_rod");
-    public static final RegistryObject<Item> IRIDIUM_ORB_ITEM = basicItem("iridium_orb");
+    public static final RegistryObject<Item> IRIDIUM_RING_ITEM = basicItem("iridium_ring");
     public static final RegistryObject<Item> SHULKER_BOWL_ITEM = registerItem("shulker_bowl", ShulkerBowlItem::new);
     public static final RegistryObject<Item> GOLDEN_STEW_ITEM = registerItem("golden_stew", () -> new BowlFoodItem(
             new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.RARE).food(
@@ -81,7 +80,7 @@ public class Registry {
                             .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 1), 1f)
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1f)
                             .build())));
-    public static final RegistryObject<Item> TRANSMUTATION_BOTTLE = registerItem("transmutation_bottle", () -> new TransmutationBottle(new Item.Properties().tab(Revamp.MAIN_TAB)));
+    public static final RegistryObject<Item> TRANSMUTATION_CHARGE = registerItem("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(Revamp.MAIN_TAB)));
 
     public static final RegistryObject<Item> ROT_ESSENCE = basicFireImmuneItem("rot_essence");
     public static final RegistryObject<Item> BONE_ESSENCE = basicFireImmuneItem("bone_essence");
@@ -99,7 +98,7 @@ public class Registry {
     public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
     public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
     public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.MAIN_TAB));
-    public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
+    //public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
 
     // region iridium gear
     public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.NONE));
@@ -229,8 +228,7 @@ public class Registry {
                     .clientTrackingRange(10));
 
     public static final RegistryObject<EntityType<HomingWitherSkull>> HOMING_WITHER_SKULL = registerEntity("homing_wither_skull", () -> EntityType.Builder.<HomingWitherSkull>of(HomingWitherSkull::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4));
-
-    public static final RegistryObject<EntityType<ThrownTransmutationBottle>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationBottle::new, MobCategory.MISC));
+    public static final RegistryObject<EntityType<ThrownTransmutationCharge>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationCharge::new, MobCategory.MISC));
     // endregion
 
     // region potions

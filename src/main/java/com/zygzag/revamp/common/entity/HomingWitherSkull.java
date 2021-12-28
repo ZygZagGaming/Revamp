@@ -8,6 +8,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.level.Level;
@@ -81,7 +82,7 @@ public class HomingWitherSkull extends WitherSkull {
             float shortestDistance = Float.MAX_VALUE;
             Entity maxEntity = entities.get(0);
             for (Entity e : entities) {
-                if (e.distanceTo(this) < shortestDistance) {
+                if (e.distanceTo(this) < shortestDistance && ((e instanceof Player player && !player.getAbilities().instabuild) || !(e instanceof Player))) {
                     shortestDistance = e.distanceTo(this);
                     maxEntity = e;
                 }

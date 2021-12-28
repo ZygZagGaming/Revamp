@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.item;
 
-import com.zygzag.revamp.common.entity.ThrownTransmutationBottle;
+import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,8 +17,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("unused")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class TransmutationBottle extends Item {
-    public TransmutationBottle(Properties prop) {
+public class TransmutationCharge extends Item {
+    public TransmutationCharge(Properties prop) {
         super(prop);
     }
 
@@ -26,7 +26,7 @@ public class TransmutationBottle extends Item {
         ItemStack itemstack = player.getItemInHand(hand);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_BOTTLE_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClientSide) {
-            ThrownTransmutationBottle bottle = new ThrownTransmutationBottle(world, player);
+            ThrownTransmutationCharge bottle = new ThrownTransmutationCharge(world, player);
             bottle.setItem(itemstack);
             bottle.shootFromRotation(player, player.getXRot(), player.getYRot(), -20.0F, 0.7F, 1.0F);
             world.addFreshEntity(bottle);

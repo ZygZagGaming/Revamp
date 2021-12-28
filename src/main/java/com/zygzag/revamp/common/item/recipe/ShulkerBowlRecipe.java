@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SuspiciousStewItem;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -88,6 +89,20 @@ public class ShulkerBowlRecipe extends CustomRecipe {
                         tag.putFloat("Saturation", prop.getSaturationModifier());
                         tag.putInt("Stews", 1);
                         List<Pair<MobEffectInstance, Float>> effects = prop.getEffects();
+                        if (stew.getItem() instanceof SuspiciousStewItem) {
+                            ListTag list = stew.getOrCreateTag().getList("Effects", 10);
+                            for (net.minecraft.nbt.Tag t : list) {
+                                if (t instanceof CompoundTag effect) {
+                                    System.out.println(effect);
+                                    MobEffect effect1 = MobEffect.byId(effect.getInt("EffectId"));
+                                    if (effect1 != null) {
+                                        MobEffectInstance inst = new MobEffectInstance(effect1, effect.getInt("EffectDuration"));
+                                        effects.add(Pair.of(inst, 1f));
+                                    }
+                                }
+                            }
+                        }
+                        System.out.println(effects);
                         if (effects.size() != 0) {
                             ListTag effectsTag = new ListTag();
                             for (Pair<MobEffectInstance, Float> pair : effects) {
@@ -101,7 +116,7 @@ public class ShulkerBowlRecipe extends CustomRecipe {
                     }
                     return stack;
                 } else {
-                    if (ShulkerBowlItem.getNumberOfStews(bowl.getOrCreateTag()) < 16) {
+                    if (ShulkerBowlItem.getNumberOfStews(bowl.getOrCreateTag()) < ShulkerBowlItem.getMaximumNumberOfStews()) {
                         ItemStack newBowl = bowl.copy();
                         CompoundTag tag = newBowl.getOrCreateTag();
                         FoodProperties prop = stew.getItem().getFoodProperties();
@@ -110,6 +125,20 @@ public class ShulkerBowlRecipe extends CustomRecipe {
                             tag.putFloat("Saturation", tag.getFloat("Saturation") + prop.getSaturationModifier());
                             tag.putInt("Stews", tag.getInt("Stews") + 1);
                             List<Pair<MobEffectInstance, Float>> effects = prop.getEffects();
+                            if (stew.getItem() instanceof SuspiciousStewItem) {
+                                ListTag list = stew.getOrCreateTag().getList("Effects", 10);
+                                for (net.minecraft.nbt.Tag t : list) {
+                                    if (t instanceof CompoundTag effect) {
+                                        System.out.println(effect);
+                                        MobEffect effect1 = MobEffect.byId(effect.getInt("EffectId"));
+                                        if (effect1 != null) {
+                                            MobEffectInstance inst = new MobEffectInstance(effect1, effect.getInt("EffectDuration"));
+                                            effects.add(Pair.of(inst, 1f));
+                                        }
+                                    }
+                                }
+                            }
+                            System.out.println(effects);
                             ListTag ogEffects = tag.getList("Effects", CompoundTag.TAG_COMPOUND);
                             if (effects.size() != 0) {
                                 ListTag effectsTag = new ListTag();

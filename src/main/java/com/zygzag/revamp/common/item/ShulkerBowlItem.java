@@ -1,10 +1,14 @@
 package com.zygzag.revamp.common.item;
 
 import com.mojang.datafixers.util.Pair;
-import com.zygzag.revamp.common.Revamp;
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,20 +16,39 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ShulkerBowlItem extends BowlFoodItem {
     public ShulkerBowlItem() {
         super(new Properties()
-                .tab(Revamp.MAIN_TAB)
                 .food(new FoodProperties.Builder().build())
         );
     }
 
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        float n = getNumberOfStews(stack.getOrCreateTag());
+        return Math.round((n / getMaximumNumberOfStews()) * MAX_BAR_WIDTH);
+    }
+
+    @Override
+    public int getBarColor(ItemStack p_150901_) {
+        return 0xde8c83;
+    }
+
+    @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entity) {
         if (entity instanceof Player player) {
             CompoundTag tag = stack.getOrCreateTag();
@@ -35,6 +58,7 @@ public class ShulkerBowlItem extends BowlFoodItem {
                 float chance = compound.getFloat("Chance");
                 MobEffectInstance inst = MobEffectInstance.load(compound);
                 if (inst != null) {
+                    System.out.println(inst);
                     int r = getNumberOfStews(tag);
                     MobEffectInstance effectToGiveToPlayer = new MobEffectInstance(inst.getEffect(), inst.getDuration() / r, inst.getAmplifier());
                     int n = compound.getInt("Duration");
@@ -63,10 +87,25 @@ public class ShulkerBowlItem extends BowlFoodItem {
     }
 
     public static float getSaturation(CompoundTag tag) {
-        return tag.getFloat("Saturation") / getNumberOfStews(tag);
+        return tag.getFloat("Saturation");
     }
 
     public static int getNumberOfStews(CompoundTag tag) {
         return tag.getInt("Stews");
+    }
+
+    public static int getMaximumNumberOfStews() {
+        return 16;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> text, TooltipFlag flag) {
+        super.appendHoverText(stack, world, text, flag);
+        int n = getNumberOfStews(stack.getOrCreateTag());
+        MutableComponent comp = new TranslatableComponent("revamp.contains").withStyle(ChatFormatting.GRAY);
+        comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+        comp.append(new TextComponent(n + " ").withStyle(ChatFormatting.GOLD));
+        comp.append(new TranslatableComponent(n == 1 ? "revamp.stew" : "revamp.stews").withStyle(ChatFormatting.GRAY));
+        text.add(comp);
     }
 }

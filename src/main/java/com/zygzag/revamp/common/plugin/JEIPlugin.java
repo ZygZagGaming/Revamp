@@ -1,5 +1,5 @@
 package com.zygzag.revamp.common.plugin;
-/*
+
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
@@ -20,8 +20,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("unused")
 @JeiPlugin
 @MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault*/
-public class JEIPlugin /*implements IModPlugin*/ { /*
+@ParametersAreNonnullByDefault
+public class JEIPlugin implements IModPlugin {
     @Nullable
     public IRecipeCategory<TransmutationRecipe> transmutationCategory;
 
@@ -42,7 +42,7 @@ public class JEIPlugin /*implements IModPlugin*/ { /*
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(Registry.TRANSMUTATION_BOTTLE.get().getDefaultInstance(), Revamp.loc("transmutation"));
+        registration.addRecipeCatalyst(Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance(), Revamp.loc("transmutation"));
         registration.addRecipeCatalyst(Registry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance(), Revamp.loc("transmutation"));
-    }*/
+    }
 }

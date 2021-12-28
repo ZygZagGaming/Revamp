@@ -1,5 +1,5 @@
 package com.zygzag.revamp.common.plugin;
-/*
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault*/
-public class TransmutationCategory /*implements IRecipeCategory<TransmutationRecipe>*/ { /*
+@MethodsReturnNonnullByDefault
+public class TransmutationCategory implements IRecipeCategory<TransmutationRecipe> {
     private final IJeiHelpers helpers;
     private final IGuiHelper guiHelper;
     private final IDrawable background;
@@ -44,7 +44,7 @@ public class TransmutationCategory /*implements IRecipeCategory<TransmutationRec
         background = guiHelper.drawableBuilder(RECIPE_GUI_VANILLA, 0, 220, 82, 34)
                 .addPadding(0, 10, 0, 0)
                 .build();
-        icon = guiHelper.createDrawableIngredient(Registry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance());
+        icon = guiHelper.createDrawableIngredient(Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
     }
 
     @Override
@@ -98,9 +98,6 @@ public class TransmutationCategory /*implements IRecipeCategory<TransmutationRec
         int x = background.getWidth() - 2 - width;
         int y = 37;
 
-        /*minecraft.font.draw(poseStack, text, x + 1, y, shadowColor);
-        minecraft.font.draw(poseStack, text, x, y + 1, shadowColor);
-        minecraft.font.draw(poseStack, text, x + 1, y + 1, shadowColor);* /
         minecraft.font.draw(poseStack, text, x, y, 0xFF111111);
-    }*/
+    }
 }

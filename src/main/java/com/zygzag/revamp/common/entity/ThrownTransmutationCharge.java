@@ -20,21 +20,21 @@ import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ThrownTransmutationBottle extends ThrowableItemProjectile {
-    public ThrownTransmutationBottle(EntityType<? extends ThrownTransmutationBottle> type, Level world) {
+public class ThrownTransmutationCharge extends ThrowableItemProjectile {
+    public ThrownTransmutationCharge(EntityType<? extends ThrownTransmutationCharge> type, Level world) {
         super(type, world);
     }
 
-    public ThrownTransmutationBottle(Level world, double xPos, double yPos, double zPos) {
+    public ThrownTransmutationCharge(Level world, double xPos, double yPos, double zPos) {
         super(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), xPos, yPos, zPos, world);
     }
 
-    public ThrownTransmutationBottle(Level world, LivingEntity thrower) {
+    public ThrownTransmutationCharge(Level world, LivingEntity thrower) {
         super(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), thrower, world);
     }
 
     protected Item getDefaultItem() {
-        return Registry.TRANSMUTATION_BOTTLE.get();
+        return Registry.TRANSMUTATION_CHARGE.get();
     }
 
     protected float getGravity() {
