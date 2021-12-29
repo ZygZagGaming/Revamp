@@ -1,10 +1,12 @@
 package com.zygzag.revamp.common.item.iridium;
 
+import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 
@@ -38,6 +40,13 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
             m.append(new TranslatableComponent("passive_ability.revamp.sword." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
             text.add(new TranslatableComponent("description.passive_ability.revamp.sword." + socket.name().toLowerCase()));
+            if (hasCooldown()) {
+                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(comp);
+            }
         }
     }
 
@@ -46,4 +55,13 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
         return socket;
     }
 
+    @Override
+    public boolean hasUseAbility() {
+        return hasCooldown();
+    }
+
+    @Override
+    public boolean hasCooldown() {
+        return false;
+    }
 }

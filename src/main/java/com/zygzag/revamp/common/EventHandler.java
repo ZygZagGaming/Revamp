@@ -121,7 +121,7 @@ public class EventHandler {
             AABB box = player.getBoundingBox().inflate(40d, 5d, 40d);
             List<IronGolem> golems = player.level.getEntitiesOfClass(IronGolem.class, box);
             for (IronGolem golem : golems) {
-                for (MobEffectInstance effect : Registry.RAGE_POTION.get().getEffects()) {
+                for (MobEffectInstance effect : Registry.LONG_RAGE_POTION.get().getEffects()) {
                     golem.addEffect(effect);
                 }
             }

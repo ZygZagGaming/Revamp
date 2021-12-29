@@ -14,6 +14,7 @@ import com.zygzag.revamp.common.item.iridium.*;
 import com.zygzag.revamp.common.item.iridium.partial.*;
 import com.zygzag.revamp.common.item.recipe.EmpowermentRecipe;
 import com.zygzag.revamp.common.item.recipe.ShulkerBowlRecipe;
+import com.zygzag.revamp.common.item.recipe.SocketRemoveRecipe;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.item.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.common.item.tier.IridiumToolTier;
@@ -65,14 +66,14 @@ public class Registry {
     public static final RegistryObject<Item> IRIDIUM_RING_ITEM = basicItem("iridium_ring");
     public static final RegistryObject<Item> SHULKER_BOWL_ITEM = registerItem("shulker_bowl", ShulkerBowlItem::new);
     public static final RegistryObject<Item> GOLDEN_STEW_ITEM = registerItem("golden_stew", () -> new BowlFoodItem(
-            new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.RARE).food(
+            new Item.Properties().stacksTo(1).craftRemainder(Items.BOWL).tab(CreativeModeTab.TAB_FOOD).rarity(Rarity.RARE).food(
                     new FoodProperties.Builder().alwaysEat().nutrition(6).saturationMod(0.6f)
                             .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 600, 2), 1f)
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 200, 1), 1f)
                             .build())));
 
     public static final RegistryObject<Item> ENCHANTED_GOLDEN_STEW_ITEM = registerItem("enchanted_golden_stew", () -> new EnchantedBowlFoodItem(
-            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).tab(CreativeModeTab.TAB_FOOD).food(
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).craftRemainder(Items.BOWL).tab(CreativeModeTab.TAB_FOOD).food(
                     new FoodProperties.Builder().alwaysEat().nutrition(12).saturationMod(1.6f)
                             .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 1200, 4), 1f)
                             .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 1), 1f)
@@ -80,6 +81,7 @@ public class Registry {
                             .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 1), 1f)
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1f)
                             .build())));
+
     public static final RegistryObject<Item> TRANSMUTATION_CHARGE = registerItem("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(Revamp.MAIN_TAB)));
 
     public static final RegistryObject<Item> ROT_ESSENCE = basicEssenceItem("rot_essence");
@@ -114,65 +116,65 @@ public class Registry {
 
     public static final RegistryObject<Item> IRIDIUM_SCEPTER = registerItem("iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.NONE));
     // region diamond socketed gear
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SWORD = registerItem("diamond_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.DIAMOND_SOCKETED, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.DIAMOND));
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SHOVEL = registerItem("diamond_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.DIAMOND_SOCKETED, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.DIAMOND));
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_PICKAXE = registerItem("diamond_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.DIAMOND_SOCKETED_PICK, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.DIAMOND));
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_AXE = registerItem("diamond_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.DIAMOND_SOCKETED, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.DIAMOND));
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_HOE = registerItem("diamond_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.DIAMOND_SOCKETED, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SWORD = registerItem("diamond_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.DIAMOND_SOCKETED, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SHOVEL = registerItem("diamond_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.DIAMOND_SOCKETED, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_PICKAXE = registerItem("diamond_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.DIAMOND_SOCKETED_PICK, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_AXE = registerItem("diamond_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.DIAMOND_SOCKETED, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_HOE = registerItem("diamond_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.DIAMOND_SOCKETED, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
 
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("diamond_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.DIAMOND_SOCKETED, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("diamond_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.DIAMOND_SOCKETED, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
 
-    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SCEPTER = registerItem("diamond_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.DIAMOND));
+    public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SCEPTER = registerItem("diamond_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(IRIDIUM_SCEPTER.get()).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
     // endregion
 
     // region emerald socketed gear
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SWORD = registerItem("emerald_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.EMERALD_SOCKETED, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.EMERALD));
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SHOVEL = registerItem("emerald_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.EMERALD_SOCKETED, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.EMERALD));
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_PICKAXE = registerItem("emerald_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.EMERALD_SOCKETED, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.EMERALD));
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_AXE = registerItem("emerald_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.EMERALD_SOCKETED, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.EMERALD));
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_HOE = registerItem("emerald_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.EMERALD_SOCKETED, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SWORD = registerItem("emerald_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.EMERALD_SOCKETED, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SHOVEL = registerItem("emerald_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.EMERALD_SOCKETED, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_PICKAXE = registerItem("emerald_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.EMERALD_SOCKETED, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_AXE = registerItem("emerald_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.EMERALD_SOCKETED, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_HOE = registerItem("emerald_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.EMERALD_SOCKETED, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
 
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("emerald_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.EMERALD_SOCKETED, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("emerald_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.EMERALD_SOCKETED, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
 
-    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SCEPTER = registerItem("emerald_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.EMERALD));
+    public static final RegistryObject<Item> EMERALD_SOCKETED_IRIDIUM_SCEPTER = registerItem("emerald_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.EMERALD), Socket.EMERALD));
     // endregion
 
     // region skull socketed gear
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SWORD = registerItem("skull_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.SKULL));
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SHOVEL = registerItem("skull_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.SKULL));
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.SKULL));
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_AXE = registerItem("skull_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.SKULL));
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_HOE = registerItem("skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SWORD = registerItem("skull_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SHOVEL = registerItem("skull_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_AXE = registerItem("skull_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_HOE = registerItem("skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
 
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("skull_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("skull_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
 
-    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SCEPTER = registerItem("skull_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.SKULL));
+    public static final RegistryObject<Item> SKULL_SOCKETED_IRIDIUM_SCEPTER = registerItem("skull_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.SKELETON_SKULL), Socket.SKULL));
     // endregion
 
     // region wither skull socketed gear
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SWORD = registerItem("wither_skull_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SHOVEL = registerItem("wither_skull_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("wither_skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_AXE = registerItem("wither_skull_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS)
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SWORD = registerItem("wither_skull_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SHOVEL = registerItem("wither_skull_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("wither_skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_AXE = registerItem("wither_skull_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).craftRemainder(Items.WITHER_SKELETON_SKULL)
             .fireResistant().stacksTo(1), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_HOE = registerItem("wither_skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_HOE = registerItem("wither_skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
 
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("wither_skull_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("wither_skull_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
 
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SCEPTER = registerItem("wither_skull_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SCEPTER = registerItem("wither_skull_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
     // endregion
 
     // region amethyst socketed gear
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SWORD = registerItem("amethyst_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.AMETHYST));
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SHOVEL = registerItem("amethyst_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.AMETHYST));
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_PICKAXE = registerItem("amethyst_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.AMETHYST));
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_AXE = registerItem("amethyst_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS)
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SWORD = registerItem("amethyst_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SHOVEL = registerItem("amethyst_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_PICKAXE = registerItem("amethyst_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_AXE = registerItem("amethyst_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).craftRemainder(Items.AMETHYST_SHARD)
             .fireResistant().stacksTo(1), Socket.AMETHYST));
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_HOE = registerItem("amethyst_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_HOE = registerItem("amethyst_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
 
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("amethyst_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("amethyst_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
 
-    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SCEPTER = registerItem("amethyst_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.AMETHYST));
+    public static final RegistryObject<Item> AMETHYST_SOCKETED_IRIDIUM_SCEPTER = registerItem("amethyst_socketed_iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.AMETHYST_SHARD), Socket.AMETHYST));
     // endregion
 
     // endregion
@@ -181,7 +183,7 @@ public class Registry {
     public static final RegistryObject<Item> PARTIAL_IRIDIUM_SWORD_2_1 = registerItem("partial_iridium_sword_1", () -> new PartialIridiumSword(IridiumToolTier.HALF, 3, -2.4F, (new Item.Properties().stacksTo(1)), 2, 1));
     public static final RegistryObject<Item> PARTIAL_IRIDIUM_PICKAXE_3_1 = registerItem("partial_iridium_pickaxe_1", () -> new PartialIridiumPickaxe(IridiumToolTier._3_1, 1, -2.8F, (new Item.Properties().stacksTo(1)), 3, 1));
     public static final RegistryObject<Item> PARTIAL_IRIDIUM_PICKAXE_3_2 = registerItem("partial_iridium_pickaxe_2", () -> new PartialIridiumPickaxe(IridiumToolTier._3_2, 1, -2.8F, (new Item.Properties().stacksTo(1)), 3, 2));
-    public static final RegistryObject<Item> PARTIAL_IRIDIUM_AXE_4_1 = registerItem("partial_iridium_axe_1", () -> new PartialIridiumAxe(IridiumToolTier._3_1, 5, -3.0F, (new Item.Properties().stacksTo(1)), 3, 1));
+    public static final RegistryObject<Item> PARTIAL_IRIDIUM_AXE_4_1 = registerItem("partial_iridium_axe_1", () -> new PartialIridiumAxe(IridiumToolTier._3_1, 5, -3.0F, (new Item.Properties().stacksTo(1).craftRemainder(Registry.IRIDIUM_AXE.get())), 3, 1));
     public static final RegistryObject<Item> PARTIAL_IRIDIUM_AXE_4_2 = registerItem("partial_iridium_axe_2", () -> new PartialIridiumAxe(IridiumToolTier._3_2, 5, -3.0F, (new Item.Properties().stacksTo(1)), 3, 2));
     public static final RegistryObject<Item> PARTIAL_IRIDIUM_HOE_2_1 = registerItem("partial_iridium_hoe_1", () -> new PartialIridiumHoe(IridiumToolTier.HALF, -1, 0.0F, (new Item.Properties()).fireResistant().stacksTo(1), 2, 1));
     // endregion
@@ -217,6 +219,7 @@ public class Registry {
     public static final RegistryObject<RecipeSerializer<ShulkerBowlRecipe>> SHULKER_BOWL_CRAFTING = registerRecipeSerializer("crafting_special_shulker_bowl", () -> new SimpleRecipeSerializer<>(ShulkerBowlRecipe::new));
     public static final RegistryObject<RecipeSerializer<TransmutationRecipe>> TRANSMUTATION_SERIALIZER = registerRecipeSerializer("transmutation", TransmutationRecipe.TransmutationSerializer::new);
     public static final RegistryObject<RecipeSerializer<EmpowermentRecipe>> EMPOWERMENT_SERIALIZER = registerRecipeSerializer("empowerment", EmpowermentRecipe.EmpowermentSerializer::new);
+    public static final RegistryObject<RecipeSerializer<SocketRemoveRecipe>> SOCKET_REMOVE_CRAFTING = registerRecipeSerializer("crafting_special_socket_remove", () -> new SimpleRecipeSerializer<>(SocketRemoveRecipe::new));
     // endregion
 
     // region entities

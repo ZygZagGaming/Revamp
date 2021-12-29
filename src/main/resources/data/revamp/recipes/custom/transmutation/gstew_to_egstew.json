@@ -1,0 +1,8 @@
+{
+  "type": "revamp:transmutation",
+  "input": {
+    "item": "revamp:golden_stew"
+  },
+  "output": "revamp:enchanted_golden_stew",
+  "rate": "0.0125"
+}

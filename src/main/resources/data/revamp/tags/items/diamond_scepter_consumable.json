@@ -14,6 +14,10 @@
     "minecraft:calcite",
     "minecraft:smooth_basalt",
     "minecraft:dirt",
-    "minecraft:gravel"
+    "minecraft:gravel",
+    "minecraft:wheat_seeds",
+    "minecraft:bone",
+    "minecraft:rotten_flesh",
+    "minecraft:end_stone"
   ]
 }

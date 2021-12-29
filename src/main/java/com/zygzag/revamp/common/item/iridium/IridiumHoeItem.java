@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common.item.iridium;
 
+import com.mojang.datafixers.kinds.Const;
 import com.mojang.datafixers.util.Pair;
 import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -35,12 +37,17 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
     }
 
     @Override
+    public boolean hasUseAbility() {
+        return hasCooldown();
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> text, TooltipFlag flag) {
         Socket s = getSocket();
         Item i = s.i;
         MutableComponent m;
         if (s != Socket.NONE) {
-            String str = s == Socket.AMETHYST ? "use" : "passive";
+            String str = hasCooldown() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
@@ -54,12 +61,29 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
             m.append(new TranslatableComponent( str + "_ability.revamp.hoe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
             text.add(new TranslatableComponent("description." + str + "_ability.revamp.hoe." + socket.name().toLowerCase()));
+            if (hasCooldown()) {
+                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(comp);
+            }
         }
     }
 
     @Override
     public Socket getSocket() {
         return socket;
+    }
+
+    @Override
+    public boolean hasCooldown() {
+        return socket == Socket.AMETHYST;
+    }
+
+    @Override
+    public int getCooldown() {
+        return socket == Socket.AMETHYST ? Constants.AMETHYST_HOE_COOLDOWN : 0;
     }
 
     @Override
@@ -72,7 +96,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
             if (pair != null) {
                 Predicate<UseOnContext> predicate = pair.getFirst();
                 if (predicate.test(context)) {
-                    int rand = (int) (Math.random() * 200.0);
+                    int rand = (int) (Math.random() * 2000.0);
                     if (rand >= 69 && rand <= 71) {
                         ItemStack i;
                         if (rand == 69) {
@@ -94,11 +118,6 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
         }
 
         return InteractionResult.PASS;
-    }
-
-    public void addCooldown(Player player, Item item, int amount, ItemStack stack) {
-        int level = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
-        player.getCooldowns().addCooldown(item, amount * (5 - level));
     }
 
 }

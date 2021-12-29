@@ -3,6 +3,8 @@ package com.zygzag.revamp.common.item.iridium;
 import com.zygzag.revamp.common.item.recipe.ItemHolder;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
+import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -45,7 +47,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
         Item i = s.i;
         MutableComponent m;
         if (s != Socket.NONE) {
-            String str = s == Socket.AMETHYST || s == Socket.EMERALD || s == Socket.SKULL ? "use" : "passive";
+            String str = hasUseAbility() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
@@ -59,12 +61,39 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
             m.append(new TranslatableComponent( str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
             text.add(new TranslatableComponent("description." + str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()));
+            if (hasCooldown()) {
+                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(comp);
+            }
         }
+    }
+
+    @Override
+    public boolean hasCooldown() {
+        return socket == Socket.AMETHYST;
+    }
+
+    @Override
+    public int getCooldown() {
+        switch (socket) {
+            case AMETHYST -> {
+                return Constants.AMETHYST_PICKAXE_COOLDOWN;
+            }
+        }
+        return 0;
     }
 
     @Override
     public Socket getSocket() {
         return socket;
+    }
+
+    @Override
+    public boolean hasUseAbility() {
+        return hasCooldown() || socket == Socket.SKULL || socket == Socket.EMERALD;
     }
 
     @Override
@@ -81,9 +110,10 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                         int playerY = player.getBlockY();
                         int playerZ = player.getBlockZ();
                         int n = 0;
-                        for (int x = playerX - 5; x <= playerX + 5; x++) {
-                            for (int y = playerY - 5; y <= playerY + 5; y++) {
-                                for (int z = playerZ - 5; z <= playerZ + 5; z++) {
+                        int range = 6;
+                        for (int x = playerX - range; x <= playerX + range; x++) {
+                            for (int y = playerY - range; y <= playerY + range; y++) {
+                                for (int z = playerZ - range; z <= playerZ + range; z++) {
                                     BlockPos pos = new BlockPos(x, y, z);
                                     BlockState state = world.getBlockState(pos);
                                     if (state.is(Tags.Blocks.ORES)) {
@@ -100,28 +130,31 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                                 }
                             }
                         }
-                        if (!player.getAbilities().instabuild) {
-                            player.getCooldowns().addCooldown(this, 6000);
-                            damageItem(stack, n, player, (p) -> {});
-                        }
+                        stack.hurtAndBreak(n, player, (e) -> { });
                     }
+                    return InteractionResultHolder.success(stack);
                 }
                 case SKULL -> {
                     if (!player.getCooldowns().isOnCooldown(this)) {
                         AABB box = player.getBoundingBox().inflate(5.0);
                         List<ItemEntity> entities = world.getEntitiesOfClass(ItemEntity.class, box);
                         List<TransmutationRecipe> recipes = world.getRecipeManager().getAllRecipesFor(ModRecipeType.TRANSMUTATION);
+                        int n = 0;
                         for (ItemEntity itemEntity : entities) {
                             for (TransmutationRecipe recipe : recipes) {
+                                if (n >= 10) break;
                                 ItemHolder holder = new ItemHolder(itemEntity.getItem());
                                 if (recipe.matches(holder, world)) {
+                                    int in = itemEntity.getItem().getCount();
                                     ItemEntity newItem = new ItemEntity(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), recipe.assemble(holder));
                                     world.addFreshEntity(newItem);
-                                    if (!player.getAbilities().instabuild) stack.hurtAndBreak(newItem.getItem().getCount(), player, (it) -> {});
+                                    if (!player.getAbilities().instabuild) stack.hurtAndBreak(in, player, (it) -> {});
                                     itemEntity.kill();
+                                    n++;
                                 }
                             }
                         }
+                        return InteractionResultHolder.success(stack);
                     }
                 }
                 case WITHER_SKULL -> {
@@ -132,6 +165,6 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                 }
             }
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResultHolder.fail(stack);
     }
 }

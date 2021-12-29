@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.item.iridium;
 
 import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -10,12 +11,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.Villager;
@@ -23,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
@@ -59,13 +60,13 @@ public class IridiumScepterItem extends Item implements ISocketable {
                 aabb = new AABB(player.blockPosition().subtract(new Vec3i(20, 20, 20)), player.blockPosition().subtract(new Vec3i(-20, -20, -20)));
                 List<ItemEntity> items = world.getEntities(EntityType.ITEM, aabb, (v) -> true);
                 for (ItemEntity v : items) {
-                    if (v.getItem().getItem().getTags().contains(new ResourceLocation("revamp:diamond_specter_consumable"))) {
-                        int count = v.getItem().getCount();
-                        player.giveExperiencePoints(count / 8);
+                    if (v.getItem().getItem().getTags().contains(new ResourceLocation("revamp:diamond_scepter_consumable"))) {
+                        int amount = v.getItem().getCount() / 8;
+                        ExperienceOrb orb = new ExperienceOrb(world, v.getX(), v.getY(), v.getZ(), amount);
+                        world.addFreshEntity(orb);
                         v.kill();
                     }
                 }
-                addCooldown(player, this, 1000, player.getItemInHand(hand));
                 break;
             case EMERALD:
                 aabb = new AABB(player.blockPosition().subtract(new Vec3i(6, 3, 6)), player.blockPosition().subtract(new Vec3i(-6, -3, -6)));
@@ -79,17 +80,17 @@ public class IridiumScepterItem extends Item implements ISocketable {
                         }
                     }
                 }
-                addCooldown(player, this, 1000, player.getItemInHand(hand));
+                ISocketable.addCooldown(player, item, Constants.EMERALD_SCEPTER_COOLDOWN);
                 break;
             case SKULL:
                 aabb = new AABB(player.blockPosition().subtract(new Vec3i(6, 3, 6)), player.blockPosition().subtract(new Vec3i(-6, -3, -6)));
                 List<Monster> monsters = world.getEntitiesOfClass(Monster.class, aabb, (m) -> m.getHealth() == 0.0);
                 if (monsters.size() > 0) {
                     player.heal(100f);
-                    addCooldown(player, this, 1000, player.getItemInHand(hand));
+                    ISocketable.addCooldown(player, item, Constants.SKULL_SCEPTER_COOLDOWN);
                 }
                 break;
-            case WITHER_SKULL:
+            case WITHER_SKULL:/* NEXT UPDATE:
                 if (!world.isClientSide) {
                     ServerLevel level = (ServerLevel) world;
                     aabb = new AABB(player.blockPosition().subtract(new Vec3i(6, 3, 6)), player.blockPosition().subtract(new Vec3i(-6, -3, -6)));
@@ -165,25 +166,20 @@ public class IridiumScepterItem extends Item implements ISocketable {
                         }
                         undead.remove(Entity.RemovalReason.KILLED);
                     }
-                    if (undeads.size() != 0) addCooldown(player, this, 1000, player.getItemInHand(hand));
-                }
+                    if (undeads.size() != 0) ISocketable.addCooldown(player, item, 1000);
+                }*/
                 break;
             case AMETHYST:
                 aabb = new AABB(player.blockPosition().subtract(new Vec3i(40, 40, 40)), player.blockPosition().subtract(new Vec3i(-40, -40, -40)));
-                List<Player> players = world.getEntities(EntityType.PLAYER, aabb, (v) -> true);
-                for (Player p : players) {
-                    p.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
-                    p.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200));
+                List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, aabb, (v) -> true);
+                for (LivingEntity e : entities) {
+                    e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
+                    e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200));
                 }
-                addCooldown(player, this, 1000, player.getItemInHand(hand));
+                ISocketable.addCooldown(player, item, Constants.AMETHYST_SCEPTER_COOLDOWN);
                 break;
         }
         return InteractionResultHolder.consume(item);
-    }
-
-    public void addCooldown(Player player, Item item, int amount, ItemStack stack) {
-        int level = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
-        player.getCooldowns().addCooldown(item, amount * (5 - level));
     }
 
     @Override
@@ -204,6 +200,42 @@ public class IridiumScepterItem extends Item implements ISocketable {
             m.append(new TranslatableComponent("use_ability.revamp.scepter." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
             text.add(new TranslatableComponent("description.use_ability.revamp.scepter." + socket.name().toLowerCase()));
+            if (hasCooldown()) {
+                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(comp);
+            }
         }
+    }
+
+    @Override
+    public boolean hasCooldown() {
+        return socket != Socket.NONE && socket != Socket.DIAMOND;
+    }
+
+    @Override
+    public boolean hasUseAbility() {
+        return true;
+    }
+
+    @Override
+    public int getCooldown() {
+        switch (socket) {
+            case EMERALD -> {
+                return Constants.EMERALD_SCEPTER_COOLDOWN;
+            }
+            case SKULL -> {
+                return Constants.SKULL_SCEPTER_COOLDOWN;
+            }
+            case WITHER_SKULL -> {
+                return Constants.WITHER_SKULL_SCEPTER_COOLDOWN;
+            }
+            case AMETHYST -> {
+                return Constants.AMETHYST_SCEPTER_COOLDOWN;
+            }
+        }
+        return 0;
     }
 }

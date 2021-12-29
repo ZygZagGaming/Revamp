@@ -1,5 +1,7 @@
 package com.zygzag.revamp.common.item.iridium;
 
+import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -27,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -43,7 +46,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
         Item i = s.i;
         MutableComponent m;
         if (s != Socket.NONE) {
-            String str = s == Socket.EMERALD || s == Socket.SKULL || s == Socket.WITHER_SKULL ? "use" : "passive";
+            String str = hasCooldown() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
@@ -57,7 +60,40 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
             m.append(new TranslatableComponent( str + "_ability.revamp.shovel." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
             text.add(new TranslatableComponent("description." + str + "_ability.revamp.shovel." + socket.name().toLowerCase()));
+            if (hasCooldown()) {
+                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(comp);
+            }
         }
+    }
+
+    @Override
+    public boolean hasCooldown() {
+        return socket == Socket.EMERALD || socket == Socket.SKULL || socket == Socket.WITHER_SKULL;
+    }
+
+    @Override
+    public boolean hasUseAbility() {
+        return hasCooldown();
+    }
+
+    @Override
+    public int getCooldown() {
+        switch (socket) {
+            case EMERALD -> {
+                return Constants.EMERALD_SHOVEL_COOLDOWN;
+            }
+            case SKULL -> {
+                return Constants.SKULL_SHOVEL_COOLDOWN;
+            }
+            case WITHER_SKULL -> {
+                return Constants.WITHER_SKULL_SHOVEL_COOLDOWN;
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -70,7 +106,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
         Tag<Block> veinmineTag = BlockTags.getAllTags().getTag(new ResourceLocation("revamp:veinmine"));
         if (veinmineTag != null && state.is(veinmineTag) && (!(user instanceof Player) || (user.isShiftKeyDown() && !((Player) user).getCooldowns().isOnCooldown(this))) && stack.getItem() instanceof IridiumShovelItem shovel && shovel.getSocket() == Socket.DIAMOND) {
             int numDestroyed = 1;
-            List<BlockPos> arr = Arrays.stream(getNeighboringBlocks(pos)).toList();
+            List<BlockPos> arr = Arrays.stream(getNeighboringBlocks(pos)).collect(Collectors.toList());
             if (level instanceof ServerLevel sLevel) {
                 while (numDestroyed <= 64) {
                     ArrayList<BlockPos> tempList = new ArrayList<>();
@@ -89,7 +125,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
                 }
             }
             if (user instanceof Player player) {
-                player.getCooldowns().addCooldown(this, numDestroyed * 10);
+                ISocketable.addCooldown(player, stack, numDestroyed * 10);
             }
         }
         return super.mineBlock(stack, level, state, pos, user);
@@ -102,8 +138,11 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
             switch (shovel.getSocket()) {
                 case SKULL -> {
                     if (!player.getCooldowns().isOnCooldown(this)) {
-                        player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle()));
-                        player.getCooldowns().addCooldown(this, 20);
+                        double multiplier = 2;
+                        if (!player.isOnGround()) multiplier = 0.5;
+                        player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().multiply(multiplier, multiplier, multiplier)));
+                        ISocketable.addCooldown(player, stack, Constants.SKULL_SHOVEL_COOLDOWN);
+                        stack.hurtAndBreak(1, player, (e) -> {});
                     }
                 }
             }
