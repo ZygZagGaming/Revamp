@@ -1,0 +1,13 @@
+{
+  "type": "revamp:autosmelt",
+  "conditions": [
+    {
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "items": [
+          "revamp:amethyst_socketed_iridium_shovel"
+        ]
+      }
+    }
+  ]
+}

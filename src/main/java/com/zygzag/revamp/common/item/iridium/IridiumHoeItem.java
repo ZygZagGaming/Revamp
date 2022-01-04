@@ -13,13 +13,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -88,31 +95,43 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        Level level = context.getLevel();
+        Level world = context.getLevel();
         Player player = context.getPlayer();
         BlockPos blockpos = context.getClickedPos();
-        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = TILLABLES.get(level.getBlockState(blockpos).getBlock());
-        if (context.getClickedFace() != Direction.DOWN && level.isEmptyBlock(blockpos.above())) {
+        Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = TILLABLES.get(world.getBlockState(blockpos).getBlock());
+        if (context.getClickedFace() != Direction.DOWN && world.isEmptyBlock(blockpos.above())) {
             if (pair != null) {
                 Predicate<UseOnContext> predicate = pair.getFirst();
                 if (predicate.test(context)) {
-                    int rand = (int) (Math.random() * 2000.0);
-                    if (rand >= 69 && rand <= 71) {
-                        ItemStack i;
-                        if (rand == 69) {
-                            i = Items.DIAMOND.getDefaultInstance();
-                        } else if (rand == 70) {
-                            i = Items.EMERALD.getDefaultInstance();
-                        } else {
-                            i = Items.AMETHYST_SHARD.getDefaultInstance();
-                            i.setCount((int) (Math.random() * 8));
+                    switch (socket) {
+                        case DIAMOND -> {
+                            int rand = (int) (Math.random() * 2000.0);
+                            if (rand >= 69 && rand <= 71) {
+                                ItemStack i;
+                                if (rand == 69) {
+                                    i = Items.DIAMOND.getDefaultInstance();
+                                } else if (rand == 70) {
+                                    i = Items.EMERALD.getDefaultInstance();
+                                } else {
+                                    i = Items.AMETHYST_SHARD.getDefaultInstance();
+                                    i.setCount((int) (Math.random() * 8));
+                                }
+                                ItemEntity e;
+                                if (player != null)
+                                    e = new ItemEntity(world, player.getX(), player.getY(), player.getZ(), i);
+                                else e = new ItemEntity(world, blockpos.getX(), blockpos.getY(), blockpos.getZ(), i);
+                                world.addFreshEntity(e);
+                            }
+                            return super.useOn(context);
                         }
-                        ItemEntity e;
-                        if (player != null) e = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), i);
-                        else e = new ItemEntity(level, blockpos.getX(), blockpos.getY(), blockpos.getZ(), i);
-                        level.addFreshEntity(e);
+                        case EMERALD -> {
+                            InteractionResult result = super.useOn(context);
+                            if (!world.isClientSide) {
+                                world.setBlock(blockpos, Registry.BLESSED_SOIL.get().defaultBlockState().setValue(FarmBlock.MOISTURE, world.getBlockState(blockpos).getValue(FarmBlock.MOISTURE)), 0);
+                            }
+                            return result;
+                        }
                     }
-                    return super.useOn(context);
                 }
             }
         }
@@ -120,4 +139,16 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
         return InteractionResult.PASS;
     }
 
+    @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+        if (socket == Socket.WITHER_SKULL && toolAction == ToolActions.SWORD_SWEEP) return true;
+        return super.canPerformAction(stack, toolAction);
+    }
+
+    @NotNull
+    @Override
+    public AABB getSweepHitBox(@NotNull ItemStack stack, @NotNull Player player, @NotNull Entity target) {
+        if (socket == Socket.WITHER_SKULL) return target.getBoundingBox().inflate(5f);
+        return super.getSweepHitBox(stack, player, target);
+    }
 }

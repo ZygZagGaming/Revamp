@@ -1,11 +1,11 @@
 package com.zygzag.revamp.common.entity;
 
-import com.zygzag.revamp.common.item.recipe.ItemHolder;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -50,7 +50,7 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
             List<TransmutationRecipe> recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeType.TRANSMUTATION);
             for (ItemEntity itemEntity : entities) {
                 for (TransmutationRecipe recipe : recipes) {
-                    ItemHolder holder = new ItemHolder(itemEntity.getItem());
+                    SimpleContainer holder = new SimpleContainer(itemEntity.getItem());
                     if (recipe.matches(holder, level)) {
                         ItemEntity newItem = new ItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), recipe.assemble(holder));
                         level.addFreshEntity(newItem);

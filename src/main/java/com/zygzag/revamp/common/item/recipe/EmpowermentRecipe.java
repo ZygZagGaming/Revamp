@@ -37,7 +37,7 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public boolean matches(ItemAndEntityHolder holder, Level world) {
-        return holder.entity.getType() == inEntity && item.test(holder.stack);
+        return holder.entity.getType() == inEntity && item.test(holder.getItem(0));
     }
 
     @Override
@@ -46,9 +46,9 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
         holder.entity = outEntity.create(holder.entity.level);
         if (holder.entity != null) {
             holder.entity.moveTo(pos);
-            holder.stack.shrink(1);
+            holder.getItem(0).shrink(1);
         }
-        return holder.stack;
+        return holder.getItem(0);
     }
 
     @Override

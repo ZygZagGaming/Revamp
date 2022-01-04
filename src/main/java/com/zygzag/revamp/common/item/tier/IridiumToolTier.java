@@ -13,7 +13,8 @@ public enum IridiumToolTier implements Tier {
     _3_2(2560, 15, 4.66f, 5, 18),
     DIAMOND_SOCKETED(2894, 16, 5.33f, 6, 12),
     DIAMOND_SOCKETED_PICK(2894, 19, 5.33f, 6, 12),
-    EMERALD_SOCKETED(2648, 17, 4f, 5, 21);
+    EMERALD_SOCKETED(2648, 17, 4f, 5, 21),
+    WITHER_SOCKETED_PICK(2768, Integer.MAX_VALUE, 5, 5, 18);
 
     int uses;
     float speed;

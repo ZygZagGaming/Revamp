@@ -79,10 +79,10 @@ public enum IridiumArmorMaterial implements ArmorMaterial {
     _8_7("iridium_7", 41, new int[]{4, 7, 9, 4}, 17, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.2F, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    DIAMOND_SOCKETED("diamond_iridium", 45, new int[]{0, 8, 0, 0}, 12, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.5f, 0.4f, () -> {
+    DIAMOND_SOCKETED("diamond_iridium", 45, new int[]{8, 8, 8, 8}, 12, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.5f, 0.4f, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     }),
-    EMERALD_SOCKETED("emerald_iridium", 38, new int[]{0, 7, 0, 0}, 19, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0f, 0.6f, () -> {
+    EMERALD_SOCKETED("emerald_iridium", 38, new int[]{7, 7, 7, 7}, 19, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0f, 0.6f, () -> {
         return Ingredient.of(Registry.IRIDIUM_PLATING.get());
     });
 

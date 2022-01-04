@@ -94,6 +94,27 @@ public class Revamp {
             PotionUtils.setPotion(lingeringRageStrongPot, Registry.STRONG_RAGE_POTION.get());
             PotionUtils.setPotion(lingeringRageLongPot, Registry.LONG_RAGE_POTION.get());
 
+            ItemStack sightPot = Items.POTION.getDefaultInstance();
+            ItemStack sightLongPot = Items.POTION.getDefaultInstance();
+            ItemStack sightStrongPot = Items.POTION.getDefaultInstance();
+            ItemStack splashSightPot = Items.SPLASH_POTION.getDefaultInstance();
+            ItemStack splashSightLongPot = Items.SPLASH_POTION.getDefaultInstance();
+            ItemStack splashSightStrongPot = Items.SPLASH_POTION.getDefaultInstance();
+            ItemStack lingeringSightPot = Items.LINGERING_POTION.getDefaultInstance();
+            ItemStack lingeringSightLongPot = Items.LINGERING_POTION.getDefaultInstance();
+            ItemStack lingeringSightStrongPot = Items.LINGERING_POTION.getDefaultInstance();
+            ItemStack awkwardPot = Items.POTION.getDefaultInstance();
+            PotionUtils.setPotion(sightPot, Registry.SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightPot, Registry.SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightPot, Registry.SIGHT_POTION.get());
+            PotionUtils.setPotion(sightLongPot, Registry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightLongPot, Registry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightLongPot, Registry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(sightStrongPot, Registry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightStrongPot, Registry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightStrongPot, Registry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(awkwardPot, Potions.AWKWARD);
+
             // region strength to rage
             BrewingRecipeRegistry.addRecipe(
                     Ingredient.of(strengthPot),
@@ -130,6 +151,7 @@ public class Revamp {
             );
             // endregion
 
+            // region other recipes
             BrewingRecipeRegistry.addRecipe(
                     Ingredient.of(ragePot),
                     Ingredient.of(Items.GUNPOWDER.getDefaultInstance()),
@@ -161,6 +183,56 @@ public class Revamp {
                     Ingredient.of(Items.DRAGON_BREATH.getDefaultInstance()),
                     lingeringRageStrongPot
             );
+
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(awkwardPot),
+                    Ingredient.of(Items.AMETHYST_CLUSTER),
+                    sightPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(sightPot),
+                    Ingredient.of(Items.REDSTONE),
+                    sightLongPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(sightPot),
+                    Ingredient.of(Items.GLOWSTONE),
+                    sightStrongPot
+            );
+
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(sightPot),
+                    Ingredient.of(Items.GUNPOWDER),
+                    splashSightPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(sightLongPot),
+                    Ingredient.of(Items.GUNPOWDER),
+                    splashSightLongPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(sightStrongPot),
+                    Ingredient.of(Items.GUNPOWDER),
+                    splashSightStrongPot
+            );
+
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(splashSightPot),
+                    Ingredient.of(Items.DRAGON_BREATH),
+                    lingeringSightPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(splashSightLongPot),
+                    Ingredient.of(Items.DRAGON_BREATH),
+                    lingeringSightLongPot
+            );
+            BrewingRecipeRegistry.addRecipe(
+                    Ingredient.of(splashSightStrongPot),
+                    Ingredient.of(Items.DRAGON_BREATH),
+                    lingeringSightStrongPot
+            );
+
+            // endregion
         });
     }
 

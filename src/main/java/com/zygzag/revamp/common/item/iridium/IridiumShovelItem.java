@@ -1,6 +1,5 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -13,16 +12,24 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BellBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -63,7 +70,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(getCooldown() / 20f + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
@@ -124,9 +131,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
                     arr = tempList;
                 }
             }
-            if (user instanceof Player player) {
-                ISocketable.addCooldown(player, stack, numDestroyed * 10);
-            }
+            stack.hurtAndBreak(numDestroyed * 2, user, (e) -> { });
         }
         return super.mineBlock(stack, level, state, pos, user);
     }
@@ -143,11 +148,57 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
                         player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().multiply(multiplier, multiplier, multiplier)));
                         ISocketable.addCooldown(player, stack, Constants.SKULL_SHOVEL_COOLDOWN);
                         stack.hurtAndBreak(1, player, (e) -> {});
+                        return InteractionResultHolder.consume(stack);
                     }
+                }
+                case EMERALD -> {
+                    if (!world.isClientSide) {
+                        BlockPos blockPos = player.blockPosition();
+                        world.playSound(null, blockPos, SoundEvents.BELL_BLOCK, SoundSource.PLAYERS, 2.0F, 1.0F);
+                        world.gameEvent(player, GameEvent.RING_BELL, blockPos);
+                        BellBlockEntity.makeRaidersGlow(world, blockPos, world.getEntities(player, player.getBoundingBox().inflate(40.0), (e) -> e.getType().is(EntityTypeTags.RAIDERS)).stream().filter((e) -> e instanceof LivingEntity).map((e) -> (LivingEntity) e).collect(Collectors.toList()));
+                        List<Villager> villagers = world.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(40.0));
+                        for (Villager villager : villagers) {
+                            villager.getBrain().setActiveActivityIfPossible(Activity.HIDE);
+                        }
+                        ISocketable.addCooldown(player, stack, Constants.EMERALD_SHOVEL_COOLDOWN);
+                        return InteractionResultHolder.consume(stack);
+                    }
+                }
+                case WITHER_SKULL -> {
+                    boolean isCrimson = Math.random() <= .75;
+                    BlockState nylium = isCrimson ? Blocks.CRIMSON_NYLIUM.defaultBlockState() : Blocks.WARPED_NYLIUM.defaultBlockState();
+                    for (int j = 0; j < 4; j++) {
+                        BlockPos pos = player.blockPosition().below();
+                        for (int i = 0; i < 64; i++) {
+                            Direction d = Direction.Plane.HORIZONTAL.getRandomDirection(player.getRandom());
+                            if (world.getBlockState(pos).is(Blocks.GRASS_BLOCK)) {
+                                world.setBlock(pos, nylium, 0);
+                                if (Math.random() <= .45 && isAirLike(world.getBlockState(pos.above()))) {
+                                    BlockState weeds = isCrimson ^ Math.random() <= .05 ? (Math.random() <= .1 ? Blocks.CRIMSON_FUNGUS.defaultBlockState() : Blocks.CRIMSON_ROOTS.defaultBlockState()) : (Math.random() <= .1 ? Blocks.WARPED_FUNGUS.defaultBlockState() : (Math.random() <= .33 ? Blocks.NETHER_SPROUTS.defaultBlockState() : Blocks.WARPED_ROOTS.defaultBlockState()));
+                                    world.setBlock(pos.above(), weeds, 0);
+                                }
+                            } else if (world.getBlockState(pos).is(Blocks.SAND)) world.setBlock(pos, Blocks.SOUL_SAND.defaultBlockState(), 0);
+                            else if (world.getBlockState(pos).is(Blocks.GRAVEL)) world.setBlock(pos, Blocks.SOUL_SOIL.defaultBlockState(), 0);
+                            pos = pos.relative(d);
+                            while (!isAirLike(world.getBlockState(pos))) pos = pos.above();
+                            while (isAirLike(world.getBlockState(pos))) {
+                                pos = pos.below();
+                            }
+                        }
+                    }
+                    ISocketable.addCooldown(player, stack, Constants.WITHER_SKULL_SHOVEL_COOLDOWN);
+                    stack.hurtAndBreak(4, player, (e) -> { });
+
+                    return InteractionResultHolder.consume(stack);
                 }
             }
         }
-        return InteractionResultHolder.consume(stack);
+        return InteractionResultHolder.pass(stack);
+    }
+
+    private static boolean isAirLike(BlockState state) {
+        return state.isAir() || state.is(Blocks.GRASS) || state.is(Blocks.TALL_GRASS);
     }
 
     private BlockPos[] getNeighboringBlocks(BlockPos pos) {
@@ -156,25 +207,5 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
             arr[i] = pos.relative(Direction.values()[i]);
         }
         return arr;
-    }
-
-    private BlockPos[] getNeighboringBlocksExceptFace(BlockPos blockPos, Direction direction) {
-        BlockPos[] arr = new BlockPos[5];
-        int which = 0;
-        for (Direction dir : Direction.values()) {
-            if (direction != dir) {
-                arr[which] = blockPos.relative(dir);
-                which++;
-            }
-        }
-        return arr;
-    }
-
-    private BlockState[] getStatesFromArray(BlockPos[] arr, Level level) {
-        BlockState[] states = new BlockState[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            states[i] = level.getBlockState(arr[i]);
-        }
-        return states;
     }
 }

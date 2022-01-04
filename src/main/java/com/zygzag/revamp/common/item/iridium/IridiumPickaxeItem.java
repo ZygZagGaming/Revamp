@@ -1,9 +1,7 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.zygzag.revamp.common.item.recipe.ItemHolder;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
-import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -16,6 +14,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -130,7 +129,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                                 }
                             }
                         }
-                        stack.hurtAndBreak(n, player, (e) -> { });
+                        stack.hurtAndBreak(n * 4, player, (e) -> { });
                     }
                     return InteractionResultHolder.success(stack);
                 }
@@ -143,7 +142,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                         for (ItemEntity itemEntity : entities) {
                             for (TransmutationRecipe recipe : recipes) {
                                 if (n >= 10) break;
-                                ItemHolder holder = new ItemHolder(itemEntity.getItem());
+                                SimpleContainer holder = new SimpleContainer(itemEntity.getItem());
                                 if (recipe.matches(holder, world)) {
                                     int in = itemEntity.getItem().getCount();
                                     ItemEntity newItem = new ItemEntity(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), recipe.assemble(holder));

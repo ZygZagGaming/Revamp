@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "entries": [
+    "revamp:executioner/wither_skeleton",
+    "revamp:executioner/creeper",
+    "revamp:executioner/ender_dragon",
+    "revamp:executioner/player",
+    "revamp:executioner/skeleton",
+    "revamp:executioner/zombie",
+    "revamp:misc/shovel_smelt"
+  ]
+}

@@ -1,10 +1,12 @@
 package com.zygzag.revamp.common.registry;
 
 import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.block.BlessedSoilBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.HomingWitherSkull;
 import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
+import com.zygzag.revamp.common.entity.effect.SightEffect;
 import com.zygzag.revamp.common.item.EmpowermentStar;
 import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
 import com.zygzag.revamp.common.item.ShulkerBowlItem;
@@ -18,6 +20,11 @@ import com.zygzag.revamp.common.item.recipe.SocketRemoveRecipe;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.item.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.common.item.tier.IridiumToolTier;
+import com.zygzag.revamp.common.loot.AutosmeltModifier;
+import com.zygzag.revamp.common.loot.ExecutionerModifier;
+import com.zygzag.revamp.util.Constants;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -37,6 +44,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -52,11 +60,15 @@ public class Registry {
     public static DeferredRegister<Enchantment> ENCHANT_REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Revamp.MODID);
     public static DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, Revamp.MODID);
     public static DeferredRegister<Potion> POTION_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
+    public static DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_REGISTER = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, Revamp.MODID);
+    public static DeferredRegister<MobEffect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Revamp.MODID);
+    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER};
 
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", () -> new IridiumOreBlock(BlockBehaviour.Properties.copy(IRIDIUM_ORE.get()).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = registerBlock("raw_iridium_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
     //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
 
     public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
@@ -101,6 +113,7 @@ public class Registry {
     public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
     public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.MAIN_TAB));
     //public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
+    public static final RegistryObject<Item> BLESSED_SOIL_ITEM = registerBlockItem(BLESSED_SOIL, new Item.Properties().tab(Revamp.MAIN_TAB));
 
     // region iridium gear
     public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.NONE));
@@ -115,6 +128,7 @@ public class Registry {
     public static final RegistryObject<Item> IRIDIUM_BOOTS = registerItem("iridium_boots", () -> new ArmorItem(IridiumArmorMaterial.IRIDIUM, EquipmentSlot.FEET, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1)));
 
     public static final RegistryObject<Item> IRIDIUM_SCEPTER = registerItem("iridium_scepter", () -> new IridiumScepterItem(new Item.Properties().tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1), Socket.NONE));
+
     // region diamond socketed gear
     public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SWORD = registerItem("diamond_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.DIAMOND_SOCKETED, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
     public static final RegistryObject<Item> DIAMOND_SOCKETED_IRIDIUM_SHOVEL = registerItem("diamond_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.DIAMOND_SOCKETED, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.DIAMOND), Socket.DIAMOND));
@@ -154,10 +168,10 @@ public class Registry {
     // region wither skull socketed gear
     public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SWORD = registerItem("wither_skull_socketed_iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
     public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_SHOVEL = registerItem("wither_skull_socketed_iridium_shovel", () -> new IridiumShovelItem(IridiumToolTier.FULL, 1.5F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("wither_skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.FULL, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE = registerItem("wither_skull_socketed_iridium_pickaxe", () -> new IridiumPickaxeItem(IridiumToolTier.WITHER_SOCKETED_PICK, 1, -2.8F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
     public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_AXE = registerItem("wither_skull_socketed_iridium_axe", () -> new IridiumAxeItem(IridiumToolTier.FULL, 5.0F, -3.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).craftRemainder(Items.WITHER_SKELETON_SKULL)
             .fireResistant().stacksTo(1), Socket.WITHER_SKULL));
-    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_HOE = registerItem("wither_skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, -1, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
+    public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_HOE = registerItem("wither_skull_socketed_iridium_hoe", () -> new IridiumHoeItem(IridiumToolTier.FULL, 6, 0.0F, (new Item.Properties()).tab(CreativeModeTab.TAB_TOOLS).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
 
     public static final RegistryObject<Item> WITHER_SKULL_SOCKETED_IRIDIUM_CHESTPLATE = registerItem("wither_skull_socketed_iridium_chestplate", () -> new IridiumChestplateItem(IridiumArmorMaterial.IRIDIUM, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1).craftRemainder(Items.WITHER_SKELETON_SKULL), Socket.WITHER_SKULL));
 
@@ -234,10 +248,23 @@ public class Registry {
     public static final RegistryObject<EntityType<ThrownTransmutationCharge>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationCharge::new, MobCategory.MISC));
     // endregion
 
+    // region effects
+    public static RegistryObject<MobEffect> SIGHT_EFFECT = registerEffect("sight", () -> new SightEffect(MobEffectCategory.BENEFICIAL, Constants.SIGHT_EFFECT_COLOR));
+    // endregion
+
     // region potions
     public static final RegistryObject<Potion> RAGE_POTION = registerPotion("rage", () -> new Potion("rage", new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 800, 1), new MobEffectInstance(MobEffects.DAMAGE_BOOST, 800, 1)));
-    public static final RegistryObject<Potion> LONG_RAGE_POTION = registerPotion("long_rage", () -> new Potion("rage", new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1600, 1), new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1600, 1)));
-    public static final RegistryObject<Potion> STRONG_RAGE_POTION = registerPotion("strong_rage", () -> new Potion("rage", new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 750, 2), new MobEffectInstance(MobEffects.DAMAGE_BOOST, 750, 2)));
+    public static final RegistryObject<Potion> LONG_RAGE_POTION = registerPotion("long_rage", () -> new Potion("long_rage", new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1600, 1), new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1600, 1)));
+    public static final RegistryObject<Potion> STRONG_RAGE_POTION = registerPotion("strong_rage", () -> new Potion("strong_rage", new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 750, 2), new MobEffectInstance(MobEffects.DAMAGE_BOOST, 750, 2)));
+
+    public static final RegistryObject<Potion> SIGHT_POTION = registerPotion("sight", () -> new Potion("sight", new MobEffectInstance(SIGHT_EFFECT.get(), 100, 0)));
+    public static final RegistryObject<Potion> LONG_SIGHT_POTION = registerPotion("long_sight", () -> new Potion("long_sight", new MobEffectInstance(SIGHT_EFFECT.get(), 200, 0)));
+    public static final RegistryObject<Potion> STRONG_SIGHT_POTION = registerPotion("strong_sight", () -> new Potion("strong_sight", new MobEffectInstance(SIGHT_EFFECT.get(), 100, 1)));
+    // endregion
+
+    // region loot mods
+    public static RegistryObject<GlobalLootModifierSerializer<?>> EXECUTIONER_LOOT_MOD = LOOT_REGISTER.register("executioner", ExecutionerModifier.Serializer::new);
+    public static RegistryObject<GlobalLootModifierSerializer<?>> AUTOSMELT_LOOT_MOD = LOOT_REGISTER.register("autosmelt", AutosmeltModifier.Serializer::new);
     // endregion
 
     // region shorthand methods
@@ -285,13 +312,14 @@ public class Registry {
         return POTION_REGISTER.register(id, supplier);
     }
 
+    public static RegistryObject<MobEffect> registerEffect(String id, Supplier<MobEffect> supplier) {
+        return EFFECT_REGISTER.register(id, supplier);
+    }
+
     public static void register(IEventBus bus) {
-        ITEM_REGISTER.register(bus);
-        BLOCK_REGISTER.register(bus);
-        RECIPE_REGISTER.register(bus);
-        ENTITY_REGISTER.register(bus);
-        ENCHANT_REGISTER.register(bus);
-        POTION_REGISTER.register(bus);
+        for (DeferredRegister<?> register : REGISTERS) {
+            register.register(bus);
+        }
     }
     // endregion
 }

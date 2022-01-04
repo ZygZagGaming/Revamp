@@ -5,6 +5,7 @@ import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +22,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class TransmutationRecipe implements Recipe<ItemHolder> {
+public class TransmutationRecipe implements Recipe<SimpleContainer> {
     Ingredient inItem;
     Item outItem;
     double rate;
@@ -34,15 +35,15 @@ public class TransmutationRecipe implements Recipe<ItemHolder> {
     }
 
     @Override
-    public boolean matches(ItemHolder holder, Level world) {
-        return inItem.test(holder.stack);
+    public boolean matches(SimpleContainer holder, Level world) {
+        return inItem.test(holder.getItem(0));
     }
 
     @Override
-    public ItemStack assemble(ItemHolder holder) {
-        int count = holder.stack.getCount();
+    public ItemStack assemble(SimpleContainer holder) {
+        int count = holder.getItem(0).getCount();
         double random = (count * rate) % 1;
-        int newCount = (int) (count * rate) + (Math.random() < random ? 1 : 0);
+        int newCount = (int) (count * rate) + (Math.random() <= random ? 1 : 0);
         return new ItemStack(outItem, newCount);
     }
 

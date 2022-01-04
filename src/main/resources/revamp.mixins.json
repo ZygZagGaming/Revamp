@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.zygzag.revamp.common.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "revamp.refmap.json",
+  "mixins": [
+    "CropBlockMixin",
+    "BlockMixin"
+  ],
+  "minVersion": "0.8"
+}
