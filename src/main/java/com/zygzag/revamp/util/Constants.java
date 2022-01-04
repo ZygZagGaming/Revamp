@@ -15,14 +15,19 @@ public class Constants {
 
     public static int AMETHYST_SCEPTER_COOLDOWN = 400;
     public static int EMERALD_SCEPTER_COOLDOWN = 1000;
-    public static int SKULL_SCEPTER_COOLDOWN = 1000;
+    public static int SKULL_SCEPTER_COOLDOWN = 400;
     public static int WITHER_SKULL_SCEPTER_COOLDOWN = 1000;
+
+    public static int WITHER_SKULL_SWORD_COOLDOWN = 1000;
 
     public static int EMERALD_SHOVEL_COOLDOWN = 20;
     public static int SKULL_SHOVEL_COOLDOWN = 100;
     public static int WITHER_SKULL_SHOVEL_COOLDOWN = 400;
 
     public static int SIGHT_EFFECT_COLOR = 0x662382;
+
+    public static int UNWATERED_SOIL_HIGHLIGHT_COLOR = 0xffffff;
+    public static int CROP_COLOR = 0xf5a716;
 
     public static int COPPER_ORE_COLOR = 0xe77c56;
     public static int COAL_ORE_COLOR = 0x323232;

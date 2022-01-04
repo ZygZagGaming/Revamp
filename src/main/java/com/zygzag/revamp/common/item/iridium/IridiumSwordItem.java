@@ -1,14 +1,20 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,6 +34,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
         Item i = s.i;
         MutableComponent m;
         if (s != Socket.NONE) {
+            String str = hasCooldown() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
@@ -35,19 +42,34 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
 
             Socket socket = getSocket();
             text.add(new TextComponent(""));
-            m = new TranslatableComponent("passive.revamp").withStyle(ChatFormatting.GRAY);
+            if (str.equals("passive")) m = new TranslatableComponent(str + ".revamp").withStyle(ChatFormatting.GRAY);
+            else m = Minecraft.getInstance().options.keyUse.getKey().getDisplayName().copy().withStyle(ChatFormatting.GRAY);
             m.append(new TextComponent( ": ").withStyle(ChatFormatting.GRAY));
-            m.append(new TranslatableComponent("passive_ability.revamp.sword." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
+            m.append(new TranslatableComponent( str + "_ability.revamp.hoe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
-            text.add(new TranslatableComponent("description.passive_ability.revamp.sword." + socket.name().toLowerCase()));
+            text.add(new TranslatableComponent("description." + str + "_ability.revamp.hoe." + socket.name().toLowerCase()));
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(getCooldown() / 20f + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
         }
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (socket == Socket.WITHER_SKULL) {
+            AABB aabb = new AABB(player.blockPosition().subtract(new Vec3i(6, 3, 6)), player.blockPosition().subtract(new Vec3i(-6, -3, -6)));
+            List<Monster> monsters = world.getEntitiesOfClass(Monster.class, aabb, (m) -> m.getHealth() == 0.0);
+            if (monsters.size() > 0) {
+                player.heal(100f);
+                ISocketable.addCooldown(player, stack, Constants.WITHER_SKULL_SWORD_COOLDOWN);
+            }
+        }
+        return super.use(world, player, hand);
     }
 
     @Override
@@ -62,6 +84,6 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
 
     @Override
     public boolean hasCooldown() {
-        return false;
+        return socket == Socket.WITHER_SKULL;
     }
 }

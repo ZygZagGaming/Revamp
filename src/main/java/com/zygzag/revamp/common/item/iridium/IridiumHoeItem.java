@@ -1,6 +1,5 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.mojang.datafixers.kinds.Const;
 import com.mojang.datafixers.util.Pair;
 import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
@@ -13,14 +12,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.phys.AABB;
@@ -71,7 +71,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(getCooldown() / 20f + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
@@ -137,6 +137,16 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
         }
 
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (socket == Socket.AMETHYST && !player.getCooldowns().isOnCooldown(stack.getItem())) {
+            player.addEffect(new MobEffectInstance(Registry.GREEN_THUMB_EFFECT.get(), 2400, 1));
+            ISocketable.addCooldown(player, stack, Constants.AMETHYST_HOE_COOLDOWN);
+        }
+        return InteractionResultHolder.pass(stack);
     }
 
     @Override

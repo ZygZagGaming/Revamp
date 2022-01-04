@@ -3,6 +3,7 @@ package com.zygzag.revamp.common.registry;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.block.BlessedSoilBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
+import com.zygzag.revamp.common.block.tag.RevampTags;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.HomingWitherSkull;
 import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
@@ -23,6 +24,7 @@ import com.zygzag.revamp.common.item.tier.IridiumToolTier;
 import com.zygzag.revamp.common.loot.AutosmeltModifier;
 import com.zygzag.revamp.common.loot.ExecutionerModifier;
 import com.zygzag.revamp.util.Constants;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -38,12 +40,11 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -249,7 +250,8 @@ public class Registry {
     // endregion
 
     // region effects
-    public static RegistryObject<MobEffect> SIGHT_EFFECT = registerEffect("sight", () -> new SightEffect(MobEffectCategory.BENEFICIAL, Constants.SIGHT_EFFECT_COLOR));
+    public static RegistryObject<MobEffect> SIGHT_EFFECT = registerEffect("sight", () -> new SightEffect(MobEffectCategory.BENEFICIAL, Constants.SIGHT_EFFECT_COLOR, (b) -> b.is(Tags.Blocks.ORES), GeneralUtil::getColor));
+    public static RegistryObject<MobEffect> GREEN_THUMB_EFFECT = registerEffect("green_thumb", () -> new SightEffect(MobEffectCategory.BENEFICIAL, Constants.SIGHT_EFFECT_COLOR, (b) -> (b.is(RevampTags.FARMLAND.get()) && b.getValue(FarmBlock.MOISTURE) != 8) || (b.getBlock() instanceof CropBlock c && c.isMaxAge(b)), (b) -> b.getBlock() instanceof CropBlock ? Constants.CROP_COLOR : Constants.UNWATERED_SOIL_HIGHLIGHT_COLOR));
     // endregion
 
     // region potions

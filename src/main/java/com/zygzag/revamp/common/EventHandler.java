@@ -98,7 +98,7 @@ public class EventHandler {
 
                 if (item == Registry.DIAMOND_SOCKETED_IRIDIUM_SWORD.get()) {
                     int height = attacker.getBlockY();
-                    float damageBonus = (height - 384f) / (-112f/3f);
+                    float damageBonus = (384f - height) / (112f/3f);
                     evt.setAmount(amt + damageBonus);
                 } else if (item == Registry.EMERALD_SOCKETED_IRIDIUM_AXE.get() && entity.getType().is(RevampTags.ILLAGERS.get())) {
                     float damageBonus = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SMITE, attackStack) * 2.5f;
