@@ -1,6 +1,9 @@
 package com.zygzag.revamp.util;
 
+import com.zygzag.revamp.common.block.tag.RevampTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -9,6 +12,7 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class GeneralUtil {
+
     /**
      * Random number generator.
      * @param leftInclusive The left bound for the random number.
@@ -29,5 +33,19 @@ public class GeneralUtil {
     public static <T> T randomFromList(List<T> list) {
         if (list.size() == 0) return null;
         return list.get(randomInt(0, list.size() - 1));
+    }
+
+    public static int getColor(BlockState state) {
+        if (state.is(RevampTags.COPPER_ORES.get())) return Constants.COPPER_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_COAL)) return Constants.COAL_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_IRON)) return Constants.IRON_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_GOLD)) return Constants.GOLD_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_NETHERITE_SCRAP)) return Constants.NETHERITE_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_DIAMOND)) return Constants.DIAMOND_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_QUARTZ)) return Constants.QUARTZ_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_LAPIS)) return Constants.LAPIS_ORE_COLOR;
+        else if (state.is(Tags.Blocks.ORES_REDSTONE)) return Constants.REDSTONE_ORE_COLOR;
+
+        return 0;
     }
 }

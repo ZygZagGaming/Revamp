@@ -3,10 +3,10 @@ package com.zygzag.revamp.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,6 @@ public class ClientEventHandler {
     public static void onRender(RenderLevelLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
         PoseStack stack = event.getPoseStack();
-        float partialTicks = event.getPartialTick();
         stack.pushPose();
         VertexConsumer buffer = event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(Constants.TEST);
         Player player = mc.player;
@@ -53,7 +52,14 @@ public class ClientEventHandler {
                             BlockPos bp = new BlockPos(x, y, z);
                             BlockState state = world.getBlockState(bp);
                             if (state.is(Tags.Blocks.ORES)) {
-                                LevelRenderer.renderShape(stack, buffer, box, x, y, z, 1, 1, 1, 1);
+                                int color = GeneralUtil.getColor(state);
+                                String hex = Integer.toString(color, 16);
+                                if (color != 0) {
+                                    float r = Integer.parseInt(hex.substring(0, 2), 16) / 255f;
+                                    float g = Integer.parseInt(hex.substring(2, 4), 16) / 255f;
+                                    float b = Integer.parseInt(hex.substring(4), 16) / 255f;
+                                    LevelRenderer.renderShape(stack, buffer, box, x, y, z, r, g, b, 1);
+                                }
                             }
                         }
                     }
