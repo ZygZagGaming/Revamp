@@ -2,6 +2,7 @@ package com.zygzag.revamp.common.item.iridium;
 
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
+import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -29,6 +31,7 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.RegEx;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -156,10 +159,14 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                         return InteractionResultHolder.success(stack);
                     }
                 }
-                case WITHER_SKULL -> {
-
-                }
                 case AMETHYST -> {
+                    if (!player.getCooldowns().isOnCooldown(this)) {
+                        player.addEffect(new MobEffectInstance(Registry.SIGHT_EFFECT.get(), 1200, 1));
+                        ISocketable.addCooldown(player, stack, Constants.AMETHYST_PICKAXE_COOLDOWN);
+                    }
+                    return InteractionResultHolder.consume(stack);
+                }
+                case WITHER_SKULL -> {
 
                 }
             }

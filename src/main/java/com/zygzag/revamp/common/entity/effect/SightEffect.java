@@ -30,6 +30,6 @@ public class SightEffect extends MobEffect {
     }
 
     public int color(BlockState state) {
-        return selector.run(state);
+        return selector.apply(state);
     }
 }

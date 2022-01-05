@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -45,9 +46,9 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
             if (str.equals("passive")) m = new TranslatableComponent(str + ".revamp").withStyle(ChatFormatting.GRAY);
             else m = Minecraft.getInstance().options.keyUse.getKey().getDisplayName().copy().withStyle(ChatFormatting.GRAY);
             m.append(new TextComponent( ": ").withStyle(ChatFormatting.GRAY));
-            m.append(new TranslatableComponent( str + "_ability.revamp.hoe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
+            m.append(new TranslatableComponent( str + "_ability.revamp.sword." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
-            text.add(new TranslatableComponent("description." + str + "_ability.revamp.hoe." + socket.name().toLowerCase()));
+            text.add(new TranslatableComponent("description." + str + "_ability.revamp.sword." + socket.name().toLowerCase()));
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
@@ -59,6 +60,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
     }
 
     @Override
+    @NotNull
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (socket == Socket.WITHER_SKULL) {
@@ -85,5 +87,11 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
     @Override
     public boolean hasCooldown() {
         return socket == Socket.WITHER_SKULL;
+    }
+
+    @Override
+    public int getCooldown() {
+        if (socket == Socket.WITHER_SKULL) return Constants.WITHER_SKULL_SWORD_COOLDOWN;
+        else return 0;
     }
 }

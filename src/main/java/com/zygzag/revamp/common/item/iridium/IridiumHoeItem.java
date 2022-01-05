@@ -145,6 +145,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
         if (socket == Socket.AMETHYST && !player.getCooldowns().isOnCooldown(stack.getItem())) {
             player.addEffect(new MobEffectInstance(Registry.GREEN_THUMB_EFFECT.get(), 2400, 1));
             ISocketable.addCooldown(player, stack, Constants.AMETHYST_HOE_COOLDOWN);
+            return InteractionResultHolder.success(stack);
         }
         return InteractionResultHolder.pass(stack);
     }

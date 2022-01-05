@@ -5,9 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.entity.effect.SightEffect;
-import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
-import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -20,13 +18,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = Revamp.MODID)
 public class ClientEventHandler {
@@ -39,7 +34,7 @@ public class ClientEventHandler {
         VertexConsumer buffer = event.getLevelRenderer().renderBuffers.bufferSource().getBuffer(Constants.TEST);
         Player player = mc.player;
         VoxelShape box = Shapes.box(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
-        if (player != null && player.hasEffect(Registry.SIGHT_EFFECT.get())) {
+        if (player != null) {
             int pbx = player.getBlockX();
             int pby = player.getBlockY();
             int pbz = player.getBlockZ();
@@ -52,8 +47,6 @@ public class ClientEventHandler {
                 MobEffect effect = entry.getKey();
                 MobEffectInstance inst = entry.getValue();
                 if (effect instanceof SightEffect s) {
-                    Predicate<BlockState> shouldHighlight = s.predicate;
-                    Function<BlockState, Integer> color = s.selector;
                     if (inst != null) {
                         int range = 20 * (inst.getAmplifier() + 1);
                         for (int x = pbx - range; x <= pbx + range; x++) {
@@ -61,8 +54,8 @@ public class ClientEventHandler {
                                 for (int z = pbz - range; z <= pbz + range; z++) {
                                     BlockPos bp = new BlockPos(x, y, z);
                                     BlockState state = world.getBlockState(bp);
-                                    if (shouldHighlight.test(state)) {
-                                        int colorToUse = color.apply(state);
+                                    if (s.test(state)) {
+                                        int colorToUse = s.color(state);
                                         String hex = Integer.toString(colorToUse, 16);
                                         if (colorToUse != 0) {
                                             float r = Integer.parseInt(hex.substring(0, 2), 16) / 255f;
