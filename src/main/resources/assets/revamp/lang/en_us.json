@@ -150,8 +150,8 @@
   "description.passive_ability.revamp.axe.amethyst": "The sunlight powers up your axe, dealing 20% more damage.",
   "passive_ability.revamp.axe.skull": "Executioner",
   "description.passive_ability.revamp.axe.skull": "Mobs killed have a 10% chance to drop their head. (Affected by Looting)",
-  "passive_ability.revamp.axe.wither_skull": "NYI",
-  "description.passive_ability.revamp.axe.wither_skull": "NYI",
+  "passive_ability.revamp.axe.wither_skull": "Valkyrie",
+  "description.passive_ability.revamp.axe.wither_skull": "You can throw your axe like a trident.",
   "passive_ability.revamp.axe.diamond": "Collateral Damage",
   "description.passive_ability.revamp.axe.diamond": "Attacks with this axe can now sweep.",
 
@@ -161,8 +161,8 @@
   "description.passive_ability.revamp.sword.amethyst": "The moonlight powers up your sword, dealing 20% more damage.",
   "passive_ability.revamp.sword.skull": "Death's Blade",
   "description.passive_ability.revamp.sword.skull": "You have a 10% chance to instantly kill mobs attacked. (2.5% for bosses, 1% for players)",
-  "passive_ability.revamp.sword.wither_skull": "Soul Eater",
-  "description.passive_ability.revamp.sword.wither_skull": "Consume a nearby dead mob on the ground to fully heal yourself.",
+  "use_ability.revamp.sword.wither_skull": "Soul Eater",
+  "description.use_ability.revamp.sword.wither_skull": "Consume a nearby dead mob on the ground to fully heal yourself.",
   "passive_ability.revamp.sword.diamond": "Bottom Feeder",
   "description.passive_ability.revamp.sword.diamond": "The lower down in the world you are, the more damage you deal.",
 

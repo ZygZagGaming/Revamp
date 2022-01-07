@@ -6,6 +6,7 @@ import com.zygzag.revamp.common.block.IridiumOreBlock;
 import com.zygzag.revamp.common.block.tag.RevampTags;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.HomingWitherSkull;
+import com.zygzag.revamp.common.entity.ThrownAxe;
 import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
 import com.zygzag.revamp.common.entity.effect.SightEffect;
 import com.zygzag.revamp.common.item.EmpowermentStar;
@@ -247,6 +248,7 @@ public class Registry {
 
     public static final RegistryObject<EntityType<HomingWitherSkull>> HOMING_WITHER_SKULL = registerEntity("homing_wither_skull", () -> EntityType.Builder.<HomingWitherSkull>of(HomingWitherSkull::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4));
     public static final RegistryObject<EntityType<ThrownTransmutationCharge>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationCharge::new, MobCategory.MISC));
+    public static final RegistryObject<EntityType<ThrownAxe>> THROWN_AXE = registerEntity("thrown_axe", () -> EntityType.Builder.of(ThrownAxe::new, MobCategory.MISC));
     // endregion
 
     // region effects

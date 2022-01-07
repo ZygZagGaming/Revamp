@@ -34,7 +34,7 @@ public class Constants {
     public static int IRON_ORE_COLOR = 0xd8d8d8;
     public static int GOLD_ORE_COLOR = 0xfdf55f;
     public static int NETHERITE_ORE_COLOR = 0x654740;
-    public static int DIAMOND_ORE_COLOR = 0xa1fbe8;
+    public static int DIAMOND_ORE_COLOR = 0x3ee6c1;
     public static int QUARTZ_ORE_COLOR = 0xddd4c6;
     public static int LAPIS_ORE_COLOR = 0x345ec3;
     public static int REDSTONE_ORE_COLOR = 0xaa0f01;

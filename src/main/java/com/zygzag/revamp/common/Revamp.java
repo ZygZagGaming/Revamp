@@ -2,7 +2,9 @@ package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.client.render.EmpoweredWitherRenderer;
 import com.zygzag.revamp.client.render.HomingWitherSkullRenderer;
+import com.zygzag.revamp.client.render.ThrownAxeRenderer;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
+import com.zygzag.revamp.common.entity.ThrownAxe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -248,6 +250,7 @@ public class Revamp {
         EntityRenderers.register(Registry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
         EntityRenderers.register(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
         EntityRenderers.register(Registry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
+        EntityRenderers.register(Registry.THROWN_AXE.get(), ThrownAxeRenderer::new);
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
