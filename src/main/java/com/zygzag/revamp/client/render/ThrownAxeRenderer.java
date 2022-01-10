@@ -27,14 +27,12 @@ public class ThrownAxeRenderer extends EntityRenderer<ThrownAxe> {
     }
 
     public void render(ThrownAxe axe, float a, float b, PoseStack stack, MultiBufferSource source, int shadowRadius) {
-        if (axe.tickCount >= 2 || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(axe) < 12.25D)) {
-            stack.pushPose();
-            stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-            stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-            this.itemRenderer.renderStatic(axe.getItem(), ItemTransforms.TransformType.GROUND, shadowRadius, OverlayTexture.NO_OVERLAY, stack, source, axe.getId());
-            stack.popPose();
-            super.render(axe, a, b, stack, source, shadowRadius);
-        }
+        stack.pushPose();
+        stack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+        this.itemRenderer.renderStatic(axe.getItem(), ItemTransforms.TransformType.GROUND, shadowRadius, OverlayTexture.NO_OVERLAY, stack, source, axe.getId());
+        stack.popPose();
+        super.render(axe, a, b, stack, source, shadowRadius);
     }
 
     @Override
