@@ -6,6 +6,8 @@
   "revamp.seconds": "seconds",
   "revamp.stews": "stews",
   "revamp.stew": "stew",
+  "container.upgraded_blast_furnace": "Upgraded Blast Furnace",
+  "gui.recipebook.toggleRecipes.upgrade_blastable": "Showing Blastable",
   "itemGroup.revamp_main_tab": "Revamp",
   "enchantment.revamp.cooldown": "Cooldown",
   "revamp.recipe.transmutation": "Transmutation",

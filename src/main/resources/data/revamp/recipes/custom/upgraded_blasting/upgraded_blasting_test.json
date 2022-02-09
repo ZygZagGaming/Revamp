@@ -1,0 +1,12 @@
+{
+  "type": "revamp:upgraded_blasting",
+  "ingredient": {
+    "item": "minecraft:raw_iron"
+  },
+  "secondary_result": {
+    "item": "minecraft:iron_nugget",
+    "count": 4
+  },
+  "result": "minecraft:iron_ingot",
+  "chance_for_secondary": 0.75
+}

@@ -3,7 +3,9 @@ package com.zygzag.revamp.common.registry;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.block.BlessedSoilBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
-import com.zygzag.revamp.common.block.tag.RevampTags;
+import com.zygzag.revamp.common.block.UpgradedBlastFurnace;
+import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
+import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.HomingWitherSkull;
 import com.zygzag.revamp.common.entity.ThrownAxe;
@@ -16,10 +18,7 @@ import com.zygzag.revamp.common.item.TransmutationCharge;
 import com.zygzag.revamp.common.item.enchant.CooldownEnchantment;
 import com.zygzag.revamp.common.item.iridium.*;
 import com.zygzag.revamp.common.item.iridium.partial.*;
-import com.zygzag.revamp.common.item.recipe.EmpowermentRecipe;
-import com.zygzag.revamp.common.item.recipe.ShulkerBowlRecipe;
-import com.zygzag.revamp.common.item.recipe.SocketRemoveRecipe;
-import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
+import com.zygzag.revamp.common.item.recipe.*;
 import com.zygzag.revamp.common.item.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.common.item.tier.IridiumToolTier;
 import com.zygzag.revamp.common.loot.AutosmeltModifier;
@@ -35,6 +34,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.inventory.AbstractFurnaceMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Recipe;
@@ -42,6 +43,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
@@ -64,13 +67,16 @@ public class Registry {
     public static DeferredRegister<Potion> POTION_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
     public static DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_REGISTER = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, Revamp.MODID);
     public static DeferredRegister<MobEffect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Revamp.MODID);
-    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER};
+    public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Revamp.MODID);
+    public static DeferredRegister<MenuType<?>> MENU_REGISTER = DeferredRegister.create(ForgeRegistries.CONTAINERS, Revamp.MODID);
+    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER, BLOCK_ENTITY_REGISTER, MENU_REGISTER};
 
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", () -> new IridiumOreBlock(BlockBehaviour.Properties.copy(IRIDIUM_ORE.get()).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
     public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = registerBlock("raw_iridium_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
     //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
     public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
+    public static final RegistryObject<Block> UPGRADED_BLAST_FURNACE = registerBlock("upgraded_blast_furnace", () -> new UpgradedBlastFurnace(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE)));
 
     public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
@@ -116,6 +122,7 @@ public class Registry {
     public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.MAIN_TAB));
     //public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
     public static final RegistryObject<Item> BLESSED_SOIL_ITEM = registerBlockItem(BLESSED_SOIL, new Item.Properties().tab(Revamp.MAIN_TAB));
+    public static final RegistryObject<Item> UPGRADED_BLAST_FURNACE_ITEM = registerBlockItem(UPGRADED_BLAST_FURNACE, new Item.Properties().tab(Revamp.MAIN_TAB));
 
     // region iridium gear
     public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.NONE));
@@ -236,6 +243,7 @@ public class Registry {
     public static final RegistryObject<RecipeSerializer<TransmutationRecipe>> TRANSMUTATION_SERIALIZER = registerRecipeSerializer("transmutation", TransmutationRecipe.TransmutationSerializer::new);
     public static final RegistryObject<RecipeSerializer<EmpowermentRecipe>> EMPOWERMENT_SERIALIZER = registerRecipeSerializer("empowerment", EmpowermentRecipe.EmpowermentSerializer::new);
     public static final RegistryObject<RecipeSerializer<SocketRemoveRecipe>> SOCKET_REMOVE_CRAFTING = registerRecipeSerializer("crafting_special_socket_remove", () -> new SimpleRecipeSerializer<>(SocketRemoveRecipe::new));
+    public static final RegistryObject<RecipeSerializer<UpgradedBlastFurnaceRecipe>> UPGRADED_BLAST_FURNACE_SERIALIZER = registerRecipeSerializer("upgraded_blasting", UpgradedBlastFurnaceRecipe.UpgradedBlastingSerializer::new);
     // endregion
 
     // region entities
@@ -269,6 +277,14 @@ public class Registry {
     // region loot mods
     public static RegistryObject<GlobalLootModifierSerializer<?>> EXECUTIONER_LOOT_MOD = LOOT_REGISTER.register("executioner", ExecutionerModifier.Serializer::new);
     public static RegistryObject<GlobalLootModifierSerializer<?>> AUTOSMELT_LOOT_MOD = LOOT_REGISTER.register("autosmelt", AutosmeltModifier.Serializer::new);
+    // endregion
+
+    // region block entities
+    public static RegistryObject<BlockEntityType<UpgradedBlastFurnaceBlockEntity>> UPGRADED_BLAST_FURNACE_BLOCK_ENTITY = registerBlockEntity("upgraded_blast_furnace", () -> BlockEntityType.Builder.of(UpgradedBlastFurnaceBlockEntity::new, Registry.UPGRADED_BLAST_FURNACE.get()).build(null));
+    // endregion
+
+    // region menus
+    public static final RegistryObject<MenuType<UpgradedBlastFurnaceMenu>> UPGRADED_BLAST_FURNACE_MENU = registerMenu("upgraded_blast_furnace", () -> new MenuType<>(UpgradedBlastFurnaceMenu::new));
     // endregion
 
     // region shorthand methods
@@ -318,6 +334,14 @@ public class Registry {
 
     public static RegistryObject<MobEffect> registerEffect(String id, Supplier<MobEffect> supplier) {
         return EFFECT_REGISTER.register(id, supplier);
+    }
+
+    public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(String id, Supplier<BlockEntityType<T>> supplier) {
+        return BLOCK_ENTITY_REGISTER.register(id, supplier);
+    }
+
+    public static <T extends AbstractFurnaceMenu> RegistryObject<MenuType<T>> registerMenu(String id, Supplier<MenuType<T>> supplier) {
+        return MENU_REGISTER.register(id, supplier);
     }
 
     public static void register(IEventBus bus) {

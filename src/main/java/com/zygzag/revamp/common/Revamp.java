@@ -1,12 +1,13 @@
 package com.zygzag.revamp.common;
 
-import com.zygzag.revamp.client.render.EmpoweredWitherRenderer;
-import com.zygzag.revamp.client.render.HomingWitherSkullRenderer;
-import com.zygzag.revamp.client.render.ThrownAxeRenderer;
+import com.zygzag.revamp.client.render.entity.EmpoweredWitherRenderer;
+import com.zygzag.revamp.client.render.entity.HomingWitherSkullRenderer;
+import com.zygzag.revamp.client.render.entity.ThrownAxeRenderer;
+import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
-import com.zygzag.revamp.common.entity.ThrownAxe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -251,6 +252,8 @@ public class Revamp {
         EntityRenderers.register(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
         EntityRenderers.register(Registry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
         EntityRenderers.register(Registry.THROWN_AXE.get(), ThrownAxeRenderer::new);
+
+        MenuScreens.register(Registry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {

@@ -1,4 +1,4 @@
-package com.zygzag.revamp.client.render;
+package com.zygzag.revamp.client.render.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.WitherSkullRenderer;
