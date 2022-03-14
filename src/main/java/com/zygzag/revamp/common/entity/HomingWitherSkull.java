@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.entity;
 
 import com.zygzag.revamp.common.registry.Registry;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -12,17 +13,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class HomingWitherSkull extends WitherSkull {
     private static final EntityDataAccessor<Optional<UUID>> DATA_TARGET_UUID = SynchedEntityData.defineId(HomingWitherSkull.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Boolean> DATA_AUTO_TARGET = SynchedEntityData.defineId(HomingWitherSkull.class, EntityDataSerializers.BOOLEAN);
     Predicate<Entity> targetSelector = (e) -> e instanceof LivingEntity l && EmpoweredWither.LIVING_ENTITY_SELECTOR.test(l);
     double speed = 0.2;
 
@@ -43,10 +49,16 @@ public class HomingWitherSkull extends WitherSkull {
         this.reapplyPosition();
         double d0 = Math.sqrt(x * x + y * y + z * z);
         if (d0 != 0.0D) {
-            this.xPower = x / d0 * 0.1D;
-            this.yPower = y / d0 * 0.1D;
-            this.zPower = z / d0 * 0.1D;
+            this.xPower = x / d0;
+            this.yPower = y / d0;
+            this.zPower = z / d0;
         }
+    }
+
+    public HomingWitherSkull(Level world, LivingEntity owner, double x, double y, double z, LivingEntity target) {
+        this(world, owner, x, y, z);
+        setTarget(target.getUUID());
+        setAutoTarget(false);
     }
 
     public Optional<UUID> getTargetUUID() {
@@ -63,16 +75,20 @@ public class HomingWitherSkull extends WitherSkull {
         return entities.get(0);
     }
 
-    public boolean hasTarget() {
-        return getTargetUUID().isPresent();
-    }
-
     public void setTarget(UUID uuid) {
         entityData.set(DATA_TARGET_UUID, Optional.of(uuid));
     }
 
     public void setNoTarget() {
         entityData.set(DATA_TARGET_UUID, Optional.empty());
+    }
+
+    public boolean shouldAutoTarget() {
+        return entityData.get(DATA_AUTO_TARGET);
+    }
+
+    public void setAutoTarget(boolean autoTarget) {
+        entityData.set(DATA_AUTO_TARGET, autoTarget);
     }
 
     @Nullable
@@ -94,14 +110,16 @@ public class HomingWitherSkull extends WitherSkull {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(DATA_TARGET_UUID, Optional.empty());
+        entityData.define(DATA_TARGET_UUID, Optional.empty());
+        entityData.define(DATA_AUTO_TARGET, true);
     }
 
     @Override
     public void tick() {
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
-            speed *= 1.0125;
+        if (this.level.isClientSide || this.level.hasChunkAt(this.blockPosition())) {
+
+            speed *= 1.025;
             super.tick();
             if (this.shouldBurn()) {
                 this.setSecondsOnFire(1);
@@ -130,14 +148,13 @@ public class HomingWitherSkull extends WitherSkull {
             this.setDeltaMovement(vec3.add(this.xPower, this.yPower, this.zPower).scale(f));
             this.level.addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
             this.setPos(d0, d1, d2);
-            if (getTargetUUID().isEmpty()) {
+            if (getTargetUUID().isEmpty() || shouldAutoTarget()) {
                 Entity e = findTarget();
                 if (e != null) setTarget(e.getUUID());
                 else setNoTarget();
             }
 
             Entity target = getTarget();
-
             
             if (target != null) {
                 double x = target.getX() - getX();
@@ -149,5 +166,16 @@ public class HomingWitherSkull extends WitherSkull {
         } else {
             this.discard();
         }
+    }
+
+    @Override
+    public void onHit(HitResult result) {
+        Entity target = getTarget();
+        if (target != null && distanceToSqr(target) <= 9.0) super.onHit(result);
+    }
+
+    protected void onHitEntity(EntityHitResult result) {
+        Entity target = getTarget();
+        if (target != null && distanceToSqr(target) <= 9.0) super.onHitEntity(result);
     }
 }

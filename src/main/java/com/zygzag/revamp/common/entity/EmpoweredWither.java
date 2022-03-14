@@ -1,8 +1,10 @@
 package com.zygzag.revamp.common.entity;
 
 import com.zygzag.revamp.common.entity.goal.boss.RevampGoalSelector;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -16,17 +18,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.PartEntity;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused", "FieldCanBeLocal"})
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class EmpoweredWither extends WitherBoss {
     // region fields and constructors
     public static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
     private int attackCooldown = 0;
     private int noGravTime = 0;
+    private EmpoweredWitherHeadPart leftHead = new EmpoweredWitherHeadPart(this, "left_head", 0.85f, 0.85f, 1.2f, 1.3f, 2.3125f, 0.3125f);
+    private EmpoweredWitherHeadPart rightHead = new EmpoweredWitherHeadPart(this, "right_head", 0.85f, 0.85f, 1.2f, -1.3f, 2.3125f, 0.3125f);
+    private EmpoweredWitherHeadPart[] subEntities = { leftHead, rightHead };
 
     public static final DamageSource SLAM = new DamageSource("slam").damageHelmet();
 
@@ -43,19 +53,55 @@ public class EmpoweredWither extends WitherBoss {
         if (noGravTime > 0) noGravTime--;
     }
 
+    public void tickParts() {
+        for (EmpoweredWitherHeadPart part : subEntities) {
+            part.tickPos();
+        }
+    }
+
     @Override
     public boolean isNoGravity() {
         return noGravTime > 0;
     }
 
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public PartEntity<?>[] getParts() {
+        return subEntities;
+    }
+
     public void setNoGravity(int noGravTime) {
         this.noGravTime = noGravTime;
+    }
+
+    public boolean hurt(EmpoweredWitherHeadPart part, DamageSource source, float amt) {
+        return super.hurt(source, amt);
+    }
+
+    public EmpoweredWitherHeadPart[] getSubEntities() {
+        return this.subEntities;
+    }
+
+    public void recreateFromPacket(ClientboundAddMobPacket packet) {
+        super.recreateFromPacket(packet);
+        EmpoweredWitherHeadPart[] parts = this.getSubEntities();
+
+        for(int i = 0; i < parts.length; ++i) {
+            parts[i].setId(i + packet.getId());
+        }
+
     }
     // endregion
 
     // region boiler code to override default behavior
     @Override
     public void aiStep() {
+        tickParts();
         mobAiStep();
         Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D);
         if (!this.level.isClientSide && this.getAlternativeTarget(0) > 0) {
@@ -260,7 +306,7 @@ public class EmpoweredWither extends WitherBoss {
         goalSelector = new RevampGoalSelector(level.getProfilerSupplier()); // replace goalSelector with custom
         //goalSelector.addGoal(0, new EmpoweredWitherDoNothingGoal());
         goalSelector.addGoal(0, new SlamGoal());
-        goalSelector.addGoal(1, new ShootAttackGoal(1, 20));
+        goalSelector.addGoal(1, new ShootAttackGoal());
         goalSelector.addGoal(1, new ShootVolleyAttackGoal());
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
@@ -350,12 +396,8 @@ public class EmpoweredWither extends WitherBoss {
     }
 
     class ShootAttackGoal extends AttackGoal {
-        private int numShots;
-        private int endLag;
-        public ShootAttackGoal(int numShots, int endLag) {
-            super(20 * numShots + endLag + 20);
-            this.endLag = endLag;
-            this.numShots = numShots;
+        public ShootAttackGoal() {
+            super(40);
         }
 
         public boolean canUse() {
@@ -373,11 +415,11 @@ public class EmpoweredWither extends WitherBoss {
 
         public void tick() {
             attackTime--;
-            if ((attackTime - endLag) % 20 == 0 && attackTime > endLag) {
+            if (attackTime == 20) {
                 LivingEntity target = getTarget();
                 if (target != null) {
-                    Vec3 targetPos = getTarget().position().subtract(position());
-                    HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPos.x, targetPos.y, targetPos.z);
+                    Vec3 targetPosLocal = getTarget().position().subtract(position());
+                    HomingWitherSkull skull = shootHomingSkull(target);
                     level.addFreshEntity(skull);
                     if (!isSilent()) {
                         level.levelEvent(null, 1024, blockPosition(), 0);
@@ -388,6 +430,24 @@ public class EmpoweredWither extends WitherBoss {
     }
 
     class ShootVolleyAttackGoal extends AttackGoal {
+        @Nullable
+        private static AttackDirection tickToDirection(int tick) {
+            switch (tick) {
+                case 20 -> {
+                    return AttackDirection.FORWARD;
+                }
+                case 30 -> {
+                    return AttackDirection.LEFT;
+                }
+                case 40 -> {
+                    return AttackDirection.RIGHT;
+                }
+                default -> {
+                    return null;
+                }
+            }
+        }
+
         public ShootVolleyAttackGoal() {
             super(80);
         }
@@ -407,17 +467,97 @@ public class EmpoweredWither extends WitherBoss {
 
         public void tick() {
             attackTime--;
-            if (attackTime >= 66 && attackTime % 6 == 0) { // fires at 78, 72, 66
+            AttackDirection dir = tickToDirection(attackTime);
+            if (dir != null) { // fires at 20, 30, and 40 ticks into the attack
                 LivingEntity target = getTarget();
                 if (target != null) {
-                    Vec3 targetPos = getTarget().position().subtract(position());
-                    HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPos.x, targetPos.y, targetPos.z);
+                    Vec3 targetPosLocal = getTarget().position().subtract(position());
+                    // HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPosLocal.x, targetPosLocal.y, targetPosLocal.z);
+                    HomingWitherSkull skull = shootHomingSkull(target, dir);
                     level.addFreshEntity(skull);
                     if (!isSilent()) {
                         level.levelEvent(null, 1024, blockPosition(), 0);
                     }
                 }
             }
+        }
+    }
+
+    class ShootQuadVolleyAttackGoal extends AttackGoal {
+        @Nullable
+        private static AttackDirection tickToDirection(int tick) {
+            switch (tick) {
+                case 20, 36 -> {
+                    return AttackDirection.LEFT;
+                }
+                case 28, 44 -> {
+                    return AttackDirection.RIGHT;
+                }
+                default -> {
+                    return null;
+                }
+            }
+        }
+
+        public ShootQuadVolleyAttackGoal() {
+            super(80);
+        }
+
+        public boolean canUse() {
+            LivingEntity target = getTarget();
+            if (target == null) return false;
+            Vec3 targetPos = target.position();
+            Vec3 pos = position();
+            return pos.distanceTo(targetPos) <= 40;
+        }
+
+        @Override
+        public void start() {
+            super.start();
+        }
+
+        public void tick() {
+            attackTime--;
+            AttackDirection dir = tickToDirection(attackTime);
+            if (dir != null) { // fires at 20, 28, 36, and 44 ticks into the attack
+                LivingEntity target = getTarget();
+                if (target != null) {
+                    Vec3 targetPosLocal = getTarget().position().subtract(position());
+                    // HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, targetPosLocal.x, targetPosLocal.y, targetPosLocal.z);
+                    HomingWitherSkull skull = shootHomingSkull(target, dir);
+                    level.addFreshEntity(skull);
+                    if (!isSilent()) {
+                        level.levelEvent(null, 1024, blockPosition(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private HomingWitherSkull shootHomingSkull(LivingEntity target) {
+        return shootHomingSkull(target, AttackDirection.FORWARD);
+    }
+
+    private HomingWitherSkull shootHomingSkull(LivingEntity target, AttackDirection direction) {
+        float yRot = getYRot() + direction.n;
+        HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, Mth.sin(yRot), 0, -Mth.cos(yRot), target);
+        level.addFreshEntity(skull);
+        return skull;
+    }
+
+    enum AttackDirection {
+        FORWARD(0.0),
+        LEFT(Math.PI / 4),
+        RIGHT(Math.PI / -4);
+
+        public float n;
+
+        AttackDirection(float n) {
+            this.n = n;
+        }
+
+        AttackDirection(double n) {
+            this((float) n);
         }
     }
     // endregion

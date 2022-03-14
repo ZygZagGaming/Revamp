@@ -143,9 +143,11 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (socket == Socket.AMETHYST && !player.getCooldowns().isOnCooldown(stack.getItem())) {
-            player.addEffect(new MobEffectInstance(Registry.GREEN_THUMB_EFFECT.get(), 2400, 1));
+            player.addEffect(new MobEffectInstance(Registry.GREEN_THUMB_EFFECT.get(), 600, 1));
             ISocketable.addCooldown(player, stack, Constants.AMETHYST_HOE_COOLDOWN);
-            return InteractionResultHolder.success(stack);
+            int r = 2 + (int) (Math.random() * 3);
+            stack.hurtAndBreak(r, player, (e) -> {});
+            return InteractionResultHolder.consume(stack);
         }
         return InteractionResultHolder.pass(stack);
     }

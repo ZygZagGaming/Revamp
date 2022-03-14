@@ -1,19 +1,16 @@
 package com.zygzag.revamp.common;
 
-import com.zygzag.revamp.client.render.entity.EmpoweredWitherRenderer;
-import com.zygzag.revamp.client.render.entity.HomingWitherSkullRenderer;
-import com.zygzag.revamp.client.render.entity.ThrownAxeRenderer;
 import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
+import com.zygzag.revamp.common.item.recipe.ModRecipeType;
+import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
@@ -44,8 +42,8 @@ import java.util.HashMap;
 public class Revamp {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MODID = "revamp";
-    public static final Tag<Block> NEEDS_IRIDIUM_TOOL_TAG = BlockTags.getAllTags().getTag(new ResourceLocation("revamp:needs_iridium_tool"));
-    public static final Tag<Item> SOCKETABLE_TAG = ItemTags.getAllTags().getTag(new ResourceLocation("revamp:can_be_socketed"));
+    public static final TagKey<Block> NEEDS_IRIDIUM_TOOL_TAG = BlockTags.create(new ResourceLocation("revamp:needs_iridium_tool"));
+    public static final TagKey<Item> SOCKETABLE_TAG = ItemTags.create(new ResourceLocation("revamp:can_be_socketed"));
     public static final HashMap<String, ResourceLocation> LOCATION_CACHE = new HashMap<>();
 
     public Revamp() {
@@ -248,11 +246,7 @@ public class Revamp {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        EntityRenderers.register(Registry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
-        EntityRenderers.register(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
-        EntityRenderers.register(Registry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
-        EntityRenderers.register(Registry.THROWN_AXE.get(), ThrownAxeRenderer::new);
-
+        RecipeType<TransmutationRecipe> r = ModRecipeType.TRANSMUTATION; // force initialization of interface
         MenuScreens.register(Registry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
     }
 

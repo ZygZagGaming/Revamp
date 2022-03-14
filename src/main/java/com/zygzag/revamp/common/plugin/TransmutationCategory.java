@@ -44,12 +44,7 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
         background = guiHelper.drawableBuilder(RECIPE_GUI_VANILLA, 0, 220, 82, 34)
                 .addPadding(0, 10, 0, 0)
                 .build();
-        icon = guiHelper.createDrawableIngredient(Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return Revamp.loc("transmutation");
+        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
     }
 
     @Override
@@ -70,6 +65,11 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
     @Override
     public IDrawable getIcon() {
         return icon;
+    }
+
+    @Override
+    public ResourceLocation getUid() {
+        return Revamp.loc("transmutation");
     }
 
     @Override

@@ -3,9 +3,11 @@ package com.zygzag.revamp.common.item.tier;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
 
@@ -55,6 +57,6 @@ public enum ModTiers implements Tier {
         return this.repairIngredient.get();
     }
 
-    public net.minecraft.tags.Tag<net.minecraft.world.level.block.Block> getTag() { return Revamp.NEEDS_IRIDIUM_TOOL_TAG; }
+    public TagKey<Block> getTag() { return Revamp.NEEDS_IRIDIUM_TOOL_TAG; }
 
 }

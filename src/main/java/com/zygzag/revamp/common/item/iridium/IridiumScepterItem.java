@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Vec3i;
+import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -66,7 +68,7 @@ public class IridiumScepterItem extends Item implements ISocketable {
                 aabb = new AABB(player.blockPosition().subtract(new Vec3i(20, 20, 20)), player.blockPosition().subtract(new Vec3i(-20, -20, -20)));
                 List<ItemEntity> items = world.getEntities(EntityType.ITEM, aabb, (v) -> true);
                 for (ItemEntity v : items) {
-                    if (v.getItem().getItem().getTags().contains(new ResourceLocation("revamp:diamond_scepter_consumable"))) {
+                    if (v.getItem().is(ItemTags.create(new ResourceLocation("revamp:diamond_scepter_consumable")))) {
                         int amount = v.getItem().getCount() / 8;
                         ExperienceOrb orb = new ExperienceOrb(world, v.getX(), v.getY(), v.getZ(), amount);
                         world.addFreshEntity(orb);

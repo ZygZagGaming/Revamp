@@ -16,7 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -108,10 +108,12 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
         return socket;
     }
 
+    private static TagKey<Block> veinmineTag;
+
     @Override
     public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity user) {
-        Tag<Block> veinmineTag = BlockTags.getAllTags().getTag(new ResourceLocation("revamp:veinmine"));
-        if (veinmineTag != null && state.is(veinmineTag) && (!(user instanceof Player) || (user.isShiftKeyDown() && !((Player) user).getCooldowns().isOnCooldown(this))) && stack.getItem() instanceof IridiumShovelItem shovel && shovel.getSocket() == Socket.DIAMOND) {
+        if (veinmineTag == null) veinmineTag = BlockTags.create(new ResourceLocation("revamp:veinmine"));
+        if (state.is(veinmineTag) && (!(user instanceof Player) || user.isShiftKeyDown() && !((Player) user).getCooldowns().isOnCooldown(this)) && stack.getItem() instanceof IridiumShovelItem shovel && shovel.getSocket() == Socket.DIAMOND) {
             int numDestroyed = 1;
             List<BlockPos> arr = Arrays.stream(getNeighboringBlocks(pos)).collect(Collectors.toList());
             if (level instanceof ServerLevel sLevel) {

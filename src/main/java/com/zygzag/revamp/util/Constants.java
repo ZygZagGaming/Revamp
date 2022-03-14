@@ -11,7 +11,7 @@ public class Constants {
 
     public static int AMETHYST_HOE_COOLDOWN = 400;
 
-    public static int AMETHYST_PICKAXE_COOLDOWN = 400;
+    public static int AMETHYST_PICKAXE_COOLDOWN = 1800;
 
     public static int AMETHYST_SCEPTER_COOLDOWN = 400;
     public static int EMERALD_SCEPTER_COOLDOWN = 1000;
@@ -25,6 +25,7 @@ public class Constants {
     public static int WITHER_SKULL_SHOVEL_COOLDOWN = 400;
 
     public static int SIGHT_EFFECT_COLOR = 0x662382;
+    public static int REACH_EFFECT_COLOR = 0xe34b34;
 
     public static int UNWATERED_SOIL_HIGHLIGHT_COLOR = 0xffffff;
     public static int CROP_COLOR = 0xf5a716;
@@ -34,7 +35,7 @@ public class Constants {
     public static int IRON_ORE_COLOR = 0xd8d8d8;
     public static int GOLD_ORE_COLOR = 0xfdf55f;
     public static int NETHERITE_ORE_COLOR = 0x654740;
-    public static int DIAMOND_ORE_COLOR = 0x3ee6c1;
+    public static int DIAMOND_ORE_COLOR = 0x2be0b9;
     public static int QUARTZ_ORE_COLOR = 0xddd4c6;
     public static int LAPIS_ORE_COLOR = 0x345ec3;
     public static int REDSTONE_ORE_COLOR = 0xaa0f01;
