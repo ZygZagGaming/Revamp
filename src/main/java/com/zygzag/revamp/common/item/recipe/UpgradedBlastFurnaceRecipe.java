@@ -53,9 +53,6 @@ public class UpgradedBlastFurnaceRecipe extends AbstractCookingRecipe implements
 
     @Override
     public ItemStack assemble(Container container) {
-        ItemStack i = getExtraOutputs(container)[0];
-        if (container.getItem(3) != ItemStack.EMPTY) container.getItem(3).grow(i.getCount());
-        else container.setItem(3, i);
         return super.assemble(container);
     }
 

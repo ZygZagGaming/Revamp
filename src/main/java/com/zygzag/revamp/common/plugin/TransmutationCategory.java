@@ -48,6 +48,11 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
     }
 
     @Override
+    public ResourceLocation getUid() {
+        return Revamp.loc("transmutation");
+    }
+
+    @Override
     public Class<? extends TransmutationRecipe> getRecipeClass() {
         return TransmutationRecipe.class;
     }
