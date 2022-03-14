@@ -73,11 +73,6 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return Revamp.loc("transmutation");
-    }
-
-    @Override
     public void setIngredients(TransmutationRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Arrays.stream(new Ingredient[]{recipe.getInItem()}).collect(Collectors.toList()));
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutItem().getDefaultInstance());

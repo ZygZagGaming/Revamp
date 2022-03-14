@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -162,6 +163,9 @@ public class HomingWitherSkull extends WitherSkull {
                 double z = target.getZ() - getZ();
                 Vec3 vec = new Vec3(x, y, z).normalize();
                 setDeltaMovement(vec.multiply(speed, speed, speed));
+                xPower = vec.x * speed;
+                yPower = vec.y * speed;
+                zPower = vec.z * speed;
             }
         } else {
             this.discard();
@@ -171,7 +175,7 @@ public class HomingWitherSkull extends WitherSkull {
     @Override
     public void onHit(HitResult result) {
         Entity target = getTarget();
-        if (target != null && distanceToSqr(target) <= 9.0) super.onHit(result);
+        if ((target != null && distanceToSqr(target) <= 9.0) || result instanceof BlockHitResult) super.onHit(result);
     }
 
     protected void onHitEntity(EntityHitResult result) {

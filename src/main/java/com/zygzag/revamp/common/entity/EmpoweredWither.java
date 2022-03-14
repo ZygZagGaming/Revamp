@@ -183,6 +183,10 @@ public class EmpoweredWither extends WitherBoss {
     }
 
     public void mobAiStep() {
+        LivingEntity target = getTarget();
+        if (target != null) {
+            lookAt(target, 0.0f, 0.0f);
+        }
         if (this.isControlledByLocalInstance()) {
             this.lerpSteps = 0;
             this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
