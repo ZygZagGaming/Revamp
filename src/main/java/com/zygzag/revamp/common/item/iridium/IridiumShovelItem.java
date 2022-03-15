@@ -52,7 +52,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
         Socket s = getSocket();
         Item i = s.i;
         MutableComponent m;
-        if (s != Socket.NONE) {
+        if (s != Socket.NONE && world != null) {
             String str = hasCooldown() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
@@ -70,7 +70,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(getCooldown() / 20f + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(getCooldown(stack, world) / 20f + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
@@ -88,7 +88,7 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
     }
 
     @Override
-    public int getCooldown() {
+    public int getCooldown(ItemStack stack, Level world) {
         switch (socket) {
             case EMERALD -> {
                 return Constants.EMERALD_SHOVEL_COOLDOWN;

@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.entity;
 
 import com.zygzag.revamp.common.entity.goal.boss.RevampGoalSelector;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,6 +23,7 @@ import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
@@ -309,9 +311,12 @@ public class EmpoweredWither extends WitherBoss {
     protected void registerGoals() {
         goalSelector = new RevampGoalSelector(level.getProfilerSupplier()); // replace goalSelector with custom
         //goalSelector.addGoal(0, new EmpoweredWitherDoNothingGoal());
-        goalSelector.addGoal(0, new SlamGoal());
-        goalSelector.addGoal(1, new ShootAttackGoal());
-        goalSelector.addGoal(1, new ShootVolleyAttackGoal());
+        goalSelector.addGoal(0, new DoAttackGoal(
+                new SlamGoal(3),
+                new ShootAttackGoal(5),
+                new ShootVolleyAttackGoal(3),
+                new ShootQuadVolleyAttackGoal(2)
+        ));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
     }
@@ -327,11 +332,10 @@ public class EmpoweredWither extends WitherBoss {
     }
 
     abstract class AttackGoal extends Goal {
-        public int attackTime;
-        public int totalAttackTime;
+        private int attackTime, totalAttackTime, weight;
         private boolean isCanceled = false;
 
-        public AttackGoal(int totalAttackTime) {
+        public AttackGoal(int totalAttackTime, int weight) {
             setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.LOOK));
             this.totalAttackTime = totalAttackTime;
         }
@@ -360,11 +364,69 @@ public class EmpoweredWither extends WitherBoss {
         private void end() {
             attackCooldown += totalAttackTime;
         }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public int getAttackTime() {
+            return attackTime;
+        }
+
+        public void decrementAttackTime() {
+            attackTime--;
+        }
+
+        public int getTotalAttackTime() {
+            return totalAttackTime;
+        }
+    }
+
+    class DoAttackGoal extends Goal  {
+        private AttackGoal[] attacks;
+        private @Nullable AttackGoal currentGoal;
+
+        public DoAttackGoal(AttackGoal... attacks) {
+            this.attacks = attacks;
+        }
+
+        @Override
+        public boolean canUse() {
+            return currentGoal == null || currentGoal.attackTime <= 0;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return currentGoal != null && currentGoal.canContinueToUse();
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+        }
+
+        @Override
+        public void start() {
+            ArrayList<AttackGoal> al = new ArrayList<>();
+            for (AttackGoal goal : attacks) {
+                if (goal.canUse()) al.add(goal);
+            }
+            AttackGoal[] availableGoals = new AttackGoal[al.size()];
+            availableGoals = al.toArray(availableGoals);
+            int totalWeight = 0;
+            int[] availableWeights = new int[availableGoals.length];
+            for (int i = 0; i < availableGoals.length; i++) {
+                availableWeights[i] = availableGoals[i].getWeight();
+                totalWeight += availableWeights[i];
+            }
+            AttackGoal goal = GeneralUtil.weightedRandom(availableGoals, availableWeights, totalWeight);
+            goal.start();
+        }
     }
 
     class SlamGoal extends AttackGoal {
-        public SlamGoal() {
-            super(100);
+        public SlamGoal(int weight) {
+            super(100, weight);
         }
 
         public boolean canUse() {
@@ -382,10 +444,10 @@ public class EmpoweredWither extends WitherBoss {
         }
 
         public void tick() {
-            attackTime--;
-            if (level.getBlockState(blockPosition().above(3)).isAir() && attackTime > 90) {
+            decrementAttackTime();
+            if (level.getBlockState(blockPosition().above(3)).isAir() && getAttackTime() > 90) {
                 moveTo(position().add(new Vec3(0, 0.5, 0)));
-            } else if (level.getBlockState(blockPosition().below()).isAir() && attackTime <= 90) {
+            } else if (level.getBlockState(blockPosition().below()).isAir() && getAttackTime() <= 90) {
                 if (!isNoGravity()) setNoGravity(90);
                 moveTo(position().add(new Vec3(0, -2, 0)));
             } else {
@@ -400,8 +462,8 @@ public class EmpoweredWither extends WitherBoss {
     }
 
     class ShootAttackGoal extends AttackGoal {
-        public ShootAttackGoal() {
-            super(40);
+        public ShootAttackGoal(int weight) {
+            super(40, weight);
         }
 
         public boolean canUse() {
@@ -418,8 +480,8 @@ public class EmpoweredWither extends WitherBoss {
         }
 
         public void tick() {
-            attackTime--;
-            if (attackTime == 20) {
+            decrementAttackTime();
+            if (getAttackTime() == 20) {
                 LivingEntity target = getTarget();
                 if (target != null) {
                     Vec3 targetPosLocal = getTarget().position().subtract(position());
@@ -452,8 +514,8 @@ public class EmpoweredWither extends WitherBoss {
             }
         }
 
-        public ShootVolleyAttackGoal() {
-            super(80);
+        public ShootVolleyAttackGoal(int weight) {
+            super(80, weight);
         }
 
         public boolean canUse() {
@@ -470,8 +532,8 @@ public class EmpoweredWither extends WitherBoss {
         }
 
         public void tick() {
-            attackTime--;
-            AttackDirection dir = tickToDirection(attackTime);
+            decrementAttackTime();
+            AttackDirection dir = tickToDirection(getAttackTime());
             if (dir != null) { // fires at 20, 30, and 40 ticks into the attack
                 LivingEntity target = getTarget();
                 if (target != null) {
@@ -503,8 +565,8 @@ public class EmpoweredWither extends WitherBoss {
             }
         }
 
-        public ShootQuadVolleyAttackGoal() {
-            super(80);
+        public ShootQuadVolleyAttackGoal(int weight) {
+            super(80, weight);
         }
 
         public boolean canUse() {
@@ -521,8 +583,8 @@ public class EmpoweredWither extends WitherBoss {
         }
 
         public void tick() {
-            attackTime--;
-            AttackDirection dir = tickToDirection(attackTime);
+            decrementAttackTime();
+            AttackDirection dir = tickToDirection(getAttackTime());
             if (dir != null) { // fires at 20, 28, 36, and 44 ticks into the attack
                 LivingEntity target = getTarget();
                 if (target != null) {

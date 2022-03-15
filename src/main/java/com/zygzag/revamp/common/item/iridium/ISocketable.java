@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 
 public interface ISocketable {
     Socket getSocket();
@@ -13,7 +14,7 @@ public interface ISocketable {
 
     boolean hasUseAbility();
 
-    default int getCooldown() {
+    default int getCooldown(ItemStack stack, Level world) {
         return 0;
     }
 

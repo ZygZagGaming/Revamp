@@ -48,7 +48,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
         Socket s = getSocket();
         Item i = s.i;
         MutableComponent m;
-        if (s != Socket.NONE) {
+        if (s != Socket.NONE && world != null) {
             String str = hasUseAbility() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
@@ -66,7 +66,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown() / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
@@ -79,7 +79,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
     }
 
     @Override
-    public int getCooldown() {
+    public int getCooldown(ItemStack stack, Level world) {
         switch (socket) {
             case AMETHYST -> {
                 return Constants.AMETHYST_PICKAXE_COOLDOWN;

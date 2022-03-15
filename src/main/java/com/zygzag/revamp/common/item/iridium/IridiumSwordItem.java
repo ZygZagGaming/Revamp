@@ -34,7 +34,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
         Socket s = getSocket();
         Item i = s.i;
         MutableComponent m;
-        if (s != Socket.NONE) {
+        if (s != Socket.NONE && world != null) {
             String str = hasCooldown() ? "use" : "passive";
             MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
             t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
@@ -52,7 +52,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
             if (hasCooldown()) {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(getCooldown() / 20f + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(new TextComponent(getCooldown(stack, world) / 20f + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
                 text.add(comp);
             }
@@ -90,7 +90,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
     }
 
     @Override
-    public int getCooldown() {
+    public int getCooldown(ItemStack stack, Level world) {
         if (socket == Socket.WITHER_SKULL) return Constants.WITHER_SKULL_SWORD_COOLDOWN;
         else return 0;
     }

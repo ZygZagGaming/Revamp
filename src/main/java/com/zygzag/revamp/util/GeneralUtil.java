@@ -48,4 +48,21 @@ public class GeneralUtil {
 
         return 0;
     }
+
+    public static <T> T weightedRandom(T[] elements, int[] weights) {
+        int total = 0;
+        for (int weight : weights) {
+            total += weight;
+        }
+        return weightedRandom(elements, weights, total);
+    }
+
+    public static <T> T weightedRandom(T[] elements, int[] weights, int totalWeight) {
+        int idx = 0;
+        for (double r = Math.random() * totalWeight; idx < elements.length - 1; idx++) {
+            r -= weights[idx];
+            if (r <= 0.0) break;
+        }
+        return elements[idx];
+    }
 }
