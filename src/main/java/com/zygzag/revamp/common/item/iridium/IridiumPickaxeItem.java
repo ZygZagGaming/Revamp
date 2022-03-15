@@ -20,6 +20,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -80,9 +81,10 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case AMETHYST -> {
-                return Constants.AMETHYST_PICKAXE_COOLDOWN;
+                return Constants.AMETHYST_PICKAXE_COOLDOWN / (cooldownLevel + 1);
             }
         }
         return 0;

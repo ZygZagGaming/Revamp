@@ -392,7 +392,7 @@ public class EmpoweredWither extends WitherBoss {
 
         @Override
         public boolean canUse() {
-            return currentGoal == null || currentGoal.attackTime <= 0;
+            return currentGoal == null || !currentGoal.canContinueToUse();
         }
 
         @Override
@@ -401,12 +401,20 @@ public class EmpoweredWither extends WitherBoss {
         }
 
         @Override
+        public void stop() {
+            super.stop();
+            if (currentGoal != null) currentGoal.stop();
+        }
+
+        @Override
         public void tick() {
             super.tick();
+            if (currentGoal != null) currentGoal.tick();
         }
 
         @Override
         public void start() {
+            if (currentGoal != null) currentGoal.cancel();
             ArrayList<AttackGoal> al = new ArrayList<>();
             for (AttackGoal goal : attacks) {
                 if (goal.canUse()) al.add(goal);
@@ -420,7 +428,11 @@ public class EmpoweredWither extends WitherBoss {
                 totalWeight += availableWeights[i];
             }
             AttackGoal goal = GeneralUtil.weightedRandom(availableGoals, availableWeights, totalWeight);
-            goal.start();
+            System.out.println(goal);
+            if (goal != null) {
+                goal.start();
+                currentGoal = goal;
+            }
         }
     }
 
@@ -471,7 +483,7 @@ public class EmpoweredWither extends WitherBoss {
             if (target == null) return false;
             Vec3 targetPos = target.position();
             Vec3 pos = position();
-            return pos.distanceTo(targetPos) <= 40 && Math.random() < 0.75;
+            return pos.distanceTo(targetPos) <= 40;
         }
 
         @Override
@@ -520,9 +532,13 @@ public class EmpoweredWither extends WitherBoss {
 
         public boolean canUse() {
             LivingEntity target = getTarget();
-            if (target == null) return false;
+            if (target == null) {
+                System.out.println("can't use: no target");
+                return false;
+            }
             Vec3 targetPos = target.position();
             Vec3 pos = position();
+            System.out.println("dist to target: " + pos.distanceTo(targetPos));
             return pos.distanceTo(targetPos) <= 40;
         }
 

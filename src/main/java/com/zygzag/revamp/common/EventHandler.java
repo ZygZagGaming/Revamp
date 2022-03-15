@@ -113,7 +113,10 @@ public class EventHandler {
                         evt.setAmount(Float.MAX_VALUE);
                     }
                 } else if (item == Registry.SKULL_SOCKETED_IRIDIUM_HOE.get()) {
-                    if (entity.getMobType() == MobType.UNDEAD) evt.setAmount(Float.MAX_VALUE);
+                    if (entity.getMobType() == MobType.UNDEAD) {
+                        if (entity.getType().is(RevampTags.BOSSES.get())) evt.setAmount(25f);
+                        else evt.setAmount(Float.MAX_VALUE);
+                    }
                 } else if (item == Registry.AMETHYST_SOCKETED_IRIDIUM_AXE.get()) {
                     if (time < 11834 || time > 22300) evt.setAmount(evt.getAmount() * 1.2f);
                 } else if (item == Registry.AMETHYST_SOCKETED_IRIDIUM_SWORD.get()) {

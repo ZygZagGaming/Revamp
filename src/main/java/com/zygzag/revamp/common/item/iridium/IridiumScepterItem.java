@@ -1,11 +1,11 @@
 package com.zygzag.revamp.common.item.iridium;
 
+import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Vec3i;
-import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -32,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
@@ -241,18 +242,19 @@ public class IridiumScepterItem extends Item implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case EMERALD -> {
-                return Constants.EMERALD_SCEPTER_COOLDOWN;
+                return Constants.EMERALD_SCEPTER_COOLDOWN / (cooldownLevel + 1);
             }
             case SKULL -> {
-                return Constants.WITHER_SKULL_SWORD_COOLDOWN;
+                return Constants.WITHER_SKULL_SWORD_COOLDOWN / (cooldownLevel + 1);
             }
             case WITHER_SKULL -> {
-                return Constants.WITHER_SKULL_SCEPTER_COOLDOWN;
+                return Constants.WITHER_SKULL_SCEPTER_COOLDOWN / (cooldownLevel + 1);
             }
             case AMETHYST -> {
-                return Constants.AMETHYST_SCEPTER_COOLDOWN;
+                return Constants.AMETHYST_SCEPTER_COOLDOWN / (cooldownLevel + 1);
             }
         }
         return 0;

@@ -161,7 +161,8 @@ public class HomingWitherSkull extends WitherSkull {
                 double x = target.getX() - getX();
                 double y = (target.getY() + target.getEyeHeight()) - getY();
                 double z = target.getZ() - getZ();
-                Vec3 vec = new Vec3(x, y, z).normalize();
+                double amt = 0.25;
+                Vec3 vec = (new Vec3(x, y, z).normalize().multiply(amt, amt, amt).add(getDeltaMovement().normalize().multiply(1 - amt, 1 - amt, 1 - amt)));
                 setDeltaMovement(vec.multiply(speed, speed, speed));
                 xPower = vec.x * speed;
                 yPower = vec.y * speed;

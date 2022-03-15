@@ -21,6 +21,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.phys.AABB;
@@ -90,7 +91,8 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        return socket == Socket.AMETHYST ? Constants.AMETHYST_HOE_COOLDOWN : 0;
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
+        return socket == Socket.AMETHYST ? Constants.AMETHYST_HOE_COOLDOWN / (cooldownLevel + 1) : 0;
     }
 
     @Override

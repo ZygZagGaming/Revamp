@@ -1,5 +1,6 @@
 package com.zygzag.revamp.common.item.iridium;
 
+import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -89,15 +91,16 @@ public class IridiumShovelItem extends ShovelItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case EMERALD -> {
-                return Constants.EMERALD_SHOVEL_COOLDOWN;
+                return Constants.EMERALD_SHOVEL_COOLDOWN / (cooldownLevel + 1);
             }
             case SKULL -> {
-                return Constants.SKULL_SHOVEL_COOLDOWN;
+                return Constants.SKULL_SHOVEL_COOLDOWN / (cooldownLevel + 1);
             }
             case WITHER_SKULL -> {
-                return Constants.WITHER_SKULL_SHOVEL_COOLDOWN;
+                return Constants.WITHER_SKULL_SHOVEL_COOLDOWN / (cooldownLevel + 1);
             }
         }
         return 0;
