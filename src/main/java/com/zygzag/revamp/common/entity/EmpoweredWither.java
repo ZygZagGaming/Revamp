@@ -317,7 +317,7 @@ public class EmpoweredWither extends WitherBoss {
                 new ShootVolleyAttackGoal(3),
                 new ShootQuadVolleyAttackGoal(2)
         ));
-        targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        targetSelector.addGoal(1, new Hur tByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
     }
 
@@ -414,10 +414,14 @@ public class EmpoweredWither extends WitherBoss {
 
         @Override
         public void start() {
+            System.out.println("starting attack");
             if (currentGoal != null) currentGoal.cancel();
             ArrayList<AttackGoal> al = new ArrayList<>();
             for (AttackGoal goal : attacks) {
-                if (goal.canUse()) al.add(goal);
+                if (goal.canUse()) {
+                    System.out.println("can use goal " + goal);
+                    al.add(goal);
+                } else System.out.println("can't use goal " + goal);
             }
             AttackGoal[] availableGoals = new AttackGoal[al.size()];
             availableGoals = al.toArray(availableGoals);
@@ -533,12 +537,10 @@ public class EmpoweredWither extends WitherBoss {
         public boolean canUse() {
             LivingEntity target = getTarget();
             if (target == null) {
-                System.out.println("can't use: no target");
                 return false;
             }
             Vec3 targetPos = target.position();
             Vec3 pos = position();
-            System.out.println("dist to target: " + pos.distanceTo(targetPos));
             return pos.distanceTo(targetPos) <= 40;
         }
 
