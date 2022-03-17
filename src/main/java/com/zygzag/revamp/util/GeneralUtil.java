@@ -62,11 +62,14 @@ public class GeneralUtil {
     @Nullable
     public static <T> T weightedRandom(T[] elements, int[] weights, int totalWeight) {
         if (elements.length == 0) return null;
-        int idx = 0;
-        for (double r = Math.random() * totalWeight; idx < elements.length - 1; idx++) {
-            r -= weights[idx];
-            if (r <= 0.0) break;
+        int n = (int) (Math.random() * totalWeight + 1);
+        int i;
+        for (i = 0; n > 0; i++) {
+            if (n <= weights[i]) {
+                return elements[i];
+            }
+            n -= weights[i];
         }
-        return elements[idx];
+        return elements[i];
     }
 }

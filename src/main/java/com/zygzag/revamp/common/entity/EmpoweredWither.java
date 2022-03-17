@@ -317,7 +317,7 @@ public class EmpoweredWither extends WitherBoss {
                 new ShootVolleyAttackGoal(3),
                 new ShootQuadVolleyAttackGoal(2)
         ));
-        targetSelector.addGoal(1, new Hur tByTargetGoal(this));
+        targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, LIVING_ENTITY_SELECTOR));
     }
 
@@ -338,6 +338,7 @@ public class EmpoweredWither extends WitherBoss {
         public AttackGoal(int totalAttackTime, int weight) {
             setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.LOOK));
             this.totalAttackTime = totalAttackTime;
+            this.weight = weight;
         }
 
         @Override
@@ -414,14 +415,12 @@ public class EmpoweredWither extends WitherBoss {
 
         @Override
         public void start() {
-            System.out.println("starting attack");
             if (currentGoal != null) currentGoal.cancel();
             ArrayList<AttackGoal> al = new ArrayList<>();
             for (AttackGoal goal : attacks) {
                 if (goal.canUse()) {
-                    System.out.println("can use goal " + goal);
                     al.add(goal);
-                } else System.out.println("can't use goal " + goal);
+                }
             }
             AttackGoal[] availableGoals = new AttackGoal[al.size()];
             availableGoals = al.toArray(availableGoals);
@@ -432,7 +431,6 @@ public class EmpoweredWither extends WitherBoss {
                 totalWeight += availableWeights[i];
             }
             AttackGoal goal = GeneralUtil.weightedRandom(availableGoals, availableWeights, totalWeight);
-            System.out.println(goal);
             if (goal != null) {
                 goal.start();
                 currentGoal = goal;
@@ -631,17 +629,13 @@ public class EmpoweredWither extends WitherBoss {
 
     enum AttackDirection {
         FORWARD(0.0),
-        LEFT(Math.PI / 4),
-        RIGHT(Math.PI / -4);
+        LEFT(Math.PI / 2),
+        RIGHT(3 * Math.PI / 2);
 
         public float n;
 
-        AttackDirection(float n) {
-            this.n = n;
-        }
-
         AttackDirection(double n) {
-            this((float) n);
+            this.n = (float) (n + ((3 * Math.PI) / 4));
         }
     }
     // endregion

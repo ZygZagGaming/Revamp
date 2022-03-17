@@ -46,7 +46,7 @@ public class HomingWitherSkull extends WitherSkull {
         super(Registry.HOMING_WITHER_SKULL.get(), world);
         setOwner(owner);
         this.setRot(owner.getYRot(), owner.getXRot());
-        this.moveTo(owner.getX(), owner.getY() + owner.getEyeHeight(), owner.getZ(), this.getYRot(), this.getXRot());
+        this.moveTo(owner.getX(), owner.getY() + owner.getEyeHeight() - 0.5, owner.getZ(), this.getYRot(), this.getXRot());
         this.reapplyPosition();
         double d0 = Math.sqrt(x * x + y * y + z * z);
         if (d0 != 0.0D) {
@@ -99,7 +99,7 @@ public class HomingWitherSkull extends WitherSkull {
             float shortestDistance = Float.MAX_VALUE;
             Entity maxEntity = entities.get(0);
             for (Entity e : entities) {
-                if (e.distanceTo(this) < shortestDistance && ((e instanceof Player player && !player.getAbilities().instabuild) || !(e instanceof Player))) {
+                if (e.distanceTo(this) < shortestDistance && (!(e instanceof Player player) || !player.getAbilities().instabuild)) {
                     shortestDistance = e.distanceTo(this);
                     maxEntity = e;
                 }
@@ -117,7 +117,6 @@ public class HomingWitherSkull extends WitherSkull {
 
     @Override
     public void tick() {
-        Entity entity = this.getOwner();
         if (this.level.isClientSide || this.level.hasChunkAt(this.blockPosition())) {
 
             speed *= 1.025;
