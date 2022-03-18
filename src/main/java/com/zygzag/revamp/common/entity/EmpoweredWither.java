@@ -6,6 +6,9 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -23,9 +26,7 @@ import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused", "FieldCanBeLocal"})
@@ -34,6 +35,7 @@ import java.util.function.Predicate;
 public class EmpoweredWither extends WitherBoss {
     // region fields and constructors
     public static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
+    private static final EntityDataAccessor<Optional<UUID>> DATA_TARGET_UUID = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.OPTIONAL_UUID);
     private int attackCooldown = 0;
     private int noGravTime = 0;
     private EmpoweredWitherHeadPart leftHead = new EmpoweredWitherHeadPart(this, "left_head", 0.85f, 0.85f, 1.2f, 1.3f, 2.3125f, 0.3125f);
@@ -51,11 +53,34 @@ public class EmpoweredWither extends WitherBoss {
     @Override
     public void tick() {
         super.tick();
-        Entity target = getTarget();
+        System.out.println("is client?: " + level.isClientSide + ", yrot: " + getYRot());
+        LivingEntity target = getTarget();
         tickParts();
         if (attackCooldown > 0) attackCooldown--;
         if (noGravTime > 0) noGravTime--;
-        if (target != null) lookAt(target);
+        if (target != null && !level.isClientSide) lookAt(target);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        entityData.define(DATA_TARGET_UUID, Optional.empty());
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        super.setTarget(target);
+        entityData.set(DATA_TARGET_UUID, target == null ? Optional.empty() : Optional.of(target.getUUID()));
+    }
+
+    @Nullable
+    @Override
+    public LivingEntity getTarget() {
+        Optional<UUID> o = entityData.get(DATA_TARGET_UUID);
+        if (o.isEmpty()) return null;
+        UUID targetUUID = o.get();
+        List<Entity> entities = level.getEntities(this, getBoundingBox().inflate(50.0), (e) -> e.getUUID() == targetUUID);
+        if (entities.size() < 1) return null;
+        return entities.get(0) instanceof LivingEntity l ? l : null;
     }
 
     private void lookAt(Entity entity) {
@@ -63,7 +88,7 @@ public class EmpoweredWither extends WitherBoss {
         double z = entity.getZ() - getZ();
         float atan = GeneralUtil.radiansToDegrees((float) Math.atan2(z, x));
         setYRot(atan);
-        System.out.println(atan);
+        this.setRot(this.getYRot(), this.getXRot());
     }
 
     public void tickParts() {
@@ -202,12 +227,13 @@ public class EmpoweredWither extends WitherBoss {
             this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
         }
 
+
         if (this.lerpSteps > 0) {
             double d0 = this.getX() + (this.lerpX - this.getX()) / (double)this.lerpSteps;
             double d2 = this.getY() + (this.lerpY - this.getY()) / (double)this.lerpSteps;
             double d4 = this.getZ() + (this.lerpZ - this.getZ()) / (double)this.lerpSteps;
             double d6 = Mth.wrapDegrees(this.lerpYRot - (double)this.getYRot());
-            this.setYRot(this.getYRot() + (float)d6 / (float)this.lerpSteps);
+            //this.setYRot(this.getYRot() + (float)d6 / (float)this.lerpSteps);
             this.setXRot(this.getXRot() + (float)(this.lerpXRot - (double)this.getXRot()) / (float)this.lerpSteps);
             --this.lerpSteps;
             this.setPos(d0, d2, d4);
