@@ -23,33 +23,36 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class EmpoweredWitherModel<T extends EmpoweredWither> extends HierarchicalModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation MAIN_LAYER = new ModelLayerLocation(new ResourceLocation("revamp", "empowered_wither"), "main");
-	private final ModelPart emp_wither;
+	private final ModelPart mainPart;
 	private final ModelPart root;
 
 	public EmpoweredWitherModel(ModelPart root) {
 		this.root = root;
-		this.emp_wither = root.getChild("empowered_wither");
+		this.mainPart = root.getChild("empowered_wither");
 	}
 
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition emp_wither = partdefinition.addOrReplaceChild("empowered_wither", CubeListBuilder.create().texOffs(0, 28).addBox(37.0F, -16.0F, -2.0F, 4.0F, 10.0F, 3.0F, new CubeDeformation(0.0F))
-		.texOffs(32, 10).addBox(37.0F, -21.0F, -2.0F, 4.0F, 2.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(-39.0F, 24.0F, 0.0F));
+		PartDefinition empowered_wither = partdefinition.addOrReplaceChild("empowered_wither", CubeListBuilder.create(), PartPose.offset(-39.0F, 24.0F, 0.0F));
 
-		PartDefinition left_head_r1 = emp_wither.addOrReplaceChild("left_head_r1", CubeListBuilder.create().texOffs(0, 16).addBox(-8.5F, -13.0F, -5.5F, 6.0F, 6.0F, 6.0F, new CubeDeformation(0.0F))
-		.texOffs(0, 0).addBox(-13.5F, -4.0F, -5.5F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F))
-		.texOffs(24, 16).addBox(-3.5F, -6.0F, -2.0F, 3.0F, 12.0F, 3.0F, new CubeDeformation(0.0F))
-		.texOffs(0, 16).addBox(-8.5F, 7.0F, -5.5F, 6.0F, 6.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(39.0F, -15.5F, 0.0F, 0.0F, 0.0F, 1.5708F));
+		PartDefinition left_head_r1 = empowered_wither.addOrReplaceChild("left_head_r1", CubeListBuilder.create().texOffs(0, 16).addBox(-8.5F, -13.0F, -5.5F, 6.0F, 6.0F, 6.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 0).addBox(-13.5F, -4.0F, -5.5F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 16).addBox(-8.5F, 7.0F, -5.5F, 6.0F, 6.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(39.0F, -15.5F, 0.0F, 0.0F, 0.0F, 1.5708F));
 
-		PartDefinition right_shoulder_r1 = emp_wither.addOrReplaceChild("right_shoulder_r1", CubeListBuilder.create().texOffs(14, 28).addBox(-1.5F, -3.5F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(30.7387F, -19.0365F, -0.5F, 0.0F, 0.0F, -1.0472F));
+		PartDefinition main_body = empowered_wither.addOrReplaceChild("main_body", CubeListBuilder.create().texOffs(0, 28).addBox(-2.0F, -16.0F, -2.0F, 4.0F, 10.0F, 3.0F, new CubeDeformation(0.0F))
+				.texOffs(32, 10).addBox(-2.0F, -21.0F, -2.0F, 4.0F, 2.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offset(39.0F, 0.0F, 0.0F));
 
-		PartDefinition left_shoulder_r1 = emp_wither.addOrReplaceChild("left_shoulder_r1", CubeListBuilder.create().texOffs(26, 31).addBox(-3.45F, -3.25F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(48.5F, -17.5F, -0.5F, 0.0F, 0.0F, 1.0472F));
+		PartDefinition left_shoulder_r1 = main_body.addOrReplaceChild("left_shoulder_r1", CubeListBuilder.create().texOffs(26, 31).addBox(-3.45F, -3.25F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(9.5F, -17.5F, -0.5F, 0.0F, 0.0F, 1.0472F));
 
-		PartDefinition coccyx_r1 = emp_wither.addOrReplaceChild("coccyx_r1", CubeListBuilder.create().texOffs(32, 0).addBox(-1.5F, -3.5F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(39.0F, -4.6122F, 1.5212F, 0.7854F, 0.0F, 0.0F));
+		PartDefinition right_shoulder_r1 = main_body.addOrReplaceChild("right_shoulder_r1", CubeListBuilder.create().texOffs(14, 28).addBox(-1.5F, -3.5F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-8.2613F, -19.0365F, -0.5F, 0.0F, 0.0F, -1.0472F));
 
-		PartDefinition ribs = emp_wither.addOrReplaceChild("ribs", CubeListBuilder.create(), PartPose.offset(44.5F, -14.0F, -0.5F));
+		PartDefinition collarbone_r1 = main_body.addOrReplaceChild("collarbone_r1", CubeListBuilder.create().texOffs(24, 16).addBox(-3.5F, -6.0F, -2.0F, 3.0F, 12.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -15.5F, 0.0F, 0.0F, 0.0F, 1.5708F));
+
+		PartDefinition coccyx_r1 = main_body.addOrReplaceChild("coccyx_r1", CubeListBuilder.create().texOffs(32, 0).addBox(-1.5F, -3.5F, -1.5F, 3.0F, 7.0F, 3.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -4.6122F, 1.5212F, 0.7854F, 0.0F, 0.0F));
+
+		PartDefinition ribs = main_body.addOrReplaceChild("ribs", CubeListBuilder.create(), PartPose.offset(5.5F, -14.0F, -0.5F));
 
 		PartDefinition rib1 = ribs.addOrReplaceChild("rib1", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
@@ -91,7 +94,7 @@ public class EmpoweredWitherModel<T extends EmpoweredWither> extends Hierarchica
 
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		emp_wither.render(poseStack, buffer, packedLight, packedOverlay);
+		mainPart.render(poseStack, buffer, packedLight, packedOverlay);
 	}
 
 	@Override

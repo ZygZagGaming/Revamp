@@ -72,4 +72,19 @@ public class GeneralUtil {
         }
         return elements[i];
     }
+
+    public static double degreesToRadians(double deg) {
+        return deg / 180.0 * Math.PI;
+    }
+
+    public static double radiansToDegrees(double rad) {
+        return rad * 180.0 / Math.PI;
+    }
+
+    public static float degreesToRadians(float deg) {
+        return (float) (deg / 180.0 * Math.PI);
+    }
+    public static float radiansToDegrees(float rad) {
+        return (float) (rad * 180.0 / Math.PI);
+    }
 }

@@ -51,8 +51,19 @@ public class EmpoweredWither extends WitherBoss {
     @Override
     public void tick() {
         super.tick();
+        Entity target = getTarget();
+        tickParts();
         if (attackCooldown > 0) attackCooldown--;
         if (noGravTime > 0) noGravTime--;
+        if (target != null) lookAt(target);
+    }
+
+    private void lookAt(Entity entity) {
+        double x = entity.getX() - getX();
+        double z = entity.getZ() - getZ();
+        float atan = GeneralUtil.radiansToDegrees((float) Math.atan2(z, x));
+        setYRot(atan);
+        System.out.println(atan);
     }
 
     public void tickParts() {
@@ -98,31 +109,31 @@ public class EmpoweredWither extends WitherBoss {
         }
 
     }
+
     // endregion
 
     // region boiler code to override default behavior
     @Override
     public void aiStep() {
-        tickParts();
         mobAiStep();
         Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D);
-        if (!this.level.isClientSide && this.getAlternativeTarget(0) > 0) {
-            Entity entity = this.level.getEntity(this.getAlternativeTarget(0));
-            if (entity != null) {
-                double d0 = vec3.y;
-                if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.getY() + 5.0D) {
-                    d0 = Math.max(0.0D, d0);
-                    d0 = d0 + (0.3D - d0 * (double)0.6F);
-                }
+        Entity target = getTarget();
+        if (!this.level.isClientSide && target != null) {
+            double d0 = vec3.y;
+            if (this.getY() < target.getY() || !this.isPowered() && this.getY() < target.getY() + 1.0D) {
+                d0 = Math.max(0.0D, d0);
+                d0 = d0 + (0.3D - d0 * (double)0.6F);
+            }
 
-                vec3 = new Vec3(vec3.x, d0, vec3.z);
-                Vec3 vec31 = new Vec3(entity.getX() - this.getX(), 0.0D, entity.getZ() - this.getZ());
-                if (vec31.horizontalDistanceSqr() > 9.0D) {
-                    Vec3 vec32 = vec31.normalize();
-                    vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
-                }
+            vec3 = new Vec3(vec3.x, d0, vec3.z);
+            Vec3 vec31 = new Vec3(target.getX() - this.getX(), 0.0D, target.getZ() - this.getZ());
+            if (vec31.horizontalDistanceSqr() > 225.0D) {
+                Vec3 vec32 = vec31.normalize();
+                vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
             }
         }
+
+
 
         this.setDeltaMovement(vec3);
 
@@ -186,9 +197,6 @@ public class EmpoweredWither extends WitherBoss {
 
     public void mobAiStep() {
         LivingEntity target = getTarget();
-        if (target != null) {
-            lookAt(target, 0.0f, 0.0f);
-        }
         if (this.isControlledByLocalInstance()) {
             this.lerpSteps = 0;
             this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
@@ -312,7 +320,7 @@ public class EmpoweredWither extends WitherBoss {
         goalSelector = new RevampGoalSelector(level.getProfilerSupplier()); // replace goalSelector with custom
         //goalSelector.addGoal(0, new EmpoweredWitherDoNothingGoal());
         goalSelector.addGoal(0, new DoAttackGoal(
-                new SlamGoal(3),
+                new SlamGoal(10),
                 new ShootAttackGoal(5),
                 new ShootVolleyAttackGoal(3),
                 new ShootQuadVolleyAttackGoal(2)
@@ -622,7 +630,7 @@ public class EmpoweredWither extends WitherBoss {
 
     private HomingWitherSkull shootHomingSkull(LivingEntity target, AttackDirection direction) {
         float yRot = getYRot() + direction.n;
-        HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, Mth.sin(yRot), 0, -Mth.cos(yRot), target);
+        HomingWitherSkull skull = new HomingWitherSkull(level, EmpoweredWither.this, Mth.sin(yRot), 0.125, -Mth.cos(yRot), target);
         level.addFreshEntity(skull);
         return skull;
     }
