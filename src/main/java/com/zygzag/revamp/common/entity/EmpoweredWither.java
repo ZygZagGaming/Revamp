@@ -89,6 +89,8 @@ public class EmpoweredWither extends WitherBoss {
         float atan = GeneralUtil.radiansToDegrees((float) Math.atan2(z, x));
         setYRot(atan);
         this.setRot(this.getYRot(), this.getXRot());
+        hasImpulse = true
+                hurtMarked = true;
     }
 
     public void tickParts() {
