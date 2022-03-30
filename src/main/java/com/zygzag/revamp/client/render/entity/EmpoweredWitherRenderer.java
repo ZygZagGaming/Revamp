@@ -7,6 +7,7 @@ import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.BlockPos;
@@ -42,5 +43,11 @@ public class EmpoweredWitherRenderer extends MobRenderer<EmpoweredWither, Empowe
         }
 
         stack.scale(f, f, f);
+    }
+
+    @Override
+    public void render(EmpoweredWither wither, float p_115456_, float p_115457_, PoseStack p_115458_, MultiBufferSource p_115459_, int p_115460_) {
+        super.render(wither, p_115456_, p_115457_, p_115458_, p_115459_, p_115460_);
+        // System.out.println("ybodyrot: " + wither.yBodyRot + ", old: " + wither.yBodyRotO + ", yheadrot: " + wither.yHeadRot + ", old: " + wither.yHeadRotO);
     }
 }

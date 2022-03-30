@@ -1,9 +1,11 @@
 package com.zygzag.revamp.common.entity;
 
+import com.mojang.math.Vector3f;
 import com.zygzag.revamp.common.entity.goal.boss.RevampGoalSelector;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -36,6 +38,7 @@ public class EmpoweredWither extends WitherBoss {
     // region fields and constructors
     public static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
     private static final EntityDataAccessor<Optional<UUID>> DATA_TARGET_UUID = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Float> DATA_YROT = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.FLOAT);
     private int attackCooldown = 0;
     private int noGravTime = 0;
     private EmpoweredWitherHeadPart leftHead = new EmpoweredWitherHeadPart(this, "left_head", 0.85f, 0.85f, 1.2f, 1.3f, 2.3125f, 0.3125f);
@@ -50,20 +53,44 @@ public class EmpoweredWither extends WitherBoss {
     // endregion
 
     // region methods
+    public float getYRot() {
+        return entityData.get(DATA_YROT);
+    }
+
+    public void setYRot(float rot) {
+        entityData.set(DATA_YROT, rot);
+    }
+
+    int tc = 0;
+    float ybr = 0;
+
     @Override
     public void tick() {
         super.tick();
-        System.out.println("is client?: " + level.isClientSide + ", yrot: " + getYRot());
         LivingEntity target = getTarget();
         tickParts();
         if (attackCooldown > 0) attackCooldown--;
         if (noGravTime > 0) noGravTime--;
         if (target != null && !level.isClientSide) lookAt(target);
+        this.yBodyRotO = ybr;
+        this.yBodyRot = this.entityData.get(DATA_YROT) - 90;
+        ybr = this.yBodyRot;
+        this.yHeadRot = yBodyRot;
+        this.yHeadRotO = yBodyRotO;
+        if (tc < 19) tc++;
+        else tc = 0;
+        double rot = getYRot();
+        double cos = Math.cos(rot);
+        double sin = Math.sin(rot);
+        makeSmokeCircle(level, getX() + cos, getY() + 1.5, getZ() + sin, tc, 20, 1, 5, 0.1, 0.2, 0.2, 0.2, false, rot);
+        makeSmokeCircle(level, getX() + cos, getY() + 1.5, getZ() + sin, tc, 20, 0.6, 3, 0.1, 0.6, 0.2, 0.2, true, rot);
     }
 
     @Override
     protected void defineSynchedData() {
         entityData.define(DATA_TARGET_UUID, Optional.empty());
+        entityData.define(DATA_YROT, 0f);
+        super.defineSynchedData();
     }
 
     @Override
@@ -89,8 +116,8 @@ public class EmpoweredWither extends WitherBoss {
         float atan = GeneralUtil.radiansToDegrees((float) Math.atan2(z, x));
         setYRot(atan);
         this.setRot(this.getYRot(), this.getXRot());
-        hasImpulse = true
-                hurtMarked = true;
+        hasImpulse = true;
+        hurtMarked = true;
     }
 
     public void tickParts() {
@@ -134,7 +161,6 @@ public class EmpoweredWither extends WitherBoss {
         for(int i = 0; i < parts.length; ++i) {
             parts[i].setId(i + packet.getId());
         }
-
     }
 
     // endregion
@@ -675,4 +701,34 @@ public class EmpoweredWither extends WitherBoss {
         }
     }
     // endregion
+
+    public static void makeSmokeCircle(
+            Level world,
+            double x,
+            double y,
+            double z,
+            int timeSinceBegan,
+            int duration,
+            double radius,
+            int count,
+            double randomness,
+            double r,
+            double g,
+            double b,
+            boolean reversed,
+            double rot
+    ) {
+        double proportion = (((float)timeSinceBegan) / duration) % 1;
+        if (reversed) proportion = 1 - proportion;
+        double sin = radius * Math.sin(proportion * Math.PI * 2);
+        double cos = radius * Math.cos(proportion * Math.PI * 2);
+        for (int i = 0; i < count; i++) {
+            double randomX = (Math.random() * randomness * 2) - 1;
+            double randomY = (Math.random() * randomness * 2) - 1;
+            double randomZ = (Math.random() * randomness * 2) - 1;
+            double cos2 = cos * Math.cos(rot);
+            double sin2 = cos * Math.sin(rot);
+            world.addParticle(new DustParticleOptions(new Vector3f((float)r, (float)g, (float)b), 1), x + randomX + cos2, y + sin + randomY, z + randomZ + sin2, 1, 1, 1);
+        }
+    }
 }
