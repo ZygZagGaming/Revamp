@@ -81,6 +81,7 @@ public class Registry {
     public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
     public static final RegistryObject<Block> UPGRADED_BLAST_FURNACE = registerBlock("upgraded_blast_furnace", () -> new UpgradedBlastFurnace(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE)));
 
+    public static final RegistryObject<Item> OSTEUM = basicItem("osteum");
     public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
     public static final RegistryObject<Item> RAW_IRIDIUM = basicItem("raw_iridium");
