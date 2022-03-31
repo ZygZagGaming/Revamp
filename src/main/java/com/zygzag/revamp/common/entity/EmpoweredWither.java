@@ -39,6 +39,7 @@ public class EmpoweredWither extends WitherBoss {
     public static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (mob) -> mob.getMobType() != MobType.UNDEAD && mob.attackable();
     private static final EntityDataAccessor<Optional<UUID>> DATA_TARGET_UUID = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Float> DATA_YROT = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> DATA_SHOW_RINGS = SynchedEntityData.defineId(EmpoweredWither.class, EntityDataSerializers.BOOLEAN);
     private int attackCooldown = 0;
     private int noGravTime = 0;
     private EmpoweredWitherHeadPart leftHead = new EmpoweredWitherHeadPart(this, "left_head", 0.85f, 0.85f, 1.2f, 1.3f, 2.3125f, 0.3125f);
@@ -63,6 +64,7 @@ public class EmpoweredWither extends WitherBoss {
 
     int tc = 0;
     float ybr = 0;
+    private boolean showRings = false;
 
     @Override
     public void tick() {
@@ -79,18 +81,33 @@ public class EmpoweredWither extends WitherBoss {
         this.yHeadRotO = yBodyRotO;
         if (tc < 19) tc++;
         else tc = 0;
-        double rot = getYRot();
-        double cos = Math.cos(rot);
-        double sin = Math.sin(rot);
-        makeSmokeCircle(level, getX() + cos, getY() + 1.5, getZ() + sin, tc, 20, 1, 5, 0.1, 0.2, 0.2, 0.2, false, rot);
-        makeSmokeCircle(level, getX() + cos, getY() + 1.5, getZ() + sin, tc, 20, 0.6, 3, 0.1, 0.6, 0.2, 0.2, true, rot);
+
+        if (shouldShowRings()) {
+            double rot = GeneralUtil.degreesToRadians(getYRot()) + Math.PI / 2;
+            double dl = 0.75;
+            double r = - 1.1;
+            double cos = Math.cos(rot + Math.atan2(r, dl));
+            double sin = Math.sin(rot + Math.atan2(r, dl));
+            double n = Math.sqrt(r * r - dl * dl) + r;
+            makeSmokeCircle(level, getX() + n * cos + 1.1, getY() + 2.25, getZ() + n * sin + 1.1, tc, 20, 0.9, 15, 0.2, 0.2, 0.2, 0.2, false, rot);
+            makeSmokeCircle(level, getX() + n * cos + 1.1, getY() + 2.25, getZ() + n * sin + 1.1, tc, 20, 0.5, 10, 0.2, 0.6, 0.2, 0.2, true, rot);
+        }
     }
 
     @Override
     protected void defineSynchedData() {
         entityData.define(DATA_TARGET_UUID, Optional.empty());
         entityData.define(DATA_YROT, 0f);
+        entityData.define(DATA_SHOW_RINGS, false);
         super.defineSynchedData();
+    }
+
+    public boolean shouldShowRings() {
+        return entityData.get(DATA_SHOW_RINGS);
+    }
+
+    public void setRings(boolean b) {
+        entityData.set(DATA_SHOW_RINGS, b);
     }
 
     @Override
@@ -553,6 +570,7 @@ public class EmpoweredWither extends WitherBoss {
         @Override
         public void start() {
             super.start();
+            setRings(true);
         }
 
         public void tick() {
@@ -566,6 +584,7 @@ public class EmpoweredWither extends WitherBoss {
                     if (!isSilent()) {
                         level.levelEvent(null, 1024, blockPosition(), 0);
                     }
+                    setRings(false);
                 }
             }
         }
@@ -607,6 +626,7 @@ public class EmpoweredWither extends WitherBoss {
         @Override
         public void start() {
             super.start();
+            setRings(true);
         }
 
         public void tick() {
@@ -622,6 +642,7 @@ public class EmpoweredWither extends WitherBoss {
                     if (!isSilent()) {
                         level.levelEvent(null, 1024, blockPosition(), 0);
                     }
+                    if (getAttackTime() == 40) setRings(false);
                 }
             }
         }
@@ -658,6 +679,7 @@ public class EmpoweredWither extends WitherBoss {
         @Override
         public void start() {
             super.start();
+            setRings(true);
         }
 
         public void tick() {
@@ -673,6 +695,7 @@ public class EmpoweredWither extends WitherBoss {
                     if (!isSilent()) {
                         level.levelEvent(null, 1024, blockPosition(), 0);
                     }
+                    if (getAttackTime() == 44) setRings(false);
                 }
             }
         }
