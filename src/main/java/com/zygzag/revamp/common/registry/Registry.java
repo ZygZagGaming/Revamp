@@ -3,6 +3,7 @@ package com.zygzag.revamp.common.registry;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.block.BlessedSoilBlock;
 import com.zygzag.revamp.common.block.IridiumOreBlock;
+import com.zygzag.revamp.common.block.OsteumBlock;
 import com.zygzag.revamp.common.block.UpgradedBlastFurnace;
 import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
 import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
@@ -80,8 +81,9 @@ public class Registry {
     //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
     public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
     public static final RegistryObject<Block> UPGRADED_BLAST_FURNACE = registerBlock("upgraded_blast_furnace", () -> new UpgradedBlastFurnace(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE)));
+    public static final RegistryObject<Block> OSTEUM = registerBlock("osteum", () -> new OsteumBlock(BlockBehaviour.Properties.copy(Blocks.BONE_BLOCK)));
 
-    public static final RegistryObject<Item> OSTEUM = basicItem("osteum");
+    public static final RegistryObject<Item> OSTEUM_ITEM = registerBlockItem(OSTEUM, new Item.Properties());
     public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
     public static final RegistryObject<Item> RAW_IRIDIUM = basicItem("raw_iridium");
