@@ -1,0 +1,80 @@
+{
+  "type": "block",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "block_state_property",
+          "block": "revamp:osteum",
+          "properties": {
+            "x": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "weight": 1,
+          "name": "revamp:osteum",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "block_state_property",
+          "block": "revamp:osteum",
+          "properties": {
+            "y": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "weight": 1,
+          "name": "revamp:osteum",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "block_state_property",
+          "block": "revamp:osteum",
+          "properties": {
+            "z": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "weight": 1,
+          "name": "revamp:osteum",
+          "functions": [
+            {
+              "function": "set_count",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

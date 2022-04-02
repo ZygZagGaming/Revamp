@@ -91,15 +91,15 @@ public class EmpoweredWither extends WitherBoss {
         if (getTarget() == null) setRings(0);
 
         if (shouldShowRings()) {
-            double rot = GeneralUtil.degreesToRadians(getYRot()) + Math.PI / 2;
+            double rot = GeneralUtil.degreesToRadians(getYRot());
             double r = 2;
-            double l = 0.55;
+            double l = 1.55;
             double cos = Math.cos(rot);
             double sin = Math.sin(rot);
-            makeSmokeCircle(level, getX() + r * cos - l * sin + 0.55, getY() + 2.25, getZ() + r * sin + l * cos + 0.55, tc / 20.0, 0.9, 15, 0.2, 0.2, 0.2, 0.2, false, rot);
+            makeSmokeCircle(level, getX() + r * cos - l * sin, getY() + 2.25, getZ() + r * sin + l * cos, tc / 20.0, 0.9, 15, 0.2, 0.2, 0.2, 0.2, false, rot);
             for (int i = 1; i <= numberOfRings(); i++) {
                 double proportion = (i * tc / 20.0) % 1;
-                makeSmokeCircle(level, getX() + r * cos + 0.55, getY() + 2.25, getZ() + r * sin + 0.55, proportion, 0.5, 7, 0.2, 0.6, 0.2, 0.2, true, rot);
+                makeSmokeCircle(level, getX() + r * cos - l * sin, getY() + 2.25, getZ() + r * sin + l * cos, proportion, 0.5, 7, 0.2, 0.6, 0.2, 0.2, true, rot);
             }
         }
     }
@@ -761,8 +761,8 @@ public class EmpoweredWither extends WitherBoss {
             double randomX = (Math.random() * randomness * 2) - 1;
             double randomY = (Math.random() * randomness * 2) - 1;
             double randomZ = (Math.random() * randomness * 2) - 1;
-            double cos2 = cos * Math.cos(rot);
-            double sin2 = cos * Math.sin(rot);
+            double cos2 = cos * Math.cos(rot + Math.PI / 2);
+            double sin2 = cos * Math.sin(rot + Math.PI / 2);
             world.addParticle(new DustParticleOptions(new Vector3f((float)r, (float)g, (float)b), 1), x + randomX + cos2, y + sin + randomY, z + randomZ + sin2, 1, 1, 1);
         }
     }
