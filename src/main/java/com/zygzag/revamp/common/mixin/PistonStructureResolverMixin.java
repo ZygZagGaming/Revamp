@@ -94,33 +94,33 @@ public class PistonStructureResolverMixin {
                             BlockPos blockpos2 = this.toPush.get(k);
                             if (this.level.getBlockState(blockpos2).isStickyBlock() && !this.addBranchingBlocks(blockpos2)) {
                                 callback.setReturnValue(false);
-                                return;
+                                break;
                             }
                         }
 
                         callback.setReturnValue(true);
-                        return;
+                        break;
                     }
 
                     blockstate = this.level.getBlockState(blockpos1);
                     if (blockstate.isAir()) {
                         callback.setReturnValue(true);
-                        return;
+                        break;
                     }
 
                     if (!PistonBaseBlock.isPushable(blockstate, this.level, blockpos1, this.pushDirection, true, this.pushDirection) || blockpos1.equals(this.pistonPos)) {
                         callback.setReturnValue(false);
-                        return;
+                        break;
                     }
-                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(Registry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED)) {
+                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(Registry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED) && toPush.contains(lastPos)) {
                         this.toDestroy.add(blockpos1);
                         callback.setReturnValue(true);
-                        return;
+                        break;
                     }
 
                     if (this.toPush.size() >= 12) {
                         callback.setReturnValue(false);
-                        return;
+                        break;
                     }
 
                     this.toPush.add(blockpos1);
