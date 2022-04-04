@@ -42,11 +42,11 @@ public class UpgradedBlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity 
         return super.getBurnDuration(stack) / 2;
     }
 
-    @Override
+    /*@Override
     public boolean burn(@Nullable Recipe<?> recipe, NonNullList<ItemStack> items, int time) {
         /*  items[0] = input
             items[1] = fuel
-            items[2] = output   */
+            items[2] = output
         if (canBurn(recipe, items, time) && recipe instanceof UpgradedBlastFurnaceRecipe uRecipe && uRecipe.getChance() < Math.random()) {
             ItemStack extraResult = uRecipe.getOutSecondary().copy();
             ItemStack current = getItem(3);
@@ -54,5 +54,5 @@ public class UpgradedBlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity 
             else if (current.getItem() == extraResult.getItem() && current.getCount() + extraResult.getCount() <= getMaxStackSize()) current.grow(extraResult.getCount());
         }
         return super.burn(recipe, items, time);
-    }
+    }*/
 }

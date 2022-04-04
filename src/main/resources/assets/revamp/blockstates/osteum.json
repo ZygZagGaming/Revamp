@@ -1,0 +1,31 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "y": "true"
+      },
+      "apply": {
+        "model": "revamp:block/osteum"
+      }
+    },
+    {
+      "when": {
+        "z": "true"
+      },
+      "apply": {
+        "model": "revamp:block/osteum",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "x": "true"
+      },
+      "apply": {
+        "model": "revamp:block/osteum",
+        "x": 90,
+        "y": 90
+      }
+    }
+  ]
+}

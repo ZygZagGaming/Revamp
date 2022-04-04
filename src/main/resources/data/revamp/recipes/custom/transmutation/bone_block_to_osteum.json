@@ -1,0 +1,8 @@
+{
+  "type": "revamp:transmutation",
+  "input": {
+    "item": "minecraft:bone_block"
+  },
+  "output": "revamp:osteum",
+  "rate": "0.625"
+}

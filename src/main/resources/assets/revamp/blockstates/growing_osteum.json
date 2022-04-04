@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "fluid_state=water": {
+      "model": "revamp:block/growing_osteum"
+    },
+    "fluid_state=lava": {
+      "model": "revamp:block/growing_osteum"
+    },
+    "fluid_state=none": {
+      "model": "revamp:block/growing_osteum"
+    }
+  }
+}

@@ -1,10 +1,7 @@
 package com.zygzag.revamp.common.registry;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.block.BlessedSoilBlock;
-import com.zygzag.revamp.common.block.IridiumOreBlock;
-import com.zygzag.revamp.common.block.OsteumBlock;
-import com.zygzag.revamp.common.block.UpgradedBlastFurnace;
+import com.zygzag.revamp.common.block.*;
 import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
 import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
@@ -61,6 +58,8 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import static com.zygzag.revamp.common.Revamp.MAIN_TAB;
+
 @SuppressWarnings("unused")
 public class Registry {
     public static DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Revamp.MODID);
@@ -82,9 +81,10 @@ public class Registry {
     public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
     public static final RegistryObject<Block> UPGRADED_BLAST_FURNACE = registerBlock("upgraded_blast_furnace", () -> new UpgradedBlastFurnace(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE)));
     public static final RegistryObject<Block> OSTEUM = registerBlock("osteum", () -> new OsteumBlock(BlockBehaviour.Properties.copy(Blocks.BONE_BLOCK)));
+    public static final RegistryObject<Block> GROWING_OSTEUM = registerBlock("growing_osteum", () -> new GrowingOsteumBlock(BlockBehaviour.Properties.copy(Blocks.BONE_BLOCK)));
 
-    public static final RegistryObject<Item> OSTEUM_ITEM = registerBlockItem(OSTEUM, new Item.Properties());
-    public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(Revamp.MAIN_TAB)));
+    public static final RegistryObject<Item> OSTEUM_ITEM = registerBlockItem(OSTEUM, new Item.Properties().tab(MAIN_TAB));
+    public static final RegistryObject<Item> EMPOWERMENT_STAR_ITEM = registerItem("empowerment_star", () -> new EmpowermentStar(new Item.Properties().tab(MAIN_TAB)));
     public static final RegistryObject<Item> IRIDIUM_PLATING = basicItem("iridium_plating");
     public static final RegistryObject<Item> RAW_IRIDIUM = basicItem("raw_iridium");
     public static final RegistryObject<Item> RAW_IRIDIUM_ROD = basicItem("raw_iridium_rod");
@@ -108,7 +108,7 @@ public class Registry {
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1f)
                             .build())));
 
-    public static final RegistryObject<Item> TRANSMUTATION_CHARGE = registerItem("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(Revamp.MAIN_TAB)));
+    public static final RegistryObject<Item> TRANSMUTATION_CHARGE = registerItem("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(MAIN_TAB)));
 
     public static final RegistryObject<Item> ROT_ESSENCE = basicEssenceItem("rot_essence");
     public static final RegistryObject<Item> BONE_ESSENCE = basicEssenceItem("bone_essence");
@@ -123,12 +123,12 @@ public class Registry {
     public static final RegistryObject<Item> FERAL_ESSENCE = basicEssenceItem("feral_essence");
     public static final RegistryObject<Item> FIRE_ESSENCE = basicEssenceItem("fire_essence");
 
-    public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
-    public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(Revamp.MAIN_TAB));
-    public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(Revamp.MAIN_TAB));
+    public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
+    public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
+    public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(RAW_IRIDIUM_BLOCK, new Item.Properties().tab(MAIN_TAB));
     //public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
-    public static final RegistryObject<Item> BLESSED_SOIL_ITEM = registerBlockItem(BLESSED_SOIL, new Item.Properties().tab(Revamp.MAIN_TAB));
-    public static final RegistryObject<Item> UPGRADED_BLAST_FURNACE_ITEM = registerBlockItem(UPGRADED_BLAST_FURNACE, new Item.Properties().tab(Revamp.MAIN_TAB));
+    public static final RegistryObject<Item> BLESSED_SOIL_ITEM = registerBlockItem(BLESSED_SOIL, new Item.Properties().tab(MAIN_TAB));
+    public static final RegistryObject<Item> UPGRADED_BLAST_FURNACE_ITEM = registerBlockItem(UPGRADED_BLAST_FURNACE, new Item.Properties().tab(MAIN_TAB));
 
     // region iridium gear
     public static final RegistryObject<Item> IRIDIUM_SWORD = registerItem("iridium_sword", () -> new IridiumSwordItem(IridiumToolTier.FULL, 3, -2.4F, (new Item.Properties()).tab(CreativeModeTab.TAB_COMBAT).fireResistant().stacksTo(1), Socket.NONE));
@@ -296,11 +296,11 @@ public class Registry {
 
     // region shorthand methods
     private static RegistryObject<Item> basicItem(String id) {
-        return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(Revamp.MAIN_TAB)));
+        return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(MAIN_TAB)));
     }
 
     private static RegistryObject<Item> basicFireImmuneItem(String id) {
-        return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(Revamp.MAIN_TAB).fireResistant()));
+        return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(MAIN_TAB).fireResistant()));
     }
 
     private static RegistryObject<Item> basicEssenceItem(String id) {
