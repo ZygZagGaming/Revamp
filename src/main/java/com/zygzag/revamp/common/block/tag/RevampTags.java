@@ -13,4 +13,5 @@ public class RevampTags {
     public static final Lazy<TagKey<EntityType<?>>> BOSSES = () -> EntityTypeTags.create("forge:bosses");
     public static final Lazy<TagKey<EntityType<?>>> ILLAGERS = () -> EntityTypeTags.create("forge:illagers");
     public static final Lazy<TagKey<Block>> COPPER_ORES = () -> BlockTags.create(new ResourceLocation("forge:ores/copper"));
+    public static final Lazy<TagKey<Block>> OSTEUM_REPLACEABLE = () -> BlockTags.create(new ResourceLocation("revamp:osteum_replaceable"));
 }

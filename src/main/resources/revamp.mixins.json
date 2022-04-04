@@ -5,7 +5,8 @@
   "refmap": "revamp.refmap.json",
   "mixins": [
     "CropBlockMixin",
-    "BlockMixin"
+    "BlockMixin",
+    "PistonStructureResolverMixin"
   ],
   "minVersion": "0.8"
 }

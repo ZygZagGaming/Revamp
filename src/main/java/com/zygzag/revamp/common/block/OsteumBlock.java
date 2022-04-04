@@ -1,5 +1,6 @@
 package com.zygzag.revamp.common.block;
 
+import com.zygzag.revamp.common.block.tag.RevampTags;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -7,11 +8,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
@@ -19,30 +27,48 @@ import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DripstoneThickness;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class OsteumBlock extends Block implements BucketPickup, LiquidBlockContainer {
+public class OsteumBlock extends Block implements BucketPickup, LiquidBlockContainer, ConditionalStickyBlock {
     public static final BooleanProperty X = BooleanProperty.create("x");
     public static final BooleanProperty Y = BooleanProperty.create("y");
     public static final BooleanProperty Z = BooleanProperty.create("z");
+    public static final EnumProperty<OsteumSideState> NORTH = EnumProperty.create("north", OsteumSideState.class);
+    public static final EnumProperty<OsteumSideState> SOUTH = EnumProperty.create("south", OsteumSideState.class);
+    public static final EnumProperty<OsteumSideState> EAST = EnumProperty.create("east", OsteumSideState.class);
+    public static final EnumProperty<OsteumSideState> WEST = EnumProperty.create("west", OsteumSideState.class);
+    public static final EnumProperty<OsteumSideState> UP = EnumProperty.create("up", OsteumSideState.class);
+    public static final EnumProperty<OsteumSideState> DOWN = EnumProperty.create("down", OsteumSideState.class);
     public static final EnumProperty<FluidState> FLUID_STATE = EnumProperty.create("fluid_state", FluidState.class);
+    private final HashMap<Direction.Axis, BlockState> stateMap = new HashMap<>();
     public static BooleanProperty getProperty(Direction.Axis a) {
         return switch(a) {
             case X -> X;
             case Y -> Y;
             case Z -> Z;
+        };
+    }
+    public static EnumProperty<OsteumSideState> getProperty(Direction a) {
+        return switch(a) {
+            case NORTH -> NORTH;
+            case SOUTH -> SOUTH;
+            case EAST -> EAST;
+            case WEST -> WEST;
+            case UP -> UP;
+            case DOWN -> DOWN;
         };
     }
     private static VoxelShape getShape(Direction.Axis a) {
@@ -63,19 +89,25 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
                         .setValue(X, false)
                         .setValue(Y, true)
                         .setValue(Z, false)
+                        .setValue(NORTH, OsteumSideState.NONE)
+                        .setValue(SOUTH, OsteumSideState.NONE)
+                        .setValue(EAST, OsteumSideState.NONE)
+                        .setValue(WEST, OsteumSideState.NONE)
+                        .setValue(UP, OsteumSideState.NORMAL)
+                        .setValue(DOWN, OsteumSideState.NORMAL)
                         .setValue(FLUID_STATE, FluidState.NONE)
         );
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(X, Y, Z, FLUID_STATE);
+        builder.add(X, Y, Z, NORTH, SOUTH, EAST, WEST, UP, DOWN, FLUID_STATE);
     }
 
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction face = context.getClickedFace();
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        if (state.is(this)) return state.setValue(getProperty(face.getAxis()), true);
-        return getStateForAxis(face.getAxis());
+        if (state.is(this)) return state.setValue(getProperty(face.getAxis()), true).setValue(getProperty(face), OsteumSideState.NORMAL).setValue(getProperty(face.getOpposite()), OsteumSideState.NORMAL);
+        return getStateForAxis(face.getAxis()).setValue(FLUID_STATE, FluidState.state(context.getLevel().getFluidState(context.getClickedPos()).getType()));
     }
 
     static HashMap<BlockState, VoxelShape> cache = new HashMap<>();
@@ -105,25 +137,41 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
     @Override
     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
         if (rng.nextDouble() < 0.25) {
-            grow(state, world, pos, rng);
+            grow(state, world, pos, rng, 0);
         }
     }
 
-    public void grow(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
-        Direction dir = Direction.getRandom(rng);
-        BlockPos relative = pos.relative(dir);
-        if (state.getValue(getProperty(dir.getAxis()))) {
-            BlockState otherState = world.getBlockState(relative);
-            if (otherState.is(this)) {
-                if (otherState.getValue(getProperty(dir.getAxis()))) grow(otherState, world, relative, rng);
-                else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true));
+    public void grow(BlockState state, ServerLevel world, BlockPos pos, Random rng, int amount) {
+        ArrayList<Direction> dirs = new ArrayList<>(Arrays.stream(Direction.values()).toList());
+        if (amount == 10) return;
+        for (Direction dir : dirs)
+            if (rng.nextDouble() < 0.25) {
+                BlockPos relative = pos.relative(dir);
+                if (state.getValue(getProperty(dir.getAxis()))) {
+                    BlockState otherState = world.getBlockState(relative);
+                    if (otherState.is(this)) {
+                        if (otherState.getValue(getProperty(dir.getAxis())))
+                            grow(otherState, world, relative, rng, amount + 1);
+                        else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true));
+                    } else if (otherState.is(RevampTags.OSTEUM_REPLACEABLE.get()))
+                        world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.GROWING_OSTEUM.get()).getStateForDirection(dir));
+                }
             }
-            else if (otherState.isAir()) world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.GROWING_OSTEUM.get()).getStateForDirection(dir));
-        }
     }
 
     public BlockState getStateForAxis(Direction.Axis axis) {
-        return defaultBlockState().setValue(Y, false).setValue(getProperty(axis), true);
+        if (stateMap.containsKey(axis)) return stateMap.get(axis);
+        BlockState dbs = defaultBlockState().setValue(Y, false).setValue(getProperty(axis), true).setValue(UP, OsteumSideState.NONE).setValue(DOWN, OsteumSideState.NONE);
+        for (Direction dir : Direction.values()) {
+            if (dir.getAxis() == axis) dbs = dbs.setValue(getProperty(dir), OsteumSideState.NORMAL);
+        }
+        stateMap.put(axis, dbs);
+        return dbs;
+    }
+
+    @Override
+    public boolean canStickTo(BlockState state, BlockState other, BlockPos pos, BlockPos otherPos, Direction dir) {
+        return state.getValue(getProperty(dir)) == OsteumSideState.STICKY;
     }
 
     public enum FluidState implements StringRepresentable {
@@ -217,8 +265,58 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
         return super.updateShape(state, dir, other, world, pos, pos2);
     }
 
+    public enum OsteumSideState implements StringRepresentable {
+        NONE("none"),
+        NORMAL("normal"),
+        STICKY("sticky"),
+        SHARPENED("sharpened");
+
+        private final String name;
+        OsteumSideState(String name){
+            this.name = name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
     @Override
-    public void spawnAfterBreak(BlockState p_60458_, ServerLevel p_60459_, BlockPos p_60460_, ItemStack p_60461_) {
-        super.spawnAfterBreak(p_60458_, p_60459_, p_60460_, p_60461_);
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        ItemStack stack = player.getItemInHand(hand);
+        Direction dir = result.getDirection();
+        if (stack.is(Items.SLIME_BALL) && state.getValue(getProperty(dir)) == OsteumSideState.NORMAL) {
+            world.setBlockAndUpdate(pos, state.setValue(getProperty(dir), OsteumSideState.STICKY));
+            return InteractionResult.SUCCESS;
+        } else if (stack.getItem() instanceof AxeItem) {
+            OsteumSideState state1 = state.getValue(getProperty(dir));
+            if (state1 == OsteumSideState.STICKY) {
+                world.setBlockAndUpdate(pos, state.setValue(getProperty(dir), OsteumSideState.NORMAL));
+                return InteractionResult.SUCCESS;
+            } else if (state1 == OsteumSideState.NORMAL) {
+                world.setBlockAndUpdate(pos, state.setValue(getProperty(dir), OsteumSideState.SHARPENED));
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return super.use(state, world, pos, player, hand, result);
+    }
+
+    @Override
+    public boolean isStickyBlock(BlockState state) {
+        for (Direction dir : Direction.values()) {
+            if (state.getValue(getProperty(dir)) == OsteumSideState.STICKY) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void fallOn(Level world, BlockState state, BlockPos pos, Entity mob, float f) {
+        if (state.getValue(UP) == OsteumSideState.SHARPENED) {
+            mob.causeFallDamage(f + 2.0F, 2.0F, DamageSource.STALAGMITE);
+        } else {
+            super.fallOn(world, state, pos, mob, f);
+        }
+
     }
 }
