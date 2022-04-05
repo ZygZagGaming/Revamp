@@ -7,6 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -152,7 +154,7 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
                     if (otherState.is(this)) {
                         if (otherState.getValue(getProperty(dir.getAxis())))
                             grow(otherState, world, relative, rng, amount + 1);
-                        else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true));
+                        else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true).setValue(getProperty(dir), OsteumSideState.NORMAL).setValue(getProperty(dir.getOpposite()), OsteumSideState.NORMAL));
                     } else if (otherState.is(RevampTags.OSTEUM_REPLACEABLE.get()))
                         world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.GROWING_OSTEUM.get()).getStateForDirection(dir));
                 }
@@ -288,6 +290,7 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
         Direction dir = result.getDirection();
         if (stack.is(Items.SLIME_BALL) && state.getValue(getProperty(dir)) == OsteumSideState.NORMAL) {
             world.setBlockAndUpdate(pos, state.setValue(getProperty(dir), OsteumSideState.STICKY));
+            world.playSound(null, pos, SoundEvents.SLIME_BLOCK_BREAK, SoundSource.BLOCKS, 1, 1);
             return InteractionResult.SUCCESS;
         } else if (stack.getItem() instanceof AxeItem) {
             OsteumSideState state1 = state.getValue(getProperty(dir));

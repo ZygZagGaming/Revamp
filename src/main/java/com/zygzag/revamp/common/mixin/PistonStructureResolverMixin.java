@@ -157,11 +157,13 @@ public class PistonStructureResolverMixin {
     }
 
     private boolean canStick(BlockState a, BlockState b, BlockPos aPos, BlockPos bPos, Direction dir) {
-        boolean x = true, y = true;
+        boolean x = true, y = true, z;
         System.out.println("trying to stick " + a.getBlock() + " and " + b.getBlock());
         if (a.getBlock() instanceof ConditionalStickyBlock c) x = c.canStickTo(a, b, aPos, bPos, dir);
         if (b.getBlock() instanceof ConditionalStickyBlock c) y = c.canStickTo(b, a, bPos, aPos, dir.getOpposite());
-        return a.canStickTo(b) && (x || y);
+        z = x && y;
+        if (a.getBlock() instanceof ConditionalStickyBlock && b.getBlock() instanceof ConditionalStickyBlock) z = x || y;
+        return a.canStickTo(b) && z;
     }
 
     @Shadow

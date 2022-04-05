@@ -1,0 +1,20 @@
+{
+  "textures": {
+    "0": "revamp:block/osteum",
+    "particle": "revamp:block/osteum"
+  },
+  "elements": [
+    {
+      "from": [7, 3, 7],
+      "to": [9, 13, 9],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 10], "texture": "#0"},
+        "east": {"uv": [0, 0, 2, 10], "texture": "#0"},
+        "south": {"uv": [0, 0, 2, 10], "texture": "#0"},
+        "west": {"uv": [0, 0, 2, 10], "texture": "#0"},
+        "up": {"uv": [2, 0, 4, 2], "texture": "#0"},
+        "down": {"uv": [2, 0, 4, 2], "texture": "#0"}
+      }
+    }
+  ]
+}

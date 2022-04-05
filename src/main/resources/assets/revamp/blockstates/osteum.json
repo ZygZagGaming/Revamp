@@ -5,7 +5,7 @@
         "y": "true"
       },
       "apply": {
-        "model": "revamp:block/osteum"
+        "model": "revamp:block/osteum_rod"
       }
     },
     {
@@ -13,7 +13,7 @@
         "z": "true"
       },
       "apply": {
-        "model": "revamp:block/osteum",
+        "model": "revamp:block/osteum_rod",
         "x": 90
       }
     },
@@ -22,7 +22,172 @@
         "x": "true"
       },
       "apply": {
-        "model": "revamp:block/osteum",
+        "model": "revamp:block/osteum_rod",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal"
+      }
+    },
+    {
+      "when": {
+        "up": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "north": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "south": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "east": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "normal"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_normal",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky"
+      }
+    },
+    {
+      "when": {
+        "up": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "north": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "south": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "east": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "sticky"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sticky",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened"
+      }
+    },
+    {
+      "when": {
+        "up": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "north": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "south": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "east": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "sharpened"
+      },
+      "apply": {
+        "model": "revamp:block/osteum_end_sharpened",
         "x": 90,
         "y": 90
       }
