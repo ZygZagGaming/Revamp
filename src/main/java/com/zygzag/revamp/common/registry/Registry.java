@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.registry;
 
-import com.zygzag.revamp.common.Revamp;
+import com.mojang.serialization.Codec;
 import com.zygzag.revamp.common.block.*;
 import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
 import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
@@ -21,8 +21,15 @@ import com.zygzag.revamp.common.item.tier.IridiumArmorMaterial;
 import com.zygzag.revamp.common.item.tier.IridiumToolTier;
 import com.zygzag.revamp.common.loot.AutosmeltModifier;
 import com.zygzag.revamp.common.loot.ExecutionerModifier;
+import com.zygzag.revamp.common.tag.RevampTags;
+import com.zygzag.revamp.common.world.PlatformFungusConfiguration;
+import com.zygzag.revamp.common.world.feature.BetterFortressFeature;
+import com.zygzag.revamp.common.world.feature.PlatformFungusFeature;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
+import net.minecraft.core.HolderSet;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -41,38 +48,66 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.placement.*;
+import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 import static com.zygzag.revamp.common.Revamp.MAIN_TAB;
+import static com.zygzag.revamp.common.Revamp.MODID;
 
 @SuppressWarnings("unused")
 public class Registry {
-    public static DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, Revamp.MODID);
-    public static DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, Revamp.MODID);
-    public static DeferredRegister<RecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Revamp.MODID);
-    public static DeferredRegister<Enchantment> ENCHANT_REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Revamp.MODID);
-    public static DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, Revamp.MODID);
-    public static DeferredRegister<Potion> POTION_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, Revamp.MODID);
-    public static DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_REGISTER = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, Revamp.MODID);
-    public static DeferredRegister<MobEffect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Revamp.MODID);
-    public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Revamp.MODID);
-    public static DeferredRegister<MenuType<?>> MENU_REGISTER = DeferredRegister.create(ForgeRegistries.CONTAINERS, Revamp.MODID);
-    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER, BLOCK_ENTITY_REGISTER, MENU_REGISTER};
+    public static DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    public static DeferredRegister<RecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+    public static DeferredRegister<Enchantment> ENCHANT_REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MODID);
+    public static DeferredRegister<EntityType<?>> ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
+    public static DeferredRegister<Potion> POTION_REGISTER = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
+    public static DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_REGISTER = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MODID);
+    public static DeferredRegister<MobEffect> EFFECT_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
+    public static DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
+    public static DeferredRegister<MenuType<?>> MENU_REGISTER = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+    public static DeferredRegister<Feature<?>> FEATURE_REGISTER = DeferredRegister.create(ForgeRegistries.FEATURES, MODID);
+    public static DeferredRegister<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.CONFIGURED_FEATURE_REGISTRY, MODID);
+    public static DeferredRegister<PlacedFeature> PLACED_FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.PLACED_FEATURE_REGISTRY, MODID);
+    public static DeferredRegister<StructureFeature<?>> STRUCTURE_FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.STRUCTURE_FEATURE_REGISTRY, MODID);
+    public static DeferredRegister<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, MODID);
+    public static DeferredRegister<Biome> BIOME_REGISTER = DeferredRegister.create(ForgeRegistries.BIOMES, MODID);
+    public static DeferredRegister<Codec<? extends BiomeSource>> BIOME_SOURCE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.BIOME_SOURCE_REGISTRY, MODID);
+    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER, BLOCK_ENTITY_REGISTER, MENU_REGISTER, FEATURE_REGISTER, CONFIGURED_FEATURE_REGISTER, PLACED_FEATURE_REGISTER, STRUCTURE_FEATURE_REGISTER, CONFIGURED_STRUCTURE_FEATURE_REGISTER, BIOME_REGISTER, BIOME_SOURCE_REGISTER};
+
+    public static final RegistryObject<Block> MAGMA_FUNGUS_BLOCK = registerBlock("magma_fungus_block", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
+    public static final RegistryObject<Block> MAGMA_FUNGUS_CAP_BLOCK = registerBlock("magma_fungus_cap", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
+    public static final RegistryObject<Block> MAGMA_FUNGUS_EDGE_BLOCK = registerBlock("magma_fungus_edge", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
+    public static final RegistryObject<Block> MAGMA_FUNGUS_STEM_BLOCK = registerBlock("magma_fungus_stem", () -> new MagmaFungusStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
 
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", () -> new IridiumOreBlock(BlockBehaviour.Properties.copy(IRIDIUM_ORE.get()).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
@@ -122,6 +157,11 @@ public class Registry {
     public static final RegistryObject<Item> ALLYSHIP_ESSENCE = basicEssenceItem("allyship_essence");
     public static final RegistryObject<Item> FERAL_ESSENCE = basicEssenceItem("feral_essence");
     public static final RegistryObject<Item> FIRE_ESSENCE = basicEssenceItem("fire_essence");
+
+    public static final RegistryObject<Item> MAGMA_FUNGUS_ITEM = registerBlockItem(MAGMA_FUNGUS_BLOCK);
+    public static final RegistryObject<Item> MAGMA_FUNGUS_CAP_ITEM = registerBlockItem(MAGMA_FUNGUS_CAP_BLOCK);
+    public static final RegistryObject<Item> MAGMA_FUNGUS_EDGE_ITEM = registerBlockItem(MAGMA_FUNGUS_EDGE_BLOCK);
+    public static final RegistryObject<Item> MAGMA_FUNGUS_STEM_ITEM = registerBlockItem(MAGMA_FUNGUS_STEM_BLOCK);
 
     public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
     public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
@@ -294,6 +334,67 @@ public class Registry {
     public static final RegistryObject<MenuType<UpgradedBlastFurnaceMenu>> UPGRADED_BLAST_FURNACE_MENU = registerMenu("upgraded_blast_furnace", () -> new MenuType<>(UpgradedBlastFurnaceMenu::new));
     // endregion
 
+    // region features
+    public static final RegistryObject<Feature<PlatformFungusConfiguration>> PLATFORM_FUNGUS_FEATURE = registerFeature("platform_fungus", () -> new PlatformFungusFeature(PlatformFungusConfiguration.CODEC));
+    // endregion
+
+    // region structure features
+    public static final RegistryObject<BetterFortressFeature> BETTER_FORTRESS = registerStructureFeature("better_fortress", () -> new BetterFortressFeature(NoneFeatureConfiguration.CODEC));
+    // endregion
+
+    // region configured features
+    public static final Lazy<List<OreConfiguration.TargetBlockState>> ORE_IRIDIUM_TARGET_LIST = Lazy.of(() -> List.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, Registry.IRIDIUM_ORE.get().defaultBlockState()), OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, Registry.DEEPSLATE_IRIDIUM_ORE.get().defaultBlockState())));
+
+    public static final RegistryObject<ConfiguredFeature<?, ?>> IRIDIUM_SMALL_CONFIGURED = registerConfiguredFeature("ore_iridium_small", () -> new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ORE_IRIDIUM_TARGET_LIST.get(), 16, 0.4f)));
+    public static final RegistryObject<ConfiguredFeature<?, ?>> IRIDIUM_LARGE_CONFIGURED = registerConfiguredFeature("ore_iridium_large", () -> new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ORE_IRIDIUM_TARGET_LIST.get(), 24, 0.6f)));
+    public static final RegistryObject<ConfiguredFeature<?, ?>> IRIDIUM_BURIED_CONFIGURED = registerConfiguredFeature("ore_iridium_buried", () -> new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(ORE_IRIDIUM_TARGET_LIST.get(), 20, 1f)));
+
+    public static final RegistryObject<ConfiguredFeature<?, ?>> PLATFORM_FUNGUS_CONFIGURED = registerConfiguredFeature("platform_fungus", () -> new ConfiguredFeature<>(PLATFORM_FUNGUS_FEATURE.get(), PlatformFungusConfiguration.defaultConfig()));
+    // endregion
+
+    // region configured structure features
+    public static final RegistryObject<ConfiguredStructureFeature<NoneFeatureConfiguration, BetterFortressFeature>> BETTER_FORTRESS_CONFIGURED = registerConfiguredStructureFeature("better_fortress", () -> new ConfiguredStructureFeature<>(BETTER_FORTRESS.get(), new NoneFeatureConfiguration(), new HolderSet.Named<>(BuiltinRegistries.BIOME, RevampTags.HAS_BETTER_FORTRESS.get()), false, Map.of(MobCategory.MONSTER, new StructureSpawnOverride(StructureSpawnOverride.BoundingBoxType.PIECE, BetterFortressFeature.FORTRESS_ENEMIES))));
+    // endregion
+
+    // region placed features
+    public static final RegistryObject<PlacedFeature> IRIDIUM_SMALL_PLACED = registerPlacedFeature("ore_iridium_small", () -> new PlacedFeature(IRIDIUM_SMALL_CONFIGURED.getHolder().get(), List.of(HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(10)), RarityFilter.onAverageOnceEvery(8))));
+    public static final RegistryObject<PlacedFeature> IRIDIUM_LARGE_PLACED = registerPlacedFeature("ore_iridium_large", () -> new PlacedFeature(IRIDIUM_LARGE_CONFIGURED.getHolder().get(), List.of(HeightRangePlacement.triangle(VerticalAnchor.absolute(-48), VerticalAnchor.absolute(-16)), RarityFilter.onAverageOnceEvery(20))));
+    public static final RegistryObject<PlacedFeature> IRIDIUM_BURIED_PLACED = registerPlacedFeature("ore_iridium_buried", () -> new PlacedFeature(IRIDIUM_BURIED_CONFIGURED.getHolder().get(), List.of(HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(10)), RarityFilter.onAverageOnceEvery(2))));
+
+    public static final RegistryObject<PlacedFeature> PLATFORM_FUNGUS_PLACED = registerPlacedFeature("platform_fungus", () -> new PlacedFeature(PLATFORM_FUNGUS_CONFIGURED.getHolder().get(), List.of(CountOnEveryLayerPlacement.of(12), BiomeFilter.biome())));
+    // endregion
+
+    // region biomes
+    public static final RegistryObject<Biome> LAVA_GARDENS = registerBiome("lava_gardens", () -> new Biome.BiomeBuilder()
+            .precipitation(Biome.Precipitation.NONE)
+            .biomeCategory(Biome.BiomeCategory.NETHER)
+            .temperature(1f)
+            .temperatureAdjustment(Biome.TemperatureModifier.NONE)
+            .downfall(0f)
+            .specialEffects(
+                    new BiomeSpecialEffects.Builder()
+                            .fogColor(12634386)
+                            .waterColor(9122495)
+                            .waterFogColor(12634386)
+                            .skyColor(13949762)
+                            .build()
+            )
+            .mobSpawnSettings(
+                    new MobSpawnSettings.Builder()
+                            .addSpawn(MobCategory.MONSTER,
+                                    new MobSpawnSettings.SpawnerData(EntityType.MAGMA_CUBE, 10, 3, 5)
+                            )
+                            .build()
+            )
+            .generationSettings(
+                    new BiomeGenerationSettings.Builder()
+                            .addFeature(GenerationStep.Decoration.UNDERGROUND_DECORATION, PLATFORM_FUNGUS_PLACED.getHolder().get())
+                            .build()
+            )
+            .build()
+    );
+    // endregion
+
     // region shorthand methods
     private static RegistryObject<Item> basicItem(String id) {
         return ITEM_REGISTER.register(id, () -> new Item(new Item.Properties().tab(MAIN_TAB)));
@@ -350,6 +451,35 @@ public class Registry {
     public static <T extends AbstractFurnaceMenu> RegistryObject<MenuType<T>> registerMenu(String id, Supplier<MenuType<T>> supplier) {
         return MENU_REGISTER.register(id, supplier);
     }
+
+    public static <F extends Feature<FC>, FC extends FeatureConfiguration> RegistryObject<F> registerFeature(String id, Supplier<F> supplier) {
+        return FEATURE_REGISTER.register(id, supplier);
+    }
+
+    public static <C extends ConfiguredFeature<FC, F>, FC extends FeatureConfiguration, F extends Feature<FC>> RegistryObject<ConfiguredFeature<?, ?>> registerConfiguredFeature(String id, Supplier<C> supplier) {
+        return CONFIGURED_FEATURE_REGISTER.register(id, supplier);
+    }
+
+    public static <P extends PlacedFeature> RegistryObject<PlacedFeature> registerPlacedFeature(String id, Supplier<P> supplier) {
+        return PLACED_FEATURE_REGISTER.register(id, supplier);
+    }
+
+    public static <S extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<S> registerStructureFeature(String id, Supplier<S> supplier) {
+        return STRUCTURE_FEATURE_REGISTER.register(id, supplier);
+    }
+
+    public static <C extends ConfiguredStructureFeature<FC, F>, F extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<C> registerConfiguredStructureFeature(String id, Supplier<C> supplier) {
+        return CONFIGURED_STRUCTURE_FEATURE_REGISTER.register(id, supplier);
+    }
+
+    public static RegistryObject<Biome> registerBiome(String id, Supplier<Biome> supplier) {
+        return BIOME_REGISTER.register(id, supplier);
+    }
+
+    public static <K extends Codec<S>, S extends BiomeSource> RegistryObject<K> registerBiomeSource(String id, Supplier<K> supplier) {
+        return BIOME_SOURCE_REGISTER.register(id, supplier);
+    }
+
 
     public static void register(IEventBus bus) {
         for (DeferredRegister<?> register : REGISTERS) {

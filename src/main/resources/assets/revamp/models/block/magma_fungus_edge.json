@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "revamp:block/magma_fungus_edge_top",
+    "bottom": "revamp:block/magma_fungus_edge_side",
+    "side": "revamp:block/magma_fungus_block"
+  }
+}

@@ -1,6 +1,6 @@
 package com.zygzag.revamp.util;
 
-import com.zygzag.revamp.common.block.tag.RevampTags;
+import com.zygzag.revamp.common.tag.RevampTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;

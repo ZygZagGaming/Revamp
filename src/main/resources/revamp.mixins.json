@@ -6,7 +6,9 @@
   "mixins": [
     "CropBlockMixin",
     "BlockMixin",
-    "PistonStructureResolverMixin"
+    "PistonStructureResolverMixin",
+    "DimensiontypeMixin",
+    "SurfaceRuleDataMixin"
   ],
   "minVersion": "0.8"
 }

@@ -71,6 +71,10 @@
   "block.revamp.iridium_grating": "Iridium Grating",
   "item.revamp.partial_iridium_hoe_1": "Iridium-Plated Netherite Hoe",
   "item.revamp.transmutation_charge": "Transmutation Charge",
+  "block.revamp.magma_fungus_block": "Magma Fungus Block",
+  "block.revamp.magma_fungus_stem": "Magma Fungus Stem",
+  "block.revamp.magma_fungus_cap": "Magma Fungus Cap",
+  "block.revamp.magma_fungus_edge": "Magma Fungus Edge",
 
   "item.revamp.rot_essence": "Essence of Rot (NYI)",
   "item.revamp.bone_essence": "Essence of Bone (NYI)",

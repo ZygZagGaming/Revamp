@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.mixin;
 
-import com.zygzag.revamp.common.block.tag.RevampTags;
+import com.zygzag.revamp.common.tag.RevampTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.CropBlock;

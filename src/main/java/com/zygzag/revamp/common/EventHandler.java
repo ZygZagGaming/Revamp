@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common;
 
-import com.zygzag.revamp.common.block.tag.RevampTags;
+import com.zygzag.revamp.common.tag.RevampTags;
 import com.zygzag.revamp.common.item.iridium.IridiumChestplateItem;
 import com.zygzag.revamp.common.item.iridium.IridiumShovelItem;
 import com.zygzag.revamp.common.item.iridium.Socket;
@@ -8,7 +8,6 @@ import com.zygzag.revamp.common.item.recipe.EmpowermentRecipe;
 import com.zygzag.revamp.common.item.recipe.ItemAndEntityHolder;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.registry.Registry;
-import com.zygzag.revamp.common.world.feature.PlacedFeatures;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -33,7 +32,6 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -45,11 +43,11 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void biomeLoadingEvent(BiomeLoadingEvent event) {
+        BiomeGenerationSettingsBuilder settings = event.getGeneration();
         if (!event.getCategory().equals(Biome.BiomeCategory.NETHER) && !event.getCategory().equals(Biome.BiomeCategory.THEEND)) {
-            BiomeGenerationSettingsBuilder settings = event.getGeneration();
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, PlacedFeatures.IRIDIUM_SMALL.get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, PlacedFeatures.IRIDIUM_LARGE.get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, PlacedFeatures.IRIDIUM_BURIED.get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_SMALL_PLACED.getHolder().get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_LARGE_PLACED.getHolder().get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_BURIED_PLACED.getHolder().get());
         }
     }
 

@@ -38,7 +38,7 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
 
     public static final ResourceLocation RECIPE_GUI_VANILLA = new ResourceLocation(ModIds.JEI_ID, TEXTURE_GUI_VANILLA);
 
-    public TransmutationCategory(IJeiHelpers helpers) {
+    public  TransmutationCategory(IJeiHelpers helpers) {
         this.helpers = helpers;
         guiHelper = helpers.getGuiHelper();
         background = guiHelper.drawableBuilder(RECIPE_GUI_VANILLA, 0, 220, 82, 34)
