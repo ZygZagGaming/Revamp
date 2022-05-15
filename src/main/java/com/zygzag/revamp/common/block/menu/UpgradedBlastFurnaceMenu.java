@@ -17,12 +17,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class UpgradedBlastFurnaceMenu extends AbstractFurnaceMenu {
     public static final int SECONDARY_RESULT_SLOT = 3;
     public UpgradedBlastFurnaceMenu(int id, Inventory inventory) {
-        super(Registry.UPGRADED_BLAST_FURNACE_MENU.get(), ModRecipeType.UPGRADED_BLASTING, RecipeBookType.BLAST_FURNACE, id, inventory);
+        super(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), ModRecipeType.UPGRADED_BLASTING, RecipeBookType.BLAST_FURNACE, id, inventory);
         this.addSlot(new FurnaceResultSlot(inventory.player, new SimpleContainer(4), 3, 156, 75));
     }
 
     public UpgradedBlastFurnaceMenu(int id, Inventory inventory, Container container, ContainerData data) {
-        super(Registry.UPGRADED_BLAST_FURNACE_MENU.get(), ModRecipeType.UPGRADED_BLASTING, RecipeBookType.BLAST_FURNACE, id, inventory, container, data);
+        super(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), ModRecipeType.UPGRADED_BLASTING, RecipeBookType.BLAST_FURNACE, id, inventory, container, data);
         this.addSlot(new FurnaceResultSlot(inventory.player, container, 3, 156, 75));
     }
 

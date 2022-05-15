@@ -64,7 +64,7 @@ public class TransmutationRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.TRANSMUTATION_SERIALIZER.get();
+        return Registry.RecipeSerializerRegistry.TRANSMUTATION_SERIALIZER.get();
     }
 
     @Override

@@ -26,15 +26,15 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
     }
 
     public ThrownTransmutationCharge(Level world, double xPos, double yPos, double zPos) {
-        super(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), xPos, yPos, zPos, world);
+        super(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), xPos, yPos, zPos, world);
     }
 
     public ThrownTransmutationCharge(Level world, LivingEntity thrower) {
-        super(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), thrower, world);
+        super(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), thrower, world);
     }
 
     protected Item getDefaultItem() {
-        return Registry.TRANSMUTATION_CHARGE.get();
+        return Registry.ItemRegistry.TRANSMUTATION_CHARGE.get();
     }
 
     protected float getGravity() {

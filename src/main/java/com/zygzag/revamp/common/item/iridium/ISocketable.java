@@ -20,20 +20,20 @@ public interface ISocketable {
 
     static void addCooldown(Player player, ItemStack stack, int amount) {
         if (!player.getAbilities().instabuild) {
-            int level = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
+            int level = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
             player.getCooldowns().addCooldown(stack.getItem(), amount / (level + 1));
         }
     }
 
     default Item getSocketlessForm() {
-        if (this instanceof IridiumAxeItem) return Registry.IRIDIUM_AXE.get();
-        else if (this instanceof IridiumChestplateItem) return Registry.IRIDIUM_CHESTPLATE.get();
-        else if (this instanceof IridiumHoeItem) return Registry.IRIDIUM_HOE.get();
-        else if (this instanceof IridiumPickaxeItem) return Registry.IRIDIUM_PICKAXE.get();
-        else if (this instanceof IridiumScepterItem) return Registry.IRIDIUM_SCEPTER.get();
-        else if (this instanceof IridiumShovelItem) return Registry.IRIDIUM_SHOVEL.get();
-        else if (this instanceof IridiumSwordItem) return Registry.IRIDIUM_SWORD.get();
+        if (this instanceof IridiumAxeItem) return Registry.IridiumGearRegistry.IRIDIUM_AXE.get();
+        else if (this instanceof IridiumChestplateItem) return Registry.IridiumGearRegistry.IRIDIUM_CHESTPLATE.get();
+        else if (this instanceof IridiumHoeItem) return Registry.IridiumGearRegistry.IRIDIUM_HOE.get();
+        else if (this instanceof IridiumPickaxeItem) return Registry.IridiumGearRegistry.IRIDIUM_PICKAXE.get();
+        else if (this instanceof IridiumScepterItem) return Registry.IridiumGearRegistry.IRIDIUM_SCEPTER.get();
+        else if (this instanceof IridiumShovelItem) return Registry.IridiumGearRegistry.IRIDIUM_SHOVEL.get();
+        else if (this instanceof IridiumSwordItem) return Registry.IridiumGearRegistry.IRIDIUM_SWORD.get();
         // else if (this instanceof IridiumRingItem) return Registry.IRIDIUM_RING.get(); // foreshadowing
-        return Registry.IRIDIUM_PLATING.get(); // should never happen
+        return Registry.ItemRegistry.IRIDIUM_PLATING.get(); // should never happen
     }
 }

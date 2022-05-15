@@ -43,7 +43,7 @@ public class HomingWitherSkull extends WitherSkull {
     }
 
     public HomingWitherSkull(Level world, LivingEntity owner, double x, double y, double z) {
-        super(Registry.HOMING_WITHER_SKULL.get(), world);
+        super(Registry.EntityRegistry.HOMING_WITHER_SKULL.get(), world);
         setOwner(owner);
         this.setRot(owner.getYRot(), owner.getXRot());
         this.moveTo(owner.getX(), owner.getY() + owner.getEyeHeight() - 0.5, owner.getZ(), this.getYRot(), this.getXRot());

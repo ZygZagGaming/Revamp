@@ -44,7 +44,7 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
         background = guiHelper.drawableBuilder(RECIPE_GUI_VANILLA, 0, 220, 82, 34)
                 .addPadding(0, 10, 0, 0)
                 .build();
-        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
+        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, Registry.ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
     }
 
     @Override

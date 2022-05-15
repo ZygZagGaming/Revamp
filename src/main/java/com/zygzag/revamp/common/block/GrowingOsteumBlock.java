@@ -45,13 +45,13 @@ public class GrowingOsteumBlock extends Block {
     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
         if (rng.nextDouble() < 0.125) {
             if (state.getValue(STAGE) != 5) world.setBlockAndUpdate(pos, state.setValue(STAGE, state.getValue(STAGE) + 1));
-            else world.setBlockAndUpdate(pos, ((OsteumBlock) Registry.OSTEUM.get()).getStateForAxis(state.getValue(DIRECTION).getAxis()));
+            else world.setBlockAndUpdate(pos, ((OsteumBlock) Registry.BlockRegistry.OSTEUM.get()).getStateForAxis(state.getValue(DIRECTION).getAxis()));
         }
     }
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         BlockState state2 = world.getBlockState(pos.relative(state.getValue(DIRECTION).getOpposite()));
-        return state2.is(Registry.OSTEUM.get()) && state2.getValue(OsteumBlock.getProperty(state.getValue(DIRECTION).getAxis()));
+        return state2.is(Registry.BlockRegistry.OSTEUM.get()) && state2.getValue(OsteumBlock.getProperty(state.getValue(DIRECTION).getAxis()));
     }
 }

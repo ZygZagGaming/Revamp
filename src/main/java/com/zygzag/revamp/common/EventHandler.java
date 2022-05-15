@@ -45,9 +45,9 @@ public class EventHandler {
     public static void biomeLoadingEvent(BiomeLoadingEvent event) {
         BiomeGenerationSettingsBuilder settings = event.getGeneration();
         if (!event.getCategory().equals(Biome.BiomeCategory.NETHER) && !event.getCategory().equals(Biome.BiomeCategory.THEEND)) {
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_SMALL_PLACED.getHolder().get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_LARGE_PLACED.getHolder().get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.IRIDIUM_BURIED_PLACED.getHolder().get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_SMALL_PLACED.getHolder().get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_LARGE_PLACED.getHolder().get());
+            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_BURIED_PLACED.getHolder().get());
         }
     }
 
@@ -59,7 +59,7 @@ public class EventHandler {
         DamageSource source = evt.getSource();
         float amt = evt.getAmount();
         ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (stack.getItem() == Registry.DIAMOND_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
+        if (stack.getItem() == Registry.IridiumGearRegistry.DIAMOND_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
             AABB box = entity.getBoundingBox().inflate(16.0);
             Object[] blocks = world.getBlockStates(box).toArray();
             HashMap<Block, Integer> map = new HashMap<>();
@@ -89,20 +89,20 @@ public class EventHandler {
                 Item item = attackStack.getItem();
                 Item chestItem = living.getItemBySlot(EquipmentSlot.CHEST).getItem();
 
-                if (stack.getItem() == Registry.WITHER_SKULL_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
+                if (stack.getItem() == Registry.IridiumGearRegistry.WITHER_SKULL_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
                     int th = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.THORNS, stack);
                     MobEffectInstance effect = new MobEffectInstance(MobEffects.WITHER, 20 * (3 + th), th / 2);
                     living.addEffect(effect);
                 }
 
-                if (item == Registry.DIAMOND_SOCKETED_IRIDIUM_SWORD.get()) {
+                if (item == Registry.IridiumGearRegistry.DIAMOND_SOCKETED_IRIDIUM_SWORD.get()) {
                     int height = attacker.getBlockY();
                     float damageBonus = (384f - height) / (112f/3f);
                     evt.setAmount(amt + damageBonus);
-                } else if (item == Registry.EMERALD_SOCKETED_IRIDIUM_AXE.get() && entity.getType().is(RevampTags.ILLAGERS.get())) {
+                } else if (item == Registry.IridiumGearRegistry.EMERALD_SOCKETED_IRIDIUM_AXE.get() && entity.getType().is(RevampTags.ILLAGERS.get())) {
                     float damageBonus = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SMITE, attackStack) * 2.5f;
                     evt.setAmount(amt + damageBonus);
-                } else if (item == Registry.SKULL_SOCKETED_IRIDIUM_SWORD.get()) {
+                } else if (item == Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_SWORD.get()) {
                     float chance = 0.1f;
                     if (entity.getType().is(RevampTags.BOSSES.get())) chance = 0.025f;
                     else if (entity.getType() == EntityType.PLAYER) chance = 0.01f;
@@ -110,19 +110,19 @@ public class EventHandler {
                     if (rand <= chance) {
                         evt.setAmount(Float.MAX_VALUE);
                     }
-                } else if (item == Registry.SKULL_SOCKETED_IRIDIUM_HOE.get()) {
+                } else if (item == Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_HOE.get()) {
                     if (entity.getMobType() == MobType.UNDEAD) {
                         if (entity.getType().is(RevampTags.BOSSES.get())) evt.setAmount(25f);
                         else evt.setAmount(Float.MAX_VALUE);
                     }
-                } else if (item == Registry.AMETHYST_SOCKETED_IRIDIUM_AXE.get()) {
+                } else if (item == Registry.IridiumGearRegistry.AMETHYST_SOCKETED_IRIDIUM_AXE.get()) {
                     if (time < 11834 || time > 22300) evt.setAmount(evt.getAmount() * 1.2f);
-                } else if (item == Registry.AMETHYST_SOCKETED_IRIDIUM_SWORD.get()) {
+                } else if (item == Registry.IridiumGearRegistry.AMETHYST_SOCKETED_IRIDIUM_SWORD.get()) {
                     if (time >= 11834 && time <= 22300) evt.setAmount(evt.getAmount() * 1.2f);
                     System.out.println(time);
                 }
 
-                if (chestItem == Registry.SKULL_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
+                if (chestItem == Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
                     float heal = amt / 4;
                     living.heal(heal);
                 }
@@ -155,7 +155,7 @@ public class EventHandler {
             AABB box = player.getBoundingBox().inflate(40d, 5d, 40d);
             List<IronGolem> golems = player.level.getEntitiesOfClass(IronGolem.class, box);
             for (IronGolem golem : golems) {
-                for (MobEffectInstance effect : Registry.LONG_RAGE_POTION.get().getEffects()) {
+                for (MobEffectInstance effect : Registry.PotionRegistry.LONG_RAGE_POTION.get().getEffects()) {
                     golem.addEffect(effect);
                 }
             }

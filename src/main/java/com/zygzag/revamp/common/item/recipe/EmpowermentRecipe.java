@@ -58,7 +58,7 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public ItemStack getResultItem() {
-        return Registry.EMPOWERMENT_STAR_ITEM.get().getDefaultInstance();
+        return Registry.ItemRegistry.EMPOWERMENT_STAR_ITEM.get().getDefaultInstance();
     }
 
     @Override

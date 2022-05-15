@@ -7,7 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -42,11 +41,11 @@ public class ThrownAxe extends AbstractArrow implements ItemSupplier {
 
     public ThrownAxe(EntityType<? extends ThrownAxe> type, Level world) {
         super(type, world);
-        this.item = Registry.IRIDIUM_AXE.get().getDefaultInstance();
+        this.item = Registry.IridiumGearRegistry.IRIDIUM_AXE.get().getDefaultInstance();
     }
 
     public ThrownAxe(Level world, Player owner, ItemStack item) {
-        super(Registry.THROWN_AXE.get(), owner, world);
+        super(Registry.EntityRegistry.THROWN_AXE.get(), owner, world);
         this.item = item.copy();
     }
 

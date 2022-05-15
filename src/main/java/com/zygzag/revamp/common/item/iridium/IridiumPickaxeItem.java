@@ -81,7 +81,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case AMETHYST -> {
                 return Constants.AMETHYST_PICKAXE_COOLDOWN / (cooldownLevel + 1);
@@ -163,7 +163,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                 }
                 case AMETHYST -> {
                     if (!player.getCooldowns().isOnCooldown(this)) {
-                        player.addEffect(new MobEffectInstance(Registry.SIGHT_EFFECT.get(), 1200, 1));
+                        player.addEffect(new MobEffectInstance(Registry.MobEffectRegistry.SIGHT_EFFECT.get(), 1200, 1));
                         ISocketable.addCooldown(player, stack, Constants.AMETHYST_PICKAXE_COOLDOWN);
                     }
                     return InteractionResultHolder.consume(stack);

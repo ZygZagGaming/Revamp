@@ -112,7 +112,7 @@ public class PistonStructureResolverMixin {
                         callback.setReturnValue(false);
                         break;
                     }
-                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(Registry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED) && toPush.contains(lastPos)) {
+                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(Registry.BlockRegistry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED) && toPush.contains(lastPos)) {
                         this.toDestroy.add(blockpos1);
                         callback.setReturnValue(true);
                         break;

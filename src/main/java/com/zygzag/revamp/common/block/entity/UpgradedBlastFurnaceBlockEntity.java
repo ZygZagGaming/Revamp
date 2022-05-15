@@ -23,7 +23,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class UpgradedBlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
     public UpgradedBlastFurnaceBlockEntity(BlockPos pos, BlockState state) {
-        super(Registry.UPGRADED_BLAST_FURNACE_BLOCK_ENTITY.get(), pos, state, ModRecipeType.UPGRADED_BLASTING);
+        super(Registry.BlockEntityTypeRegistry.UPGRADED_BLAST_FURNACE_BLOCK_ENTITY.get(), pos, state, ModRecipeType.UPGRADED_BLASTING);
         this.items = NonNullList.withSize(4, ItemStack.EMPTY);
     }
 

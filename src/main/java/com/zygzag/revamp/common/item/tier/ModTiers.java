@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @MethodsReturnNonnullByDefault
 public enum ModTiers implements Tier {
     IRIDIUM(5, 2589, 8.85F, 5.5F, 18, () -> {
-        return Ingredient.of(Registry.IRIDIUM_PLATING.get());
+        return Ingredient.of(Registry.ItemRegistry.IRIDIUM_PLATING.get());
     });
 
     private final int level;

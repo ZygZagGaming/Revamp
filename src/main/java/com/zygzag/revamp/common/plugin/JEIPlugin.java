@@ -47,8 +47,8 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(Registry.TRANSMUTATION_CHARGE.get().getDefaultInstance(), Revamp.loc("transmutation"));
-        registration.addRecipeCatalyst(Registry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance(), Revamp.loc("transmutation"));
-        registration.addRecipeCatalyst(Registry.UPGRADED_BLAST_FURNACE_ITEM.get().getDefaultInstance(), Revamp.loc("upgraded_blasting"));
+        registration.addRecipeCatalyst(Registry.ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance(), Revamp.loc("transmutation"));
+        registration.addRecipeCatalyst(Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance(), Revamp.loc("transmutation"));
+        registration.addRecipeCatalyst(Registry.ItemRegistry.UPGRADED_BLAST_FURNACE_ITEM.get().getDefaultInstance(), Revamp.loc("upgraded_blasting"));
     }
 }

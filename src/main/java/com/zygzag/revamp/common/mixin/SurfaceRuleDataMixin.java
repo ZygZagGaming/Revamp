@@ -233,7 +233,7 @@ public class SurfaceRuleDataMixin {
                     ),
                     SurfaceRules.ifTrue(
                             SurfaceRules.isBiome(
-                                    Registry.LAVA_GARDENS.getKey()
+                                    Registry.BiomeRegistry.LAVA_GARDENS.getKey()
                             ),
                             SurfaceRules.ifTrue(
                                     SurfaceRules.UNDER_FLOOR,

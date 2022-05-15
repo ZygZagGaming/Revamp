@@ -242,7 +242,7 @@ public class IridiumScepterItem extends Item implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case EMERALD -> {
                 return Constants.EMERALD_SCEPTER_COOLDOWN / (cooldownLevel + 1);

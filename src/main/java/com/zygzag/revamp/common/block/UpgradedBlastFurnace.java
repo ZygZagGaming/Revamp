@@ -35,7 +35,7 @@ public class UpgradedBlastFurnace extends AbstractFurnaceBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return createFurnaceTicker(world, type, Registry.UPGRADED_BLAST_FURNACE_BLOCK_ENTITY.get());
+        return createFurnaceTicker(world, type, Registry.BlockEntityTypeRegistry.UPGRADED_BLAST_FURNACE_BLOCK_ENTITY.get());
     }
 
     protected void openContainer(Level world, BlockPos pos, Player player) {

@@ -43,7 +43,7 @@ public class DimensionTypeMixin {
                                             registry.getOrCreateHolder(Biomes.BASALT_DELTAS)
                                     ), Pair.of(
                                             Climate.parameters(-0.5F, 0.0F, 0.3F, 0.0F, 0.0F, 0.0F, 0.175F),
-                                            registry.getOrCreateHolder(com.zygzag.revamp.common.registry.Registry.LAVA_GARDENS.getKey())
+                                            registry.getOrCreateHolder(com.zygzag.revamp.common.registry.Registry.BiomeRegistry.LAVA_GARDENS.getKey())
                                     )
                             )
                     )

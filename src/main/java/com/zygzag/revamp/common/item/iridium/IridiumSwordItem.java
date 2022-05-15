@@ -93,7 +93,7 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         if (socket == Socket.WITHER_SKULL) return Constants.WITHER_SKULL_SWORD_COOLDOWN / (cooldownLevel + 1);
         else return 0;
     }

@@ -15,7 +15,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +46,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @Mod("revamp")
@@ -101,15 +99,15 @@ public class Revamp {
             PotionUtils.setPotion(speedPot, Potions.SWIFTNESS);
             PotionUtils.setPotion(speedStrongPot, Potions.STRONG_SWIFTNESS);
             PotionUtils.setPotion(speedLongPot, Potions.LONG_SWIFTNESS);
-            PotionUtils.setPotion(ragePot, Registry.RAGE_POTION.get());
-            PotionUtils.setPotion(rageStrongPot, Registry.STRONG_RAGE_POTION.get());
-            PotionUtils.setPotion(rageLongPot, Registry.LONG_RAGE_POTION.get());
-            PotionUtils.setPotion(splashRagePot, Registry.RAGE_POTION.get());
-            PotionUtils.setPotion(splashRageStrongPot, Registry.STRONG_RAGE_POTION.get());
-            PotionUtils.setPotion(splashRageLongPot, Registry.LONG_RAGE_POTION.get());
-            PotionUtils.setPotion(lingeringRagePot, Registry.RAGE_POTION.get());
-            PotionUtils.setPotion(lingeringRageStrongPot, Registry.STRONG_RAGE_POTION.get());
-            PotionUtils.setPotion(lingeringRageLongPot, Registry.LONG_RAGE_POTION.get());
+            PotionUtils.setPotion(ragePot, Registry.PotionRegistry.RAGE_POTION.get());
+            PotionUtils.setPotion(rageStrongPot, Registry.PotionRegistry.STRONG_RAGE_POTION.get());
+            PotionUtils.setPotion(rageLongPot, Registry.PotionRegistry.LONG_RAGE_POTION.get());
+            PotionUtils.setPotion(splashRagePot, Registry.PotionRegistry.RAGE_POTION.get());
+            PotionUtils.setPotion(splashRageStrongPot, Registry.PotionRegistry.STRONG_RAGE_POTION.get());
+            PotionUtils.setPotion(splashRageLongPot, Registry.PotionRegistry.LONG_RAGE_POTION.get());
+            PotionUtils.setPotion(lingeringRagePot, Registry.PotionRegistry.RAGE_POTION.get());
+            PotionUtils.setPotion(lingeringRageStrongPot, Registry.PotionRegistry.STRONG_RAGE_POTION.get());
+            PotionUtils.setPotion(lingeringRageLongPot, Registry.PotionRegistry.LONG_RAGE_POTION.get());
 
             ItemStack sightPot = Items.POTION.getDefaultInstance();
             ItemStack sightLongPot = Items.POTION.getDefaultInstance();
@@ -121,15 +119,15 @@ public class Revamp {
             ItemStack lingeringSightLongPot = Items.LINGERING_POTION.getDefaultInstance();
             ItemStack lingeringSightStrongPot = Items.LINGERING_POTION.getDefaultInstance();
             ItemStack awkwardPot = Items.POTION.getDefaultInstance();
-            PotionUtils.setPotion(sightPot, Registry.SIGHT_POTION.get());
-            PotionUtils.setPotion(splashSightPot, Registry.SIGHT_POTION.get());
-            PotionUtils.setPotion(lingeringSightPot, Registry.SIGHT_POTION.get());
-            PotionUtils.setPotion(sightLongPot, Registry.LONG_SIGHT_POTION.get());
-            PotionUtils.setPotion(splashSightLongPot, Registry.LONG_SIGHT_POTION.get());
-            PotionUtils.setPotion(lingeringSightLongPot, Registry.LONG_SIGHT_POTION.get());
-            PotionUtils.setPotion(sightStrongPot, Registry.STRONG_SIGHT_POTION.get());
-            PotionUtils.setPotion(splashSightStrongPot, Registry.STRONG_SIGHT_POTION.get());
-            PotionUtils.setPotion(lingeringSightStrongPot, Registry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(sightPot, Registry.PotionRegistry.SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightPot, Registry.PotionRegistry.SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightPot, Registry.PotionRegistry.SIGHT_POTION.get());
+            PotionUtils.setPotion(sightLongPot, Registry.PotionRegistry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightLongPot, Registry.PotionRegistry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightLongPot, Registry.PotionRegistry.LONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(sightStrongPot, Registry.PotionRegistry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(splashSightStrongPot, Registry.PotionRegistry.STRONG_SIGHT_POTION.get());
+            PotionUtils.setPotion(lingeringSightStrongPot, Registry.PotionRegistry.STRONG_SIGHT_POTION.get());
             PotionUtils.setPotion(awkwardPot, Potions.AWKWARD);
 
             // region strength to rage
@@ -264,12 +262,12 @@ public class Revamp {
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         RecipeType<TransmutationRecipe> r = ModRecipeType.TRANSMUTATION; // force initialization of interface
-        MenuScreens.register(Registry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
+        MenuScreens.register(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
-        evt.put(Registry.EMPOWERED_WITHER.get(), EmpoweredWither.createAttributes().build());
-        evt.put(Registry.REVAMPED_BLAZE.get(), RevampedBlaze.createAttributes().build());
+        evt.put(Registry.EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWither.createAttributes().build());
+        evt.put(Registry.EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlaze.createAttributes().build());
     }
 
     private void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {
@@ -298,7 +296,7 @@ public class Revamp {
     public static CreativeModeTab MAIN_TAB = new CreativeModeTab("revamp_main_tab") {
         @Override
         public ItemStack makeIcon() {
-            return Registry.IRIDIUM_PLATING.get().getDefaultInstance();
+            return Registry.ItemRegistry.IRIDIUM_PLATING.get().getDefaultInstance();
         }
     };
 

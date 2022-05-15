@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -48,9 +47,9 @@ public class ShulkerBowlRecipe extends CustomRecipe {
         if (stacks.size() == 2) {
             ItemStack first = stacks.get(0);
             ItemStack second = stacks.get(1);
-            if (first.is(stewTag) && (second.is(Items.SHULKER_SHELL) || second.is(Registry.SHULKER_BOWL_ITEM.get()))) {
+            if (first.is(stewTag) && (second.is(Items.SHULKER_SHELL) || second.is(Registry.ItemRegistry.SHULKER_BOWL_ITEM.get()))) {
                 return ShulkerBowlItem.getNumberOfStews(second.getOrCreateTag()) < 16;
-            } else if (second.is(stewTag) && (first.is(Items.SHULKER_SHELL) || first.is(Registry.SHULKER_BOWL_ITEM.get()))) {
+            } else if (second.is(stewTag) && (first.is(Items.SHULKER_SHELL) || first.is(Registry.ItemRegistry.SHULKER_BOWL_ITEM.get()))) {
                 return ShulkerBowlItem.getNumberOfStews(first.getOrCreateTag()) < 16;
             } else return false;
         }
@@ -72,16 +71,16 @@ public class ShulkerBowlRecipe extends CustomRecipe {
             ItemStack second = stacks.get(1);
             ItemStack bowl;
             ItemStack stew;
-            if (first.is(stewTag) && (second.is(Items.SHULKER_SHELL) || second.is(Registry.SHULKER_BOWL_ITEM.get()))) {
+            if (first.is(stewTag) && (second.is(Items.SHULKER_SHELL) || second.is(Registry.ItemRegistry.SHULKER_BOWL_ITEM.get()))) {
                 stew = first;
                 bowl = second;
-            } else if (second.is(stewTag) && (first.is(Items.SHULKER_SHELL) || first.is(Registry.SHULKER_BOWL_ITEM.get()))) {
+            } else if (second.is(stewTag) && (first.is(Items.SHULKER_SHELL) || first.is(Registry.ItemRegistry.SHULKER_BOWL_ITEM.get()))) {
                 stew = second;
                 bowl = first;
             } else return ItemStack.EMPTY;
 
             if (bowl.is(Items.SHULKER_SHELL)) {
-                ItemStack stack = new ItemStack(Registry.SHULKER_BOWL_ITEM.get());
+                ItemStack stack = new ItemStack(Registry.ItemRegistry.SHULKER_BOWL_ITEM.get());
                 CompoundTag tag = stack.getOrCreateTag();
                 FoodProperties prop = stew.getItem().getFoodProperties();
                 if (prop != null) {
@@ -187,6 +186,6 @@ public class ShulkerBowlRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.SHULKER_BOWL_CRAFTING.get();
+        return Registry.RecipeSerializerRegistry.SHULKER_BOWL_CRAFTING.get();
     }
 }

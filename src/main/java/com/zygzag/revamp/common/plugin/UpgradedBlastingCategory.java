@@ -59,7 +59,7 @@ public class UpgradedBlastingCategory implements IRecipeCategory<UpgradedBlastFu
         animatedFlame = guiHelper.createAnimatedDrawable(staticFlame, 300, IDrawableAnimated.StartDirection.TOP, true);
         this.background = guiHelper.createDrawable(RECIPE_GUI_VANILLA, 0, 114, 82, 54);
         this.regularCookTime = 100;
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Registry.UPGRADED_BLAST_FURNACE_ITEM.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Registry.ItemRegistry.UPGRADED_BLAST_FURNACE_ITEM.get()));
         this.localizedName = new TranslatableComponent("revamp.recipe.upgraded_blasting");
         this.cachedArrows = CacheBuilder.newBuilder()
                 .maximumSize(25)

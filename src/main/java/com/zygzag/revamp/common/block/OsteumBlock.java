@@ -154,7 +154,7 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
                             grow(otherState, world, relative, rng, amount + 1);
                         else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true).setValue(getProperty(dir), OsteumSideState.NORMAL).setValue(getProperty(dir.getOpposite()), OsteumSideState.NORMAL));
                     } else if (otherState.is(RevampTags.OSTEUM_REPLACEABLE.get()))
-                        world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.GROWING_OSTEUM.get()).getStateForDirection(dir));
+                        world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.BlockRegistry.GROWING_OSTEUM.get()).getStateForDirection(dir));
                 }
             }
     }

@@ -57,6 +57,6 @@ public enum IridiumToolTier implements Tier {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.of(Registry.IRIDIUM_PLATING.get());
+        return Ingredient.of(Registry.ItemRegistry.IRIDIUM_PLATING.get());
     }
 }

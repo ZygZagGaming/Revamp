@@ -26,7 +26,7 @@ public class BlockMixin {
     public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity be, ItemStack stack, CallbackInfo callback) {
         player.awardStat(Stats.BLOCK_MINED.get((Block) (Object) this));
         player.causeFoodExhaustion(0.005F);
-        if (stack.getItem() != Registry.WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE.get()) dropResources(state, world, pos, be, player, stack);
+        if (stack.getItem() != Registry.IridiumGearRegistry.WITHER_SKULL_SOCKETED_IRIDIUM_PICKAXE.get()) dropResources(state, world, pos, be, player, stack);
         callback.cancel();
     }
 

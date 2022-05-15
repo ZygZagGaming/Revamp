@@ -42,7 +42,7 @@ public class UpgradedBlastFurnaceRecipe extends AbstractCookingRecipe implements
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.UPGRADED_BLAST_FURNACE_SERIALIZER.get();
+        return Registry.RecipeSerializerRegistry.UPGRADED_BLAST_FURNACE_SERIALIZER.get();
     }
 
     @Override

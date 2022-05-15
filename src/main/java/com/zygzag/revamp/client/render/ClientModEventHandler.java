@@ -25,10 +25,10 @@ public class ClientModEventHandler {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(Registry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
-        event.registerEntityRenderer(Registry.REVAMPED_BLAZE.get(), RevampedBlazeRenderer::new);
-        event.registerEntityRenderer(Registry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
-        event.registerEntityRenderer(Registry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
-        event.registerEntityRenderer(Registry.THROWN_AXE.get(), ThrownAxeRenderer::new);
+        event.registerEntityRenderer(Registry.EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
+        event.registerEntityRenderer(Registry.EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlazeRenderer::new);
+        event.registerEntityRenderer(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(Registry.EntityRegistry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
+        event.registerEntityRenderer(Registry.EntityRegistry.THROWN_AXE.get(), ThrownAxeRenderer::new);
     }
 }
