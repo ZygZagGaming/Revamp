@@ -2,16 +2,20 @@ package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
+import com.zygzag.revamp.common.entity.RevampedBlaze;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +28,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
@@ -36,8 +43,11 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Mod("revamp")
@@ -48,6 +58,7 @@ public class Revamp {
     public static final TagKey<Block> NEEDS_IRIDIUM_TOOL_TAG = BlockTags.create(new ResourceLocation("revamp:needs_iridium_tool"));
     public static final TagKey<Item> SOCKETABLE_TAG = ItemTags.create(new ResourceLocation("revamp:can_be_socketed"));
     public static final HashMap<String, ResourceLocation> LOCATION_CACHE = new HashMap<>();
+    public static final Capability<RevampedBlaze.Rods> RODS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
     public Revamp() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -58,11 +69,13 @@ public class Revamp {
         modEventBus.addListener(this::processIMC);
         modEventBus.addListener(this::doClientStuff);
         modEventBus.addListener(this::registerAttributes);
+        modEventBus.addListener(this::registerCapabilities);
         Registry.register(modEventBus);
 
         // forgeEventBus.addListener(this::doServerStuff);
 
         forgeEventBus.register(this);
+        forgeEventBus.addGenericListener(Entity.class, this::attachCapabilities);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -256,6 +269,27 @@ public class Revamp {
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
         evt.put(Registry.EMPOWERED_WITHER.get(), EmpoweredWither.createAttributes().build());
+        evt.put(Registry.REVAMPED_BLAZE.get(), RevampedBlaze.createAttributes().build());
+    }
+
+    private void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof RevampedBlaze p) {
+            LazyOptional<RevampedBlaze.Rods> lazy = LazyOptional.of(() -> new RevampedBlaze.Rods(p));
+            event.addCapability(loc("rods"), new ICapabilityProvider() {
+                @NotNull
+                @Override
+                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                    if (cap == RODS_CAPABILITY) {
+                        return lazy.cast();
+                    }
+                    return LazyOptional.empty();
+                }
+            });
+        }
+    }
+
+    private void registerCapabilities(final RegisterCapabilitiesEvent event) {
+        event.register(RevampedBlaze.Rods.class);
     }
 
     // private void doServerStuff(final FMLServerStartingEvent event) { }

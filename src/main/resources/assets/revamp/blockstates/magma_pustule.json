@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "face=down": {
+      "model": "revamp:block/magma_pustule"
+    },
+    "face=up": {
+      "model": "revamp:block/magma_pustule",
+      "x": 180
+    },
+    "face=south": {
+      "model": "revamp:block/magma_pustule",
+      "x": 90
+    },
+    "face=north": {
+      "model": "revamp:block/magma_pustule",
+      "x": 270
+    },
+    "face=west": {
+      "model": "revamp:block/magma_pustule",
+      "x": 90,
+      "y": 90
+    },
+    "face=east": {
+      "model": "revamp:block/magma_pustule",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

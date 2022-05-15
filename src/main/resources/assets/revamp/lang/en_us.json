@@ -147,7 +147,7 @@
   "use_ability.revamp.pickaxe.skull": "Arcane Alchemy",
   "description.use_ability.revamp.pickaxe.skull": "Transmutes nearby materials on the ground into small amounts of other materials.",
   "passive_ability.revamp.pickaxe.wither_skull": "Dark Devastation",
-  "description.passive_ability.revamp.pickaxe.wither_skull": "Instamines all pickaxe blocks, but does not drop items.",
+  "description.passive_ability.revamp.pickaxe.wither_skull": "Instamines all stone-like blocks, but does not drop items.",
   "passive_ability.revamp.pickaxe.diamond": "Butter Knife",
   "description.passive_ability.revamp.pickaxe.diamond": "You can mine faster. 'Nuff said.",
 
@@ -174,7 +174,7 @@
   "description.passive_ability.revamp.sword.diamond": "The lower down in the world you are, the more damage you deal.",
 
   "passive_ability.revamp.chestplate.emerald": "Shining Armor",
-  "description.passive_ability.revamp.chestplate.emerald": "You will always be seen as a hero. (Not Guaranteed)",
+  "description.passive_ability.revamp.chestplate.emerald": "You will always be seen as a hero (by villagers).",
   "passive_ability.revamp.chestplate.amethyst": "Enhanced Vision",
   "description.passive_ability.revamp.chestplate.amethyst": "You can see without the need of light.",
   "passive_ability.revamp.chestplate.skull": "Vampirism",
@@ -204,5 +204,8 @@
   "use_ability.revamp.shovel.wither_skull": "Rotting Thumb",
   "description.use_ability.revamp.shovel.wither_skull": "Ground near you is transmuted into similar Nether terrain.",
   "passive_ability.revamp.shovel.diamond": "Pulverization",
-  "description.passive_ability.revamp.shovel.diamond": "Blocks like sand, gravel, and clay are mined in large chunks (while sneaking)."
+  "description.passive_ability.revamp.shovel.diamond": "Blocks like sand, gravel, and clay are mined in large chunks (while sneaking).",
+
+  "death.attack.pustule": "%1$s stepped on a trap",
+  "block.revamp.magma_pustule": "Magma Pustule"
 }

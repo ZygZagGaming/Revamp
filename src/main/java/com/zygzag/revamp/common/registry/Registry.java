@@ -4,10 +4,7 @@ import com.mojang.serialization.Codec;
 import com.zygzag.revamp.common.block.*;
 import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
 import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
-import com.zygzag.revamp.common.entity.EmpoweredWither;
-import com.zygzag.revamp.common.entity.HomingWitherSkull;
-import com.zygzag.revamp.common.entity.ThrownAxe;
-import com.zygzag.revamp.common.entity.ThrownTransmutationCharge;
+import com.zygzag.revamp.common.entity.*;
 import com.zygzag.revamp.common.entity.effect.SightEffect;
 import com.zygzag.revamp.common.item.EmpowermentStar;
 import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
@@ -67,6 +64,7 @@ import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.util.Lazy;
@@ -102,12 +100,14 @@ public class Registry {
     public static DeferredRegister<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, MODID);
     public static DeferredRegister<Biome> BIOME_REGISTER = DeferredRegister.create(ForgeRegistries.BIOMES, MODID);
     public static DeferredRegister<Codec<? extends BiomeSource>> BIOME_SOURCE_REGISTER = DeferredRegister.create(net.minecraft.core.Registry.BIOME_SOURCE_REGISTRY, MODID);
-    public static DeferredRegister<?>[] REGISTERS = {ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, ENTITY_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER, BLOCK_ENTITY_REGISTER, MENU_REGISTER, FEATURE_REGISTER, CONFIGURED_FEATURE_REGISTER, PLACED_FEATURE_REGISTER, STRUCTURE_FEATURE_REGISTER, CONFIGURED_STRUCTURE_FEATURE_REGISTER, BIOME_REGISTER, BIOME_SOURCE_REGISTER};
+    public static DeferredRegister<?>[] REGISTERS = {ENTITY_REGISTER, ITEM_REGISTER, BLOCK_REGISTER, RECIPE_REGISTER, ENCHANT_REGISTER, POTION_REGISTER, LOOT_REGISTER, EFFECT_REGISTER, BLOCK_ENTITY_REGISTER, MENU_REGISTER, FEATURE_REGISTER, CONFIGURED_FEATURE_REGISTER, PLACED_FEATURE_REGISTER, STRUCTURE_FEATURE_REGISTER, CONFIGURED_STRUCTURE_FEATURE_REGISTER, BIOME_REGISTER, BIOME_SOURCE_REGISTER};
 
     public static final RegistryObject<Block> MAGMA_FUNGUS_BLOCK = registerBlock("magma_fungus_block", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
     public static final RegistryObject<Block> MAGMA_FUNGUS_CAP_BLOCK = registerBlock("magma_fungus_cap", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
     public static final RegistryObject<Block> MAGMA_FUNGUS_EDGE_BLOCK = registerBlock("magma_fungus_edge", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
     public static final RegistryObject<Block> MAGMA_FUNGUS_STEM_BLOCK = registerBlock("magma_fungus_stem", () -> new MagmaFungusStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
+
+    public static final RegistryObject<Block> MAGMA_PUSTULE_BLOCK = registerBlock("magma_pustule", () -> new MagmaPustuleBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(0f).sound(SoundType.NETHER_SPROUTS)));
 
     public static final RegistryObject<Block> IRIDIUM_ORE = registerBlock("iridium_ore", IridiumOreBlock::new);
     public static final RegistryObject<Block> DEEPSLATE_IRIDIUM_ORE = registerBlock("deepslate_iridium_ore", () -> new IridiumOreBlock(BlockBehaviour.Properties.copy(IRIDIUM_ORE.get()).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
@@ -162,6 +162,8 @@ public class Registry {
     public static final RegistryObject<Item> MAGMA_FUNGUS_CAP_ITEM = registerBlockItem(MAGMA_FUNGUS_CAP_BLOCK);
     public static final RegistryObject<Item> MAGMA_FUNGUS_EDGE_ITEM = registerBlockItem(MAGMA_FUNGUS_EDGE_BLOCK);
     public static final RegistryObject<Item> MAGMA_FUNGUS_STEM_ITEM = registerBlockItem(MAGMA_FUNGUS_STEM_BLOCK);
+
+    public static final RegistryObject<Item> MAGMA_PUSTULE_ITEM = registerBlockItem(MAGMA_PUSTULE_BLOCK);
 
     public static final RegistryObject<Item> IRIDIUM_ORE_ITEM = registerBlockItem(IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
     public static final RegistryObject<Item> DEEPSLATE_IRIDIUM_ORE_ITEM = registerBlockItem(DEEPSLATE_IRIDIUM_ORE, new Item.Properties().tab(MAIN_TAB));
@@ -299,10 +301,17 @@ public class Registry {
                     .immuneTo(Blocks.WITHER_ROSE)
                     .sized(1.1F, 3.75F)
                     .clientTrackingRange(10));
+    public static final RegistryObject<EntityType<RevampedBlaze>> REVAMPED_BLAZE = registerEntity("revamped_blaze", () ->
+            EntityType.Builder.of(RevampedBlaze::new, MobCategory.MONSTER)
+                    .fireImmune()
+                    .sized(0.8F, 1.85F)
+                    .clientTrackingRange(10));
 
     public static final RegistryObject<EntityType<HomingWitherSkull>> HOMING_WITHER_SKULL = registerEntity("homing_wither_skull", () -> EntityType.Builder.<HomingWitherSkull>of(HomingWitherSkull::new, MobCategory.MISC).sized(0.3125F, 0.3125F).clientTrackingRange(4));
     public static final RegistryObject<EntityType<ThrownTransmutationCharge>> TRANSMUTATION_BOTTLE_ENTITY = registerEntity("transmutation_bottle", () -> EntityType.Builder.of(ThrownTransmutationCharge::new, MobCategory.MISC));
     public static final RegistryObject<EntityType<ThrownAxe>> THROWN_AXE = registerEntity("thrown_axe", () -> EntityType.Builder.of(ThrownAxe::new, MobCategory.MISC));
+
+    public static final RegistryObject<Item> REVAMPED_BLAZE_SPAWN_EGG = registerItem("revamped_blaze_spawn_egg", () -> new ForgeSpawnEggItem(REVAMPED_BLAZE, 16167425, 16775294, (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
     // endregion
 
     // region effects

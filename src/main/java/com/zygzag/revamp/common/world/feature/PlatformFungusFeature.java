@@ -38,7 +38,7 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
         PlatformFungusConfiguration config = ctx.config();
         HashMap<BlockPos, BlockState> toPlace = new HashMap<>();
         boolean isDouble = Math.random() < 0.2;
-        boolean isTriple = Math.random() < 0.75;
+        boolean isTriple = Math.random() < 0.075;
         if (!world.getBlockState(origin.below()).getFluidState().is(Fluids.LAVA)) return false;
         int height = (int) (Math.random() * 4) + 3; // [3, 7)
         int radius = (int) (Math.random() * 5) + 5; // [5, 10)
