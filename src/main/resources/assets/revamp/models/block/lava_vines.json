@@ -1,0 +1,29 @@
+{
+	"parent": "block/block",
+	"textures": {
+		"0": "revamp:block/lava_vines",
+		"particle": "revamp:block/lava_vines"
+	},
+	"elements": [
+		{
+			"from": [5, 0, 8],
+			"to": [11, 16, 8],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8]},
+			"shade": false,
+			"faces": {
+				"north": {"uv": [0, 0, 6, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 6, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [8, 0, 5],
+			"to": [8, 16, 11],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8]},
+			"shade": false,
+			"faces": {
+				"east": {"uv": [0, 0, 6, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 6, 16], "texture": "#0"}
+			}
+		}
+	]
+}

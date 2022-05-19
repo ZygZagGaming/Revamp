@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=east,type=middle": {
+      "model": "revamp:block/lava_vines",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west,type=middle": {
+      "model": "revamp:block/lava_vines",
+      "x": 90,
+      "y": 270
+    },
+    "facing=north,type=middle": {
+      "model": "revamp:block/lava_vines",
+      "x": 90
+    },
+    "facing=south,type=middle": {
+      "model": "revamp:block/lava_vines",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east,type=end": {
+      "model": "revamp:block/lava_vines_end",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west,type=end": {
+      "model": "revamp:block/lava_vines_end",
+      "x": 90,
+      "y": 270
+    },
+    "facing=north,type=end": {
+      "model": "revamp:block/lava_vines_end",
+      "x": 90
+    },
+    "facing=south,type=end": {
+      "model": "revamp:block/lava_vines_end",
+      "x": 90,
+      "y": 180
+    }
+  }
+}

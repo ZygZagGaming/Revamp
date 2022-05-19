@@ -10,11 +10,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -72,7 +75,6 @@ public class MagmaPustuleBlock extends Block {
 
     @Override
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
-        System.out.println(entity.getBoundingBox() + " intersects " + shape(state.getValue(FACE)).bounds() + ": " + entity.getBoundingBox().intersects(shape(state.getValue(FACE)).bounds().move(pos).inflate(0.0625)));
         if (entity.getBoundingBox().intersects(shape(state.getValue(FACE)).bounds().move(pos).inflate(0.0625))) {
             world.destroyBlock(pos, true);
             if (entity instanceof LivingEntity living) {
@@ -86,5 +88,16 @@ public class MagmaPustuleBlock extends Block {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return state(ctx.getClickedFace().getOpposite());
+    }
+
+    @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState otherState, LevelAccessor world, BlockPos pos, BlockPos otherPos) {
+        if (!state.canSurvive(world, pos)) return Blocks.AIR.defaultBlockState();
+        return state;
+    }
+
+    @Override
+    public PushReaction getPistonPushReaction(BlockState state) {
+        return PushReaction.DESTROY;
     }
 }

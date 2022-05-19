@@ -207,5 +207,10 @@
   "description.passive_ability.revamp.shovel.diamond": "Blocks like sand, gravel, and clay are mined in large chunks (while sneaking).",
 
   "death.attack.pustule": "%1$s stepped on a trap",
-  "block.revamp.magma_pustule": "Magma Pustule"
+  "death.attack.pustule.player": "%2$s pushed %1$s into a trap",
+  "block.revamp.magma_pustule": "Magma Pustule",
+  "item.revamp.revamped_blaze_spawn_egg": "Revamped Blaze Spawn Egg",
+  "block.revamp.lava_vines": "Lava Vines",
+  "block.revamp.magma_mycelium": "Magma Mycelium",
+  "tooltip.revamp.shulker_shell_extra": "Can store up to 8 bowls of different stews"
 }

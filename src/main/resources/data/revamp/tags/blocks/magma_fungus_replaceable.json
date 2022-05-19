@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:air",
+    "minecraft:void_air",
+    "minecraft:cave_air",
+    "minecraft:lava",
+    "minecraft:magma_block",
+    "revamp:magma_mycelium"
+  ]
+}

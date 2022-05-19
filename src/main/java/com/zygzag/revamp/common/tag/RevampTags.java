@@ -18,4 +18,5 @@ public class RevampTags {
     public static final Lazy<TagKey<Block>> COPPER_ORES = () -> BlockTags.create(new ResourceLocation("forge:ores/copper"));
     public static final Lazy<TagKey<Block>> OSTEUM_REPLACEABLE = () -> BlockTags.create(new ResourceLocation("revamp:osteum_replaceable"));
     public static final Lazy<TagKey<Biome>> HAS_BETTER_FORTRESS = () -> BiomeTags.create("revamp:has_better_fortress");
+    public static final Lazy<TagKey<Block>> MAGMA_FUNGUS_REPLACEABLE = () -> BlockTags.create(Revamp.loc("magma_fungus_replaceable"));
 }

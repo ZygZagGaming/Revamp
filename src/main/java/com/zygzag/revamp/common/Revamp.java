@@ -8,6 +8,8 @@ import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -73,7 +75,6 @@ public class Revamp {
         // forgeEventBus.addListener(this::doServerStuff);
 
         forgeEventBus.register(this);
-        forgeEventBus.addGenericListener(Entity.class, this::attachCapabilities);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -263,27 +264,13 @@ public class Revamp {
     private void doClientStuff(final FMLClientSetupEvent event) {
         RecipeType<TransmutationRecipe> r = ModRecipeType.TRANSMUTATION; // force initialization of interface
         MenuScreens.register(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
+
+        ItemBlockRenderTypes.setRenderLayer(Registry.BlockRegistry.LAVA_VINES_BLOCK.get(), RenderType.cutoutMipped());
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
         evt.put(Registry.EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWither.createAttributes().build());
         evt.put(Registry.EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlaze.createAttributes().build());
-    }
-
-    private void attachCapabilities(final AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof RevampedBlaze p) {
-            LazyOptional<RevampedBlaze.Rods> lazy = LazyOptional.of(() -> new RevampedBlaze.Rods(p));
-            event.addCapability(loc("rods"), new ICapabilityProvider() {
-                @NotNull
-                @Override
-                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                    if (cap == RODS_CAPABILITY) {
-                        return lazy.cast();
-                    }
-                    return LazyOptional.empty();
-                }
-            });
-        }
     }
 
     private void registerCapabilities(final RegisterCapabilitiesEvent event) {

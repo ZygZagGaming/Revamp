@@ -1,4 +1,5 @@
 {
+  "parent": "minecraft:block",
   "variants": {
     "face=down": {
       "model": "revamp:block/magma_pustule"

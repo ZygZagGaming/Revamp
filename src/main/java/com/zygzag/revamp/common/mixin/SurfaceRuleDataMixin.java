@@ -1,6 +1,8 @@
 package com.zygzag.revamp.common.mixin;
 
+import com.zygzag.revamp.common.misc.RuleSource2;
 import com.zygzag.revamp.common.registry.Registry;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
@@ -8,13 +10,18 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraftforge.registries.RegistryObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 @SuppressWarnings({"unused", "ConstantConditions"})
 @Mixin(SurfaceRuleData.class)
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class SurfaceRuleDataMixin {
     private static final SurfaceRules.RuleSource AIR = makeStateRule(Blocks.AIR);
     private static final SurfaceRules.RuleSource BEDROCK = makeStateRule(Blocks.BEDROCK);
@@ -50,6 +57,9 @@ public class SurfaceRuleDataMixin {
     private static final SurfaceRules.RuleSource NETHER_WART_BLOCK = makeStateRule(Blocks.NETHER_WART_BLOCK);
     private static final SurfaceRules.RuleSource CRIMSON_NYLIUM = makeStateRule(Blocks.CRIMSON_NYLIUM);
     private static final SurfaceRules.RuleSource ENDSTONE = makeStateRule(Blocks.END_STONE);
+
+    private static final SurfaceRules.RuleSource MAGMA_BLOCK = makeStateRule(Blocks.MAGMA_BLOCK);
+    private static final SurfaceRules.RuleSource MAGMA_MYCELIUM = makeStateRule2(Registry.BlockRegistry.MAGMA_MYCELIUM_BLOCK);
 
     @Inject(cancellable = true, at = @At("HEAD"), method = "nether()Lnet/minecraft/world/level/levelgen/SurfaceRules$RuleSource;")
     private static void nether(CallbackInfoReturnable<SurfaceRules.RuleSource> callback) {
@@ -235,9 +245,11 @@ public class SurfaceRuleDataMixin {
                             SurfaceRules.isBiome(
                                     Registry.BiomeRegistry.LAVA_GARDENS.getKey()
                             ),
-                            SurfaceRules.ifTrue(
-                                    SurfaceRules.UNDER_FLOOR,
-                                    LAVA
+                            SurfaceRules.sequence(
+                                    SurfaceRules.ifTrue(
+                                            SurfaceRules.ON_FLOOR,
+                                            MAGMA_MYCELIUM
+                                    )
                             )
                     ),
                     NETHERRACK
@@ -249,5 +261,9 @@ public class SurfaceRuleDataMixin {
 
     private static SurfaceRules.RuleSource makeStateRule(Block block) {
         return SurfaceRules.state(block.defaultBlockState());
+    }
+
+    private static SurfaceRules.RuleSource makeStateRule2(RegistryObject<Block> obj) {
+        return new RuleSource2(obj);
     }
 }

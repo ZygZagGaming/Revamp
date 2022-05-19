@@ -1,11 +1,14 @@
 package com.zygzag.revamp.common.entity;
 
-import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
@@ -14,33 +17,29 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
+@SuppressWarnings("unchecked")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class RevampedBlaze extends Monster {
     public static final EntityDataAccessor<Boolean> DATA_IS_GUARD = SynchedEntityData.defineId(RevampedBlaze.class, EntityDataSerializers.BOOLEAN);
-    LazyOptional<Rods> rods;
+    public static final EntityDataAccessor<Rods> DATA_RODS = SynchedEntityData.defineId(RevampedBlaze.class, (EntityDataSerializer<Rods>) Registry.EntityDataSerializerRegistry.ROD_SERIALIZER_ENTRY.get().getSerializer());
     private static final EntityDimensions threeLayers = new EntityDimensions(0.6f, 1.8f, false);
     private static final EntityDimensions twoLayers = new EntityDimensions(0.6f, 1.3f, false);
     private static final EntityDimensions oneLayer = new EntityDimensions(0.6f, 0.6f, false);
@@ -51,9 +50,19 @@ public class RevampedBlaze extends Monster {
         return getDimensions(Pose.STANDING).makeBoundingBox(position());
     }
 
+    public Rods getRods() {
+        return entityData.get(DATA_RODS);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.dimensions = getDimensions(Pose.STANDING);
+        this.eyeHeight = getEyeHeight(Pose.STANDING);
+    }
+
     @Override
     public EntityDimensions getDimensions(Pose pose) {
-        if (rods == null) return threeLayers;
         int n = numRods();
         if (n > 8) return threeLayers;
         else if (n > 4) return twoLayers;
@@ -63,11 +72,15 @@ public class RevampedBlaze extends Monster {
 
     public RevampedBlaze(EntityType<? extends RevampedBlaze> type, Level world) {
         super(type, world);
-        Rods j = new Rods(this);
-        int k = (int) (Math.random() * 13);
-        for (int i = 0; i < k; i++)
-            j.rods.add(Rod.REGULAR);
-        this.rods = LazyOptional.of(() -> j);
+        this.moveControl = new FlyingMoveControl(this, 12, true);
+        if (!level.isClientSide) {
+            Rods j = new Rods(this);
+            int k = (int) (Math.random() * 13);
+            for (int i = 0; i < k; i++) {
+                j.rods.add(Rod.REGULAR);
+            }
+            entityData.set(DATA_RODS, j);
+        }
     }
 
     @Override
@@ -76,13 +89,19 @@ public class RevampedBlaze extends Monster {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.FLYING_SPEED, 0.6).add(Attributes.FOLLOW_RANGE, 40.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 6.0D).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.FLYING_SPEED, 0.6).add(Attributes.FOLLOW_RANGE, 40.0D);
+    }
+
+    @Override
+    public int getArmorValue() {
+        return numRods() * 2;
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(DATA_IS_GUARD, false);
+        entityData.define(DATA_RODS, new Rods(this));
     }
 
     protected void registerGoals() {
@@ -99,9 +118,8 @@ public class RevampedBlaze extends Monster {
         return entityData.get(DATA_IS_GUARD);
     }
 
-    public Rods getRods() {
-        if (rods.resolve().isEmpty()) rods = LazyOptional.of(() -> new Rods(this));
-        return rods.resolve().get();
+    public boolean causeFallDamage(float a, float b, DamageSource source) {
+        return false;
     }
 
     public int numRods() {
@@ -151,55 +169,42 @@ public class RevampedBlaze extends Monster {
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return rods.cast();
-        }
-        return super.getCapability(cap);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        rods.invalidate();
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
         ListTag k = nbt.getList("rods", Tag.TAG_STRING);
         List<Rod> l = new ArrayList<>();
         for (Tag tag : k) {
-            Rod rod = Rod.valueOf(k.getAsString());
+            Rod rod = Rod.valueOf(tag.getAsString());
             l.add(rod);
         }
-        rods = LazyOptional.of(() -> new Rods(l, this));
+        setRods(new Rods(l, getUUID()));
+    }
+
+    public void setRods(Rods rods) {
+        entityData.set(DATA_RODS, rods);
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag compoundTag = super.serializeNBT();
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
         ListTag listTag = new ListTag();
-        Optional<Rods> rods1 = rods.resolve();
-        if (rods1.isPresent()) {
-            for (Rod rod : rods1.get().rods) {
-                listTag.add(StringTag.valueOf(rod.toString()));
-            }
+        Rods rods = getRods();
+        for (Rod rod : rods.rods) {
+            listTag.add(StringTag.valueOf(rod.toString()));
         }
-        compoundTag.put("rods", listTag);
-        return compoundTag;
+        tag.put("rods", listTag);
     }
 
     public static class Rods {
         public List<Rod> rods;
-        public RevampedBlaze blaze;
-        public Rods(List<Rod> rods, RevampedBlaze blaze) {
+        public UUID blazeUUID;
+        public Rods(List<Rod> rods, UUID blazeUUID) {
             this.rods = rods;
-            this.blaze = blaze;
+            this.blazeUUID = blazeUUID;
         }
 
         public Rods(RevampedBlaze blaze) {
-            this(new ArrayList<>(), blaze);
+            this(new ArrayList<>(), blaze.getUUID());
         }
 
         public int numRods() {
@@ -275,31 +280,42 @@ public class RevampedBlaze extends Monster {
 
         public void tick() {
             --this.attackTime;
-            LivingEntity livingentity = this.blaze.getTarget();
-            if (livingentity != null) {
-                boolean flag = this.blaze.getSensing().hasLineOfSight(livingentity);
+            LivingEntity target = this.blaze.getTarget();
+            if (target != null) {
+                boolean flag = this.blaze.getSensing().hasLineOfSight(target);
                 if (flag) {
                     this.lastSeen = 0;
                 } else {
                     ++this.lastSeen;
                 }
 
-                double d0 = this.blaze.distanceToSqr(livingentity);
-                if (d0 < 4.0D) {
+                double distance = this.blaze.distanceTo(target);
+                State state = blaze.getState();
+
+                if (state == State.NEUTRAL || state == State.HOSTILE) {
+                    if (Math.abs(distance - 10) > 4) { // if more than 4 blocks from 10 block sphere around player
+                        Vec3 pos = blaze.position().subtract(target.position());
+                        pos = pos.scale(20.0 / pos.length());
+                        pos = pos.add(target.position());
+                        blaze.getMoveControl().setWantedPosition(pos.x(), pos.y(), pos.z(), 1);
+                    }
+                }
+
+                if (distance < 4.0D) {
                     if (!flag || blaze.getState() != State.GUARD) {
                         return;
                     }
 
                     if (this.attackTime <= 0) {
                         this.attackTime = 20;
-                        this.blaze.doHurtTarget(livingentity);
+                        this.blaze.doHurtTarget(target);
                     }
 
-                    this.blaze.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
-                } else if (d0 < this.getFollowDistance() * this.getFollowDistance() && flag) { // if target within follow distance and i have line of sight
-                    double d1 = livingentity.getX() - this.blaze.getX();
-                    double d2 = livingentity.getY(0.5D) - this.blaze.getY(0.5D);
-                    double d3 = livingentity.getZ() - this.blaze.getZ();
+                    this.blaze.getMoveControl().setWantedPosition(target.getX(), target.getY(), target.getZ(), 1.0D);
+                } else if (distance < this.getFollowDistance() * this.getFollowDistance() && flag) { // if target within follow distance and i have line of sight
+                    double d1 = target.getX() - this.blaze.getX();
+                    double d2 = target.getY(0.5D) - this.blaze.getY(0.5D);
+                    double d3 = target.getZ() - this.blaze.getZ();
                     if (this.attackTime <= 0) {
                         ++this.attackStep;
                         if (this.attackStep == 1) {
@@ -312,7 +328,7 @@ public class RevampedBlaze extends Monster {
                         }
 
                         if (this.attackStep > 1) { // if should fire fireball
-                            double d4 = Math.sqrt(Math.sqrt(d0)) * 0.5D;
+                            double d4 = Math.sqrt(Math.sqrt(distance)) * 0.5D;
                             if (!this.blaze.isSilent()) {
                                 this.blaze.level.levelEvent(null, 1018, this.blaze.blockPosition(), 0);
                             }
@@ -327,9 +343,9 @@ public class RevampedBlaze extends Monster {
 
                     }
 
-                    this.blaze.getLookControl().setLookAt(livingentity, 10.0F, 10.0F);
+                    this.blaze.getLookControl().setLookAt(target, 10.0F, 10.0F);
                 } else if (this.lastSeen < 5) {
-                    this.blaze.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
+                    this.blaze.getMoveControl().setWantedPosition(target.getX(), target.getY(), target.getZ(), 1.0D);
                 }
 
                 super.tick();
