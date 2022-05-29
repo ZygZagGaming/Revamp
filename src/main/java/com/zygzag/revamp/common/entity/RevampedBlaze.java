@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.entity;
 
 import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.tag.RevampTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
 @ParametersAreNonnullByDefault
@@ -56,9 +58,13 @@ public class RevampedBlaze extends Monster {
 
     @Override
     public void tick() {
+        Vec3 old = position();
         super.tick();
         this.dimensions = getDimensions(Pose.STANDING);
         this.eyeHeight = getEyeHeight(Pose.STANDING);
+        xOld = old.x();
+        yOld = old.y();
+        zOld = old.z();
     }
 
     @Override
@@ -77,10 +83,15 @@ public class RevampedBlaze extends Monster {
             Rods j = new Rods(this);
             int k = (int) (Math.random() * 13);
             for (int i = 0; i < k; i++) {
-                j.rods.add(Rod.REGULAR);
+                j.rods.add(new Rod(RodType.REGULAR, position()));
             }
             entityData.set(DATA_RODS, j);
         }
+    }
+
+    @Override
+    public boolean fireImmune() {
+        return true;
     }
 
     @Override
@@ -105,6 +116,7 @@ public class RevampedBlaze extends Monster {
     }
 
     protected void registerGoals() {
+        this.goalSelector.addGoal(3, new BlazeEvadeEntitiesGoal(this, (entity) -> !entity.getType().is(RevampTags.BLAZE_COMFORTABLE.get()) && (!(entity instanceof Player player) || !player.getAbilities().instabuild)));
         this.goalSelector.addGoal(4, new BlazeAttackGoal(this));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D, 0.0F));
@@ -171,10 +183,16 @@ public class RevampedBlaze extends Monster {
     @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        ListTag k = nbt.getList("rods", Tag.TAG_STRING);
+        ListTag k = nbt.getList("rods", Tag.TAG_COMPOUND);
         List<Rod> l = new ArrayList<>();
         for (Tag tag : k) {
-            Rod rod = Rod.valueOf(tag.getAsString());
+            CompoundTag cTag = (CompoundTag) tag;
+            RodType type = RodType.valueOf(cTag.getString("type"));
+            double x = cTag.getDouble("x");
+            double y = cTag.getDouble("y");
+            double z = cTag.getDouble("z");
+            Vec3 pos = new Vec3(x, y, z);
+            Rod rod = new Rod(type, pos);
             l.add(rod);
         }
         setRods(new Rods(l, getUUID()));
@@ -190,7 +208,12 @@ public class RevampedBlaze extends Monster {
         ListTag listTag = new ListTag();
         Rods rods = getRods();
         for (Rod rod : rods.rods) {
-            listTag.add(StringTag.valueOf(rod.toString()));
+            CompoundTag rodTag = new CompoundTag();
+            rodTag.putString("type", rod.type.toString());
+            rodTag.putDouble("x", rod.pos.x);
+            rodTag.putDouble("y", rod.pos.y);
+            rodTag.putDouble("z", rod.pos.z);
+            listTag.add(rodTag);
         }
         tag.put("rods", listTag);
     }
@@ -212,7 +235,9 @@ public class RevampedBlaze extends Monster {
         }
     }
 
-    public enum Rod {
+    public record Rod(RodType type, Vec3 pos) { }
+
+    public enum RodType {
         REGULAR,
         NONE,
         SHIELD,
@@ -292,10 +317,10 @@ public class RevampedBlaze extends Monster {
                 double distance = this.blaze.distanceTo(target);
                 State state = blaze.getState();
 
-                if (state == State.NEUTRAL || state == State.HOSTILE) {
+                if ((state == State.NEUTRAL || state == State.HOSTILE) && !blaze.isEvasive()) {
                     if (Math.abs(distance - 10) > 4) { // if more than 4 blocks from 10 block sphere around player
                         Vec3 pos = blaze.position().subtract(target.position());
-                        pos = pos.scale(20.0 / pos.length());
+                        pos = pos.scale(10.0 / pos.length());
                         pos = pos.add(target.position());
                         blaze.getMoveControl().setWantedPosition(pos.x(), pos.y(), pos.z(), 1);
                     }
@@ -312,7 +337,7 @@ public class RevampedBlaze extends Monster {
                     }
 
                     this.blaze.getMoveControl().setWantedPosition(target.getX(), target.getY(), target.getZ(), 1.0D);
-                } else if (distance < this.getFollowDistance() * this.getFollowDistance() && flag) { // if target within follow distance and i have line of sight
+                } else if (distance < this.getFollowDistance() && flag) { // if target within follow distance and i have line of sight
                     double d1 = target.getX() - this.blaze.getX();
                     double d2 = target.getY(0.5D) - this.blaze.getY(0.5D);
                     double d3 = target.getZ() - this.blaze.getZ();
@@ -328,14 +353,14 @@ public class RevampedBlaze extends Monster {
                         }
 
                         if (this.attackStep > 1) { // if should fire fireball
-                            double d4 = Math.sqrt(Math.sqrt(distance)) * 0.5D;
+                            double d4 = Math.sqrt(distance) * 0.5D;
                             if (!this.blaze.isSilent()) {
                                 this.blaze.level.levelEvent(null, 1018, this.blaze.blockPosition(), 0);
                             }
 
                             for (int i = 0; i < 1; ++i) {
                                 SmallFireball smallfireball = new SmallFireball(this.blaze.level, this.blaze, d1 + this.blaze.getRandom().nextGaussian() * d4, d2, d3 + this.blaze.getRandom().nextGaussian() * d4);
-                                smallfireball.setPos(smallfireball.getX(), this.blaze.getY(0.5D) + 0.5D, smallfireball.getZ());
+                                smallfireball.setPos(smallfireball.getX(), this.blaze.getEyeY(), smallfireball.getZ());
                                 this.blaze.level.addFreshEntity(smallfireball);
                             }
                         }
@@ -350,24 +375,47 @@ public class RevampedBlaze extends Monster {
 
                 super.tick();
             }
+        }
 
+        private double getFollowDistance() {
+            return this.blaze.getAttributeValue(Attributes.FOLLOW_RANGE);
+        }
+    }
+
+    public static class BlazeEvadeEntitiesGoal extends Goal {
+        private Predicate<Entity> predicate;
+        private RevampedBlaze blaze;
+
+        public BlazeEvadeEntitiesGoal(RevampedBlaze blaze, Predicate<Entity> predicate) {
+            this.blaze = blaze;
+            this.predicate = predicate;
+        }
+
+        @Override
+        public boolean canUse() {
+            return true;
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        @Override
+        public void tick() {
             if (blaze.isEvasive()) {
                 Level world = blaze.level;
-                List<Entity> entities = world.getEntities(blaze, blaze.getBoundingBox().inflate(15.0));
+                List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, blaze.getBoundingBox().inflate(15.0), (entity) -> entity != blaze && predicate.test(entity));
                 if (entities.size() > 0) {
                     Vec3 minDistEscapePos = entities.get(0).position();
-                    for (Entity e : entities) {
-                        if (e.distanceToSqr(blaze) < minDistEscapePos.distanceToSqr(blaze.position()))
+                    for (LivingEntity e : entities) {
+                        if (predicate.test(e) && e.distanceToSqr(blaze) < minDistEscapePos.distanceToSqr(blaze.position()))
                             minDistEscapePos = e.position();
                     }
                     Vec3 p = blaze.position().subtract(minDistEscapePos).scale(4.0).add(minDistEscapePos);
                     blaze.getMoveControl().setWantedPosition(p.x, p.y, p.z, 1.0);
                 }
             }
-        }
-
-        private double getFollowDistance() {
-            return this.blaze.getAttributeValue(Attributes.FOLLOW_RANGE);
         }
     }
 }

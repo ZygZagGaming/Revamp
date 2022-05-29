@@ -1,10 +1,18 @@
 package com.zygzag.revamp.common;
 
+import com.zygzag.revamp.client.overlay.JoltedOverlay;
 import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
+import com.zygzag.revamp.common.charge.ArcHandler;
+import com.zygzag.revamp.common.charge.ChunkChargeHandler;
+import com.zygzag.revamp.common.charge.ClientLevelChargeHandler;
+import com.zygzag.revamp.common.charge.EntityChargeHandler;
+import com.zygzag.revamp.common.data.ConductivenessReloadListener;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.RevampedBlaze;
+import com.zygzag.revamp.common.item.iridium.ISocketable;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
+import com.zygzag.revamp.common.networking.RevampPacketHandler;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -25,12 +33,17 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -59,6 +72,12 @@ public class Revamp {
     public static final TagKey<Item> SOCKETABLE_TAG = ItemTags.create(new ResourceLocation("revamp:can_be_socketed"));
     public static final HashMap<String, ResourceLocation> LOCATION_CACHE = new HashMap<>();
     public static final Capability<RevampedBlaze.Rods> RODS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<EntityChargeHandler> ENTITY_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<ChunkChargeHandler> CHUNK_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<ClientLevelChargeHandler> CLIENT_LEVEL_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<ArcHandler> ARC_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+
+    public static final ConductivenessReloadListener CONDUCTIVENESS = new ConductivenessReloadListener();
 
     public Revamp() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -75,6 +94,10 @@ public class Revamp {
         // forgeEventBus.addListener(this::doServerStuff);
 
         forgeEventBus.register(this);
+        forgeEventBus.addListener(this::addReloadListeners);
+        forgeEventBus.addGenericListener(Entity.class, this::attachCapabilitiesToEntities);
+        forgeEventBus.addGenericListener(LevelChunk.class, this::attachCapabilitiesToChunks);
+        forgeEventBus.addGenericListener(Level.class, this::attachCapabilitiesToLevels);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -251,6 +274,7 @@ public class Revamp {
             // endregion
         });
         BiomeManager.addBiome(BiomeManager.BiomeType.WARM, new BiomeManager.BiomeEntry(ResourceKey.create(ForgeRegistries.BIOMES.getRegistryKey(), loc("lava_gardens")), 1));
+        RevampPacketHandler.registerMessages();
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
@@ -266,6 +290,8 @@ public class Revamp {
         MenuScreens.register(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
 
         ItemBlockRenderTypes.setRenderLayer(Registry.BlockRegistry.LAVA_VINES_BLOCK.get(), RenderType.cutoutMipped());
+
+        OverlayRegistry.registerOverlayTop("jolted", new JoltedOverlay());
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
@@ -275,6 +301,70 @@ public class Revamp {
 
     private void registerCapabilities(final RegisterCapabilitiesEvent event) {
         event.register(RevampedBlaze.Rods.class);
+        event.register(EntityChargeHandler.class);
+        event.register(ChunkChargeHandler.class);
+        event.register(ClientLevelChargeHandler.class);
+        event.register(ArcHandler.class);
+    }
+
+    private void attachCapabilitiesToEntities(final AttachCapabilitiesEvent<Entity> event) {
+        LazyOptional<EntityChargeHandler> lazy = LazyOptional.of(() -> new EntityChargeHandler(event.getObject(), 0f, 20f));
+        event.addCapability(loc("entity_charge"), new ICapabilityProvider() {
+            @NotNull
+            @Override
+            public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                if (cap == ENTITY_CHARGE_CAPABILITY) {
+                    return lazy.cast();
+                }
+                return LazyOptional.empty();
+            }
+        });
+    }
+
+    private void attachCapabilitiesToChunks(final AttachCapabilitiesEvent<LevelChunk> event) {
+        LazyOptional<ChunkChargeHandler> lazy = LazyOptional.of(() -> new ChunkChargeHandler(event.getObject()));
+        event.addCapability(loc("chunk_charge"), new ICapabilityProvider() {
+            @NotNull
+            @Override
+            public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                if (cap == CHUNK_CHARGE_CAPABILITY) {
+                    return lazy.cast();
+                }
+                return LazyOptional.empty();
+            }
+        });
+    }
+
+    private void attachCapabilitiesToLevels(final AttachCapabilitiesEvent<Level> event) {
+        if (event.getObject().isClientSide) {
+            LazyOptional<ClientLevelChargeHandler> lazy = LazyOptional.of(() -> new ClientLevelChargeHandler(event.getObject()));
+            event.addCapability(loc("client_level_charge"), new ICapabilityProvider() {
+                @NotNull
+                @Override
+                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                    if (cap == CLIENT_LEVEL_CHARGE_CAPABILITY) {
+                        return lazy.cast();
+                    }
+                    return LazyOptional.empty();
+                }
+            });
+
+            LazyOptional<ArcHandler> lazy2 = LazyOptional.of(() -> new ArcHandler(event.getObject()));
+            event.addCapability(loc("arc"), new ICapabilityProvider() {
+                @NotNull
+                @Override
+                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                    if (cap == ARC_CAPABILITY) {
+                        return lazy2.cast();
+                    }
+                    return LazyOptional.empty();
+                }
+            });
+        }
+    }
+
+    public void addReloadListeners(final AddReloadListenerEvent event) {
+        event.addListener(CONDUCTIVENESS);
     }
 
     // private void doServerStuff(final FMLServerStartingEvent event) { }
@@ -293,4 +383,6 @@ public class Revamp {
         LOCATION_CACHE.put(s, l);
         return l;
     }
+
+    public static final EnchantmentCategory COOLDOWN_CATEGORY = EnchantmentCategory.create("cooldown", (item) -> item instanceof ISocketable socketable && socketable.hasCooldown());
 }

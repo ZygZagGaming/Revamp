@@ -212,5 +212,8 @@
   "item.revamp.revamped_blaze_spawn_egg": "Revamped Blaze Spawn Egg",
   "block.revamp.lava_vines": "Lava Vines",
   "block.revamp.magma_mycelium": "Magma Mycelium",
-  "tooltip.revamp.shulker_shell_extra": "Can store up to 8 bowls of different stews"
+  "tooltip.revamp.shulker_shell_extra": "Can store up to 8 bowls of different stews",
+  "death.attack.shocked": "%1$s was shocked to death",
+  "death.attack.shocked.player": "%1$s was shocked to death trying to escape %2$s",
+  "enchantment.revamp.surge_protector": "Surge Protector"
 }

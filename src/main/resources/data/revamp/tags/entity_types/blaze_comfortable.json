@@ -1,0 +1,12 @@
+{
+  "values": [
+    "revamp:revamped_blaze",
+    "minecraft:blaze",
+    "minecraft:wither_skeleton",
+    "minecraft:ghast",
+    "minecraft:strider",
+    "minecraft:zombified_piglin",
+    "minecraft:piglin",
+    "minecraft:hoglin"
+  ]
+}

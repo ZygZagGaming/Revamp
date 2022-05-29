@@ -1,13 +1,11 @@
 package com.zygzag.revamp.common.item.enchant;
 
-import com.zygzag.revamp.common.item.iridium.ISocketable;
+import com.zygzag.revamp.common.Revamp;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
-public class CooldownEnchantment extends Enchantment {
+public class CooldownEnchantment extends RevampEnchantment {
     public CooldownEnchantment(Rarity rarity) {
-        super(rarity, EnchantmentCategory.create("socketable", (item) -> item instanceof ISocketable socketable && socketable.hasCooldown()), new EquipmentSlot[]{EquipmentSlot.MAINHAND});
+        super(rarity, Revamp.COOLDOWN_CATEGORY, new EquipmentSlot[]{EquipmentSlot.MAINHAND});
     }
 
     @Override

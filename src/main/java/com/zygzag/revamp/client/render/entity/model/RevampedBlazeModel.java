@@ -11,6 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -40,6 +41,10 @@ public class RevampedBlazeModel extends HierarchicalModel<RevampedBlaze> {
     @Override
     public void setupAnim(RevampedBlaze blaze, float a, float b, float counter, float yRot, float xRot) {
         int numRods = blaze.numRods();
+        Vec3 current = blaze.position();
+        Vec3 old = new Vec3(blaze.xOld, blaze.yOld, blaze.zOld);
+        // System.out.println("current: " + current + " old: " + old);
+        Vec3 delta = old.subtract(current).scale(50.0);
         head.xRot = xRot * ((float)Math.PI / 180F);
         head.yRot = yRot * ((float)Math.PI / 180F);
         float d = 0;
@@ -51,13 +56,13 @@ public class RevampedBlazeModel extends HierarchicalModel<RevampedBlaze> {
         while (i < numRods) {
             ModelPart rod = rods[i];
             if (i < 4) {
-                rod.setPos((float) Math.cos(k) * 9, -4 + (float) Math.cos((float) i * 2 + counter / 2) + d, (float) Math.sin(k) * 9);
+                rod.setPos((float) (Math.cos(k) * 9 + delta.x()), (float) (-4 + Math.cos(i * 2 + counter / 2) + d + delta.y()), (float) (Math.sin(k) * 9 + delta.z()));
             } else if (i < 8) {
                 if (i == 4) k = counter * (float) Math.PI * 0.05f;
-                rod.setPos((float) Math.cos(k) * 8, 4 + (float) Math.cos((float) i * 2 + counter / 2) + d, (float) Math.sin(k) * 7);
+                rod.setPos((float) (Math.cos(k) * 8 + delta.x() * 2), (float) (4 + Math.cos(i * 2 + counter / 2) + d + delta.y() * 2), (float) (Math.sin(k) * 7 + delta.z() * 2));
             } else {
                 if (i == 8) k = counter * (float) Math.PI * -0.025f;
-                rod.setPos((float) Math.cos(k) * 7, 12 + (float) Math.cos((float) i * 2 + counter / 2) + d, (float) Math.sin(k) * 5);
+                rod.setPos((float) (Math.cos(k) * 7 + delta.x() * 3), (float) (12 + Math.cos( i * 2 + counter / 2) + d + delta.y() * 3), (float) (Math.sin(k) * 5 + delta.z() * 3));
             }
             k += Math.PI / 2;
             i++;
@@ -65,6 +70,7 @@ public class RevampedBlazeModel extends HierarchicalModel<RevampedBlaze> {
         for (int j = numRods; j < 12; j++) {
             rods[j].setPos(0f, 1000f, 0f);
         }
+
     }
 
 

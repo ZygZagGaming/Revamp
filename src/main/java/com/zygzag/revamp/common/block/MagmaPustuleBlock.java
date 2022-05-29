@@ -77,9 +77,9 @@ public class MagmaPustuleBlock extends Block {
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (entity.getBoundingBox().intersects(shape(state.getValue(FACE)).bounds().move(pos).inflate(0.0625))) {
             world.destroyBlock(pos, true);
-            if (entity instanceof LivingEntity living) {
+            if (!entity.fireImmune() && entity instanceof LivingEntity living) {
                 living.hurt(PUSTULE_DAMAGE, 4f);
-                if (!(living instanceof Player p) || !p.getAbilities().instabuild) living.setRemainingFireTicks(Math.max(living.getRemainingFireTicks(), 60));
+                if ((!(living instanceof Player p) || !p.getAbilities().instabuild)) living.setRemainingFireTicks(Math.max(living.getRemainingFireTicks(), 60));
             }
         }
     }

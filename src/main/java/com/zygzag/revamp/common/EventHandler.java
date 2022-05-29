@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common;
 
-import com.zygzag.revamp.common.tag.RevampTags;
+import com.zygzag.revamp.common.charge.ChunkChargeHandler;
+import com.zygzag.revamp.common.charge.EntityChargeHandler;
 import com.zygzag.revamp.common.item.iridium.IridiumChestplateItem;
 import com.zygzag.revamp.common.item.iridium.IridiumShovelItem;
 import com.zygzag.revamp.common.item.iridium.Socket;
@@ -8,9 +9,13 @@ import com.zygzag.revamp.common.item.recipe.EmpowermentRecipe;
 import com.zygzag.revamp.common.item.recipe.ItemAndEntityHolder;
 import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.tag.RevampTags;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,6 +32,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.Tags;
@@ -40,7 +47,6 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 
@@ -205,6 +211,26 @@ public class EventHandler {
     public static void tooltipEvent(ItemTooltipEvent event) {
         List<Component> list = event.getToolTip();
         if (event.getItemStack().is(Items.SHULKER_SHELL)) list.add(new TranslatableComponent("tooltip.revamp.shulker_shell_extra").withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    @SubscribeEvent
+    public static void tick(TickEvent.WorldTickEvent event) {
+        Level world = event.world;
+        ChunkSource source = world.getChunkSource();
+        if (source instanceof ServerChunkCache cache) {
+            Iterable<ChunkHolder> chunks = cache.chunkMap.getChunks();
+            for (ChunkHolder holder : chunks) {
+                LevelChunk chunk = holder.getFullChunk();
+                if (chunk != null) {
+                    GeneralUtil.ifCapability(chunk, Revamp.CHUNK_CHARGE_CAPABILITY, ChunkChargeHandler::tick);
+                }
+            }
+        }
+
+        Iterable<Entity> entities = world.getEntities().getAll();
+        for (Entity entity : entities) {
+            GeneralUtil.ifCapability(entity, Revamp.ENTITY_CHARGE_CAPABILITY, EntityChargeHandler::tick);
+        }
     }
 }
 
