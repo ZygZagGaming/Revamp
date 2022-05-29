@@ -1,9 +1,15 @@
 package com.zygzag.revamp.util;
 
+import com.mojang.datafixers.util.Pair;
+import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.charge.EnergyCharge;
+import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.common.tag.RevampTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -205,8 +211,13 @@ public class GeneralUtil {
         else return aabb.getZsize();
     }
 
+    static HashMap<Pair<Integer, Integer>, Integer> nCkCache = new HashMap<>();
+
     public static int nCk(int n, int k) {
-        return factorial(n) / (factorial(k) * factorial(n - k));
+        if (k == 0 || k == n) return 1;
+        Pair<Integer, Integer> pair = new Pair<>(n, k);
+        if (!nCkCache.containsKey(pair)) nCkCache.put(pair, nCk(n - 1, k - 1) + nCk(n - 1, k));
+        return nCkCache.get(pair);
     }
 
     static HashMap<Integer, Integer> factorialCache = new HashMap<>();
@@ -267,5 +278,26 @@ public class GeneralUtil {
 
     public static <T> void ifNonNull(@Nullable T t, Consumer<T> function) {
         if (t != null) function.accept(t);
+    }
+
+    public static SimpleParticleType particle(double charge) {
+        if (charge > 0) return Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get();
+        else return Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get();
+    }
+
+    public static float getChargeAt(Level world, BlockPos pos) {
+        Float f = ifCapabilityMap(world.getChunkAt(pos), Revamp.CHUNK_CHARGE_CAPABILITY, (handler) -> {
+            if (handler.charges.get(pos) == null) return 0f;
+            else return handler.charges.get(pos).getCharge();
+        });
+        if (f == null) return 0;
+        return f;
+    }
+
+    public static void setChargeAt(Level world, BlockPos pos, float charge) {
+        ifCapability(world.getChunkAt(pos), Revamp.CHUNK_CHARGE_CAPABILITY, (handler) -> {
+            if (handler.charges.get(pos) == null) handler.add(new EnergyCharge(charge, pos, handler));
+            else handler.charges.get(pos).setCharge(charge);
+        });
     }
 }

@@ -11,16 +11,22 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+import org.lwjgl.system.CallbackI;
 
 import java.util.List;
 import java.util.Random;
 
 public class EntityChargeHandler {
+    private int ticksSinceLastModified = 0;
     public static final DamageSource SHOCKED_DAMAGE_SOURCE = new DamageSource("shocked");
     private final Entity entity;
     private float charge;
@@ -47,6 +53,7 @@ public class EntityChargeHandler {
 
     public void setCharge(float c) {
         this.charge = c;
+        ticksSinceLastModified = 0;
         markDirty();
     }
 
@@ -64,6 +71,7 @@ public class EntityChargeHandler {
 
     public void tick() {
         if (!entity.level.isClientSide) {
+            ticksSinceLastModified++;
             if (dirty) {
                 ClientboundEntityChargeSyncPacket packet = new ClientboundEntityChargeSyncPacket(entity.getUUID(), charge, maxCharge);
                 if (entity instanceof ServerPlayer player)
@@ -74,14 +82,37 @@ public class EntityChargeHandler {
             if (Math.abs(charge) > maxCharge) {
                 overload();
             }
-            setCharge(charge * (1 - Constants.CHARGE_DECAY_RATE));
+            if (ticksSinceLastModified > 90) {
+                if (Math.abs(charge) < Constants.CHARGE_DECAY_RATE) setCharge(0);
+                else {
+                    charge -= Math.signum(charge) * Constants.CHARGE_DECAY_RATE;
+                    markDirty();
+                }
+            }
             if (Math.abs(charge) < Constants.EPSILON) setCharge(0);
+
+            if (entity instanceof LivingEntity living) {
+                AttributeInstance speedInstance = living.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (speedInstance != null) {
+                    if (speedInstance.getModifier(Constants.SPEED_MODIFIER_JOLTED_UUID) != null) {
+                        speedInstance.removeModifier(Constants.SPEED_MODIFIER_JOLTED_UUID);
+                    }
+                    speedInstance.addTransientModifier(new AttributeModifier(Constants.SPEED_MODIFIER_JOLTED_UUID, "Jolted speed mod", charge * Constants.CHARGE_SPEED_MULTIPLIER, AttributeModifier.Operation.ADDITION));
+                }
+                AttributeInstance attackSpeedInstance = living.getAttribute(Attributes.ATTACK_SPEED);
+                if (attackSpeedInstance != null) {
+                    if (attackSpeedInstance.getModifier(Constants.ATTACK_SPEED_MODIFIER_JOLTED_UUID) != null) {
+                        attackSpeedInstance.removeModifier(Constants.ATTACK_SPEED_MODIFIER_JOLTED_UUID);
+                    }
+                    attackSpeedInstance.addTransientModifier(new AttributeModifier(Constants.ATTACK_SPEED_MODIFIER_JOLTED_UUID, "Jolted attack speed mod", charge * Constants.CHARGE_ATTACK_SPEED_MULTIPLIER, AttributeModifier.Operation.ADDITION));
+                }
+            }
         }
         if (Math.random() < Math.abs(charge) / 20) {
             Level world = entity.level;
             Random rng = world.getRandom();
             Vec3 pos = GeneralUtil.randomPointOnAABB(entity.getBoundingBox(), rng).add(entity.position());
-            world.addParticle(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE.get(), pos.x, pos.y, pos.z, 0, 0, 0);
+            world.addParticle(GeneralUtil.particle(charge), pos.x, pos.y, pos.z, 0, 0, 0);
         }
     }
 

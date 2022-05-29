@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.OptionalDouble;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class Constants {
@@ -53,8 +54,12 @@ public class Constants {
     public static final float CHARGE_DAMAGE_MULTIPLIER = 0.75f;
     public static final float SURGE_PROTECTOR_DAMAGE_MULTIPLIER = 0.25f;
     public static final float EPSILON = 1e-7f;
-    public static final float CHARGE_DECAY_RATE = 0.005f;
+    public static final float CHARGE_DECAY_RATE = 0.0125f;
     public static final float ARC_RANGE = 6f;
+    public static final float CHARGE_SPEED_MULTIPLIER = 0.0025f;
+    public static final float CHARGE_ATTACK_SPEED_MULTIPLIER = 0.1f;
+    public static final UUID SPEED_MODIFIER_JOLTED_UUID = UUID.fromString("360d6a40-5801-4f65-ba6a-350f6c77f32f");
+    public static final UUID ATTACK_SPEED_MODIFIER_JOLTED_UUID = UUID.fromString("06d09ebe-745b-4a8c-af7b-6d720e1ef5f0");
 
     public static final Predicate<Entity> CHARGEABLE_PREDICATE = (entity) -> !(entity instanceof Player player) || !player.getAbilities().instabuild;
 }

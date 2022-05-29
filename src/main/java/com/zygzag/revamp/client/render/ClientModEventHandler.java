@@ -43,6 +43,7 @@ public class ClientModEventHandler {
 
     @SubscribeEvent
     public static void registerParticleProviders(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particleEngine.register(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE.get(), ChargeParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get(), ChargeParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get(), ChargeParticle.Provider::new);
     }
 }

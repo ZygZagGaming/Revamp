@@ -96,6 +96,7 @@ public class Registry {
     private static final List<DeferredRegister<?>> REGISTERS = List.of(
             EntityRegistry.REGISTER,
             ItemRegistry.REGISTER,
+            IridiumGearRegistry.REGISTER,
             BlockRegistry.REGISTER,
             RecipeSerializerRegistry.REGISTER,
             EnchantmentRegistry.REGISTER,
@@ -138,15 +139,12 @@ public class Registry {
 
         public static final RegistryObject<Block> MAGMA_MYCELIUM_BLOCK = registerBlock("magma_mycelium", () -> new MagmaMyceliumBlock(BlockBehaviour.Properties.copy(Blocks.NETHERRACK)));
 
-        public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK = registerBlock("charge_crystal", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST)));
+        public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_NEGATIVE = registerBlock("charge_crystal_negative", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), -20f));
+        public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_POSITIVE = registerBlock("charge_crystal_positive", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), 20f));
 
         public static RegistryObject<Block> registerBlock(String id, Supplier<Block> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class ItemRegistry {
@@ -211,7 +209,8 @@ public class Registry {
 
         public static final RegistryObject<Item> MAGMA_MYCELIUM_ITEM = registerBlockItem(BlockRegistry.MAGMA_MYCELIUM_BLOCK);
 
-        public static final RegistryObject<Item> CHARGE_CRYSTAL_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK);
+        public static final RegistryObject<Item> CHARGE_CRYSTAL_NEGATIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_NEGATIVE);
+        public static final RegistryObject<Item> CHARGE_CRYSTAL_POSITIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_POSITIVE);
 
         private static RegistryObject<Item> basicItem(String id) {
             return REGISTER.register(id, () -> new Item(new Item.Properties().tab(MAIN_TAB)));
@@ -234,12 +233,8 @@ public class Registry {
         }
 
         public static RegistryObject<Item> registerBlockItem(RegistryObject<Block> block) {
-            return registerBlockItem(block, new Item.Properties());
+            return registerBlockItem(block, new Item.Properties().tab(MAIN_TAB));
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class IridiumGearRegistry {
@@ -340,10 +335,6 @@ public class Registry {
         private static RegistryObject<Item> registerItem(String id, Supplier<Item> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class EnchantmentRegistry {
@@ -354,10 +345,6 @@ public class Registry {
         public static RegistryObject<Enchantment> registerEnchant(String id, Supplier<Enchantment> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class RecipeSerializerRegistry {
@@ -371,10 +358,6 @@ public class Registry {
         public static <T extends Recipe<?>> RegistryObject<RecipeSerializer<T>> registerRecipeSerializer(String id, Supplier<RecipeSerializer<T>> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class EntityRegistry {
@@ -398,10 +381,6 @@ public class Registry {
         public static <T extends Entity> RegistryObject<EntityType<T>> registerEntity(String id, Supplier<EntityType.Builder<T>> supplier) {
             return REGISTER.register(id, () -> supplier.get().build(id));
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class MobEffectRegistry {
@@ -413,10 +392,6 @@ public class Registry {
         public static RegistryObject<MobEffect> registerEffect(String id, Supplier<MobEffect> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class PotionRegistry {
@@ -432,10 +407,6 @@ public class Registry {
         public static RegistryObject<Potion> registerPotion(String id, Supplier<Potion> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class GlobalLootModifierSerializerRegistry {
@@ -446,10 +417,6 @@ public class Registry {
         private static RegistryObject<GlobalLootModifierSerializer<?>> register(String id, Supplier<GlobalLootModifierSerializer<?>> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class BlockEntityTypeRegistry {
@@ -459,10 +426,6 @@ public class Registry {
         public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(String id, Supplier<BlockEntityType<T>> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class MenuTypeRegistry {
@@ -472,10 +435,6 @@ public class Registry {
         public static <T extends AbstractFurnaceMenu> RegistryObject<MenuType<T>> registerMenu(String id, Supplier<MenuType<T>> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class FeatureRegistry {
@@ -485,10 +444,6 @@ public class Registry {
         public static <F extends Feature<FC>, FC extends FeatureConfiguration> RegistryObject<F> registerFeature(String id, Supplier<F> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class StructureFeatureRegistry {
@@ -498,10 +453,6 @@ public class Registry {
         public static <S extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<S> registerStructureFeature(String id, Supplier<S> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class ConfiguredFeatureRegistry {
@@ -517,10 +468,6 @@ public class Registry {
         public static <C extends ConfiguredFeature<FC, F>, FC extends FeatureConfiguration, F extends Feature<FC>> RegistryObject<ConfiguredFeature<?, ?>> registerConfiguredFeature(String id, Supplier<C> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class ConfiguredStructureFeatureRegistry {
@@ -530,10 +477,6 @@ public class Registry {
         public static <C extends ConfiguredStructureFeature<FC, F>, F extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<C> registerConfiguredStructureFeature(String id, Supplier<C> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class PlacedFeatureRegistry {
@@ -547,10 +490,6 @@ public class Registry {
         public static <P extends PlacedFeature> RegistryObject<PlacedFeature> registerPlacedFeature(String id, Supplier<P> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class BiomeRegistry {
@@ -587,10 +526,6 @@ public class Registry {
         public static RegistryObject<Biome> registerBiome(String id, Supplier<Biome> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        } // force initialization
     }
 
     public static class RuleSourceRegistry {
@@ -599,10 +534,6 @@ public class Registry {
 
         public static <K extends Codec<S>, S extends SurfaceRules.RuleSource> RegistryObject<K> registerRuleSource(String id, Supplier<K> supplier) {
             return REGISTER.register(id, supplier);
-        }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
         }
     }
 
@@ -645,22 +576,15 @@ public class Registry {
         public static RegistryObject<DataSerializerEntry> registerDataSerializerEntry(String id, Supplier<DataSerializerEntry> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        }
     }
 
     public static class ParticleTypeRegistry {
         private static final DeferredRegister<ParticleType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, MODID);
-        public static RegistryObject<SimpleParticleType> CHARGE_PARTICLE_TYPE = registerParticleType("charge", () -> new SimpleParticleType(false));
+        public static RegistryObject<SimpleParticleType> CHARGE_PARTICLE_TYPE_POSITIVE = registerParticleType("charge_positive", () -> new SimpleParticleType(false));
+        public static RegistryObject<SimpleParticleType> CHARGE_PARTICLE_TYPE_NEGATIVE = registerParticleType("charge_negative", () -> new SimpleParticleType(false));
 
         public static <T extends ParticleType<?>> RegistryObject<T> registerParticleType(String id, Supplier<T> supplier) {
             return REGISTER.register(id, supplier);
-        }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
         }
     }
 
@@ -670,34 +594,9 @@ public class Registry {
         public static <K extends Codec<S>, S extends BiomeSource> RegistryObject<K> registerBiomeSource(String id, Supplier<K> supplier) {
             return REGISTER.register(id, supplier);
         }
-
-        public static void registerTo(IEventBus bus) {
-            REGISTER.register(bus);
-        }
     }
 
     public static void register(IEventBus bus) {
-        BlockRegistry.registerTo(bus);
-        ItemRegistry.registerTo(bus);
-        IridiumGearRegistry.registerTo(bus);
-        EnchantmentRegistry.registerTo(bus);
-        RecipeSerializerRegistry.registerTo(bus);
-        EntityRegistry.registerTo(bus);
-        MobEffectRegistry.registerTo(bus);
-        PotionRegistry.registerTo(bus);
-        GlobalLootModifierSerializerRegistry.registerTo(bus);
-        BlockEntityTypeRegistry.registerTo(bus);
-        MenuTypeRegistry.registerTo(bus);
-        FeatureRegistry.registerTo(bus);
-        StructureFeatureRegistry.registerTo(bus);
-        ConfiguredFeatureRegistry.registerTo(bus);
-        ConfiguredStructureFeatureRegistry.registerTo(bus);
-        PlacedFeatureRegistry.registerTo(bus);
-        BiomeRegistry.registerTo(bus);
-        RuleSourceRegistry.registerTo(bus);
-        EntityDataSerializerRegistry.registerTo(bus);
-        ParticleTypeRegistry.registerTo(bus);
-        BiomeSourceRegistry.registerTo(bus);
         for (DeferredRegister<?> register : REGISTERS) {
             register.register(bus);
         }

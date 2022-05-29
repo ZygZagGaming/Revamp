@@ -14,12 +14,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ChargeCrystalBlock extends Block {
-    public ChargeCrystalBlock(Properties properties) {
+    private final float charge;
+    public ChargeCrystalBlock(Properties properties, float charge) {
         super(properties);
+        this.charge = charge;
     }
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState state2, boolean flag) {
-        GeneralUtil.ifCapability(world.getChunkAt(pos), Revamp.CHUNK_CHARGE_CAPABILITY, (h) -> h.charges.put(pos, new EnergyCharge(-20f, pos, h)));
+        GeneralUtil.ifCapability(world.getChunkAt(pos), Revamp.CHUNK_CHARGE_CAPABILITY, (h) -> h.charges.put(pos, new EnergyCharge(charge, pos, h)));
     }
 }

@@ -22,7 +22,7 @@ public class Arc {
     public int lifetime;
 
     public Arc(Vec3 start, Vec3 end, int lifetime) {
-        this(start, end, 4, lifetime);
+        this(start, end, (int) (4 * start.distanceTo(end)), lifetime);
     }
 
     public Arc(Vec3 start, Vec3 end, int between, int lifetime) {

@@ -84,20 +84,19 @@ public class EnergyCharge {
         lifetime++;
         Random rng = world.getRandom();
         Vec3 point = GeneralUtil.randomPointOnCube(pos, rng);
-        if (rng.nextDouble() < Math.abs(charge) / 20f) world.addParticle(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE.get(), point.x, point.y, point.z, 0, 0, 0);
-        if (!canSurvive() || Math.abs(charge) < 0.001f) remove();
+        if (rng.nextDouble() < Math.abs(charge) / 20f) world.addParticle(GeneralUtil.particle(charge), point.x, point.y, point.z, 0, 0, 0);
+        if (!canSurvive() || Math.abs(charge) < Constants.EPSILON) remove();
         if (!world.isClientSide) {
             List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, new AABB(pos).inflate(Constants.ARC_RANGE), Constants.CHARGEABLE_PREDICATE);
-            for (LivingEntity entity : entities) {
-                GeneralUtil.ifCapability(entity, Revamp.ENTITY_CHARGE_CAPABILITY, (handler) -> {
-                    float c = handler.getCharge();
-                    handler.setCharge(c + charge);
-                    Vec3 entityPos = entity.getBoundingBox().getCenter();
-                    Vec3 thisPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-                    if (Math.abs(charge) > Constants.EPSILON) new Arc(thisPos, entityPos, (int) Math.abs(charge)).sendToClients();
-                    charge = 0;
-                });
-            }
+            LivingEntity living = GeneralUtil.minByOrNull(entities, (e) -> e.distanceToSqr(Vec3.atCenterOf(pos)));
+            if (living != null) GeneralUtil.ifCapability(living, Revamp.ENTITY_CHARGE_CAPABILITY, (handler) -> {
+                float c = handler.getCharge();
+                handler.setCharge(c + charge);
+                Vec3 entityPos = living.getBoundingBox().getCenter();
+                Vec3 thisPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                new Arc(thisPos, entityPos, (int) Math.abs(charge)).sendToClients();
+                charge = 0;
+            });
             if (Math.abs(charge) > Constants.EPSILON) spread();
         }
     }
@@ -131,12 +130,11 @@ public class EnergyCharge {
     public void spread() {
         List<Direction> dirs = Arrays.stream(Direction.values()).filter((it) -> canSpreadTo(pos.relative(it))).toList();
         if (dirs.size() == 0) return;
-        float c = charge / (dirs.size() + 1);
-        this.charge = c;
-        for (Direction dir : dirs) {
-            Block block = world.getBlockState(pos.relative(dir)).getBlock();
-            if (Revamp.CONDUCTIVENESS.isConductor(block)) addOrCreateCharge(world, pos.relative(dir), c * (Revamp.CONDUCTIVENESS.getValue(block) / 100));
-        }
+        float c = charge;
+        for (Direction dir : dirs) c += GeneralUtil.getChargeAt(world, pos.relative(dir));
+        c /= dirs.size();
+        setCharge(c);
+        for (Direction dir : dirs) GeneralUtil.setChargeAt(world, pos.relative(dir), c);
     }
 
     public static void addOrCreateCharge(Level world, BlockPos pos, float value) {
@@ -150,5 +148,9 @@ public class EnergyCharge {
                 handler.charges.put(pos, new EnergyCharge(value, pos, handler));
             }
         });
+    }
+
+    public double arcDistance() {
+        return charge / 6;
     }
 }

@@ -21,6 +21,7 @@
   "minecraft:ice": 35,
   "minecraft:packed_ice": 50,
   "minecraft:blue_ice": 65,
-  "revamp:charge_crystal": 100,
+  "revamp:charge_crystal_positive": 100,
+  "revamp:charge_crystal_negative": 100,
   "minecraft:air": -1
 }
