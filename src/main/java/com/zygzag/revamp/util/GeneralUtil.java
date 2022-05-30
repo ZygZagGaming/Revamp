@@ -198,7 +198,7 @@ public class GeneralUtil {
         Direction.Axis a3 = axis == Direction.Axis.Z ? Direction.Axis.X : Direction.Axis.Z;
         double localX = rng.nextDouble() * size(aabb, a2);
         double localZ = rng.nextDouble() * size(aabb, a3);
-        Vec3 vec = Vec3.ZERO;
+        Vec3 vec = new Vec3(-aabb.getXsize() / 2, -aabb.getYsize() / 2, -aabb.getZsize() / 2);
         vec = add(vec, axis, reversed ? size(aabb, axis) : 0);
         vec = add(vec, a2, localX);
         vec = add(vec, a3, localZ);

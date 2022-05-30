@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 public class EntityChargeHandler {
-    private int ticksSinceLastModified = 0;
+    public int ticksSinceLastModified = 0;
     public static final DamageSource SHOCKED_DAMAGE_SOURCE = new DamageSource("shocked");
     private final Entity entity;
     private float charge;
@@ -52,9 +52,11 @@ public class EntityChargeHandler {
     }
 
     public void setCharge(float c) {
-        this.charge = c;
-        ticksSinceLastModified = 0;
-        markDirty();
+        if (c != charge) {
+            ticksSinceLastModified = 0;
+            charge = c;
+            markDirty();
+        }
     }
 
     public void setMaxCharge(float c) {
@@ -70,8 +72,8 @@ public class EntityChargeHandler {
     }
 
     public void tick() {
+        ticksSinceLastModified++;
         if (!entity.level.isClientSide) {
-            ticksSinceLastModified++;
             if (dirty) {
                 ClientboundEntityChargeSyncPacket packet = new ClientboundEntityChargeSyncPacket(entity.getUUID(), charge, maxCharge);
                 if (entity instanceof ServerPlayer player)

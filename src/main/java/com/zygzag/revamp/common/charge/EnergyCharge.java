@@ -134,7 +134,7 @@ public class EnergyCharge {
         for (Direction dir : dirs) c += GeneralUtil.getChargeAt(world, pos.relative(dir));
         c /= dirs.size();
         setCharge(c);
-        for (Direction dir : dirs) GeneralUtil.setChargeAt(world, pos.relative(dir), c);
+        for (Direction dir : dirs) if (Revamp.CONDUCTIVENESS.isConductor(world.getBlockState(pos.relative(dir)).getBlock())) GeneralUtil.setChargeAt(world, pos.relative(dir), c);
     }
 
     public static void addOrCreateCharge(Level world, BlockPos pos, float value) {

@@ -15,6 +15,8 @@ public class Constants {
 
     public static final int JOLTED_FRAMETIME = 4;
     public static final int JOLTED_NUM_FRAMES = 4;
+    public static final int GAUGE_ANIM_FRAMETIME = 4;
+    public static final int GAUGE_ANIM_NUM_FRAMES = 4;
 
     public static int AMETHYST_HOE_COOLDOWN = 400;
 
@@ -49,8 +51,8 @@ public class Constants {
 
     public static RenderType.CompositeRenderType TEST = RenderType.create("test", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, RenderType.CompositeState.builder().setShaderState(RenderType.RENDERTYPE_LINES_SHADER).setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty())).setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING).setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setOutputState(RenderType.OUTLINE_TARGET).setWriteMaskState(RenderType.COLOR_DEPTH_WRITE).setDepthTestState(RenderType.NO_DEPTH_TEST).setCullState(RenderType.NO_CULL).createCompositeState(true));
 
-    public static final boolean RENDER_BEZIER_ARCS = true;
-    public static final double ARC_RANDOMNESS = 1.5;
+    public static final boolean RENDER_BEZIER_ARCS = false;
+    public static final double ARC_RANDOMNESS = RENDER_BEZIER_ARCS ? 1.5 : 0.75;
     public static final float CHARGE_DAMAGE_MULTIPLIER = 0.75f;
     public static final float SURGE_PROTECTOR_DAMAGE_MULTIPLIER = 0.25f;
     public static final float EPSILON = 1e-7f;
@@ -61,5 +63,9 @@ public class Constants {
     public static final UUID SPEED_MODIFIER_JOLTED_UUID = UUID.fromString("360d6a40-5801-4f65-ba6a-350f6c77f32f");
     public static final UUID ATTACK_SPEED_MODIFIER_JOLTED_UUID = UUID.fromString("06d09ebe-745b-4a8c-af7b-6d720e1ef5f0");
 
+    public static final int HIGH_POSITIVE_CHARGE_COLOR = 0xed7e24;
+    public static final int LOW_POSITIVE_CHARGE_COLOR = 0xb5601b;
+    public static final int HIGH_NEGATIVE_CHARGE_COLOR = 0xeded21;
+    public static final int LOW_NEGATIVE_CHARGE_COLOR = 0x0bdbd1a;
     public static final Predicate<Entity> CHARGEABLE_PREDICATE = (entity) -> !(entity instanceof Player player) || !player.getAbilities().instabuild;
 }

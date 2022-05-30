@@ -26,13 +26,14 @@ import com.zygzag.revamp.common.world.feature.BetterFortressFeature;
 import com.zygzag.revamp.common.world.feature.PlatformFungusFeature;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -472,9 +473,22 @@ public class Registry {
 
     public static class ConfiguredStructureFeatureRegistry {
         private static final DeferredRegister<ConfiguredStructureFeature<?, ?>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, MODID);
-        public static final RegistryObject<ConfiguredStructureFeature<NoneFeatureConfiguration, BetterFortressFeature>> BETTER_FORTRESS_CONFIGURED = registerConfiguredStructureFeature("better_fortress", () -> new ConfiguredStructureFeature<>(StructureFeatureRegistry.BETTER_FORTRESS.get(), new NoneFeatureConfiguration(), new HolderSet.Named<>(BuiltinRegistries.BIOME, RevampTags.HAS_BETTER_FORTRESS.get()), false, Map.of(MobCategory.MONSTER, new StructureSpawnOverride(StructureSpawnOverride.BoundingBoxType.PIECE, BetterFortressFeature.FORTRESS_ENEMIES))));
+        public static final RegistryObject<ConfiguredStructureFeature<?, ?>> BETTER_FORTRESS_CONFIGURED = registerConfiguredStructureFeature("better_fortress", () ->
+                StructureFeatureRegistry.BETTER_FORTRESS.get().configured(
+                        NoneFeatureConfiguration.INSTANCE,
+                        RevampTags.HAS_BETTER_FORTRESS.get(),
+                        false,
+                        Map.of(
+                                MobCategory.MONSTER,
+                                new StructureSpawnOverride(
+                                        StructureSpawnOverride.BoundingBoxType.PIECE,
+                                        BetterFortressFeature.FORTRESS_ENEMIES
+                                )
+                        )
+                )
+        );
 
-        public static <C extends ConfiguredStructureFeature<FC, F>, F extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<C> registerConfiguredStructureFeature(String id, Supplier<C> supplier) {
+        public static <FC extends FeatureConfiguration, F extends StructureFeature<FC>> RegistryObject<ConfiguredStructureFeature<?, ?>> registerConfiguredStructureFeature(String id, Supplier<ConfiguredStructureFeature<FC, F>> supplier) {
             return REGISTER.register(id, supplier);
         }
     }
