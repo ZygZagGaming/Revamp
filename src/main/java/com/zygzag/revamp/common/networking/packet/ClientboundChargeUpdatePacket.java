@@ -1,23 +1,16 @@
 package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.charge.ChunkChargeHandler;
-import com.zygzag.revamp.common.charge.ClientLevelChargeHandler;
 import com.zygzag.revamp.common.charge.EnergyCharge;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.PacketListener;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -56,7 +49,8 @@ public class ClientboundChargeUpdatePacket {
         if (world != null) {
             int n = buf.readInt();
             for (int i = 0; i < n; i++) {
-                map.put(buf.readBlockPos(), EnergyCharge.decode(buf, world));
+                BlockPos pos = buf.readBlockPos();
+                map.put(pos, EnergyCharge.decode(buf, world));
             }
             int k = buf.readInt();
             for (int i = 0; i < k; i++) {

@@ -2,6 +2,7 @@ package com.zygzag.revamp.common.registry;
 
 import com.mojang.serialization.Codec;
 import com.zygzag.revamp.common.block.*;
+import com.zygzag.revamp.common.block.entity.ChargeDetectorBlockEntity;
 import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
 import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
 import com.zygzag.revamp.common.entity.*;
@@ -10,8 +11,7 @@ import com.zygzag.revamp.common.item.EmpowermentStar;
 import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
 import com.zygzag.revamp.common.item.ShulkerBowlItem;
 import com.zygzag.revamp.common.item.TransmutationCharge;
-import com.zygzag.revamp.common.item.enchant.CooldownEnchantment;
-import com.zygzag.revamp.common.item.enchant.SurgeProtectorEnchantment;
+import com.zygzag.revamp.common.item.enchant.*;
 import com.zygzag.revamp.common.item.iridium.*;
 import com.zygzag.revamp.common.item.iridium.partial.*;
 import com.zygzag.revamp.common.item.recipe.*;
@@ -26,14 +26,11 @@ import com.zygzag.revamp.common.world.feature.BetterFortressFeature;
 import com.zygzag.revamp.common.world.feature.PlatformFungusFeature;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -142,6 +139,8 @@ public class Registry {
 
         public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_NEGATIVE = registerBlock("charge_crystal_negative", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), -20f));
         public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_POSITIVE = registerBlock("charge_crystal_positive", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), 20f));
+        public static final RegistryObject<Block> CHARGE_DETECTOR = registerBlock("charge_detector", () -> new ChargeDetectorBlock(BlockBehaviour.Properties.of(Material.DECORATION).instabreak().sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> ARC_CRYSTAL = registerBlock("arc_crystal", () -> new ArcCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST)));
 
         public static RegistryObject<Block> registerBlock(String id, Supplier<Block> supplier) {
             return REGISTER.register(id, supplier);
@@ -212,6 +211,8 @@ public class Registry {
 
         public static final RegistryObject<Item> CHARGE_CRYSTAL_NEGATIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_NEGATIVE);
         public static final RegistryObject<Item> CHARGE_CRYSTAL_POSITIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_POSITIVE);
+        public static final RegistryObject<Item> CHARGE_DETECTOR_ITEM = registerBlockItem(BlockRegistry.CHARGE_DETECTOR);
+        public static final RegistryObject<Item> ARC_CRYSTAL_ITEM = registerBlockItem(BlockRegistry.ARC_CRYSTAL);
 
         private static RegistryObject<Item> basicItem(String id) {
             return REGISTER.register(id, () -> new Item(new Item.Properties().tab(MAIN_TAB)));
@@ -342,8 +343,11 @@ public class Registry {
         private static final DeferredRegister<Enchantment> REGISTER = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MODID);
         public static final RegistryObject<Enchantment> COOLDOWN_ENCHANTMENT = registerEnchant("cooldown", () -> new CooldownEnchantment(Enchantment.Rarity.RARE));
         public static final RegistryObject<Enchantment> SURGE_PROTECTOR_ENCHANTMENT = registerEnchant("surge_protector", SurgeProtectorEnchantment::new);
-
-        public static RegistryObject<Enchantment> registerEnchant(String id, Supplier<Enchantment> supplier) {
+        public static final RegistryObject<VoltageEnchantment> VOLTAGE_PLUS_ENCHANTMENT = registerEnchant("voltage_plus", () -> new VoltageEnchantment(Constants.VOLTAGE_ENCHANTMENT_CHARGE_PER_TICK));
+        public static final RegistryObject<VoltageEnchantment> VOLTAGE_MINUS_ENCHANTMENT = registerEnchant("voltage_minus", () -> new VoltageEnchantment(-Constants.VOLTAGE_ENCHANTMENT_CHARGE_PER_TICK));
+        public static final RegistryObject<DynamoEnchantment> DYNAMO_ENCHANTMENT = registerEnchant("dynamo", DynamoEnchantment::new);
+        public static final RegistryObject<GroundedEnchantment> GROUNDED_ENCHANTMENT = registerEnchant("grounded", GroundedEnchantment::new);
+        public static <T extends Enchantment> RegistryObject<T> registerEnchant(String id, Supplier<T> supplier) {
             return REGISTER.register(id, supplier);
         }
     }
@@ -423,6 +427,7 @@ public class Registry {
     public static class BlockEntityTypeRegistry {
         private static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
         public static RegistryObject<BlockEntityType<UpgradedBlastFurnaceBlockEntity>> UPGRADED_BLAST_FURNACE_BLOCK_ENTITY = registerBlockEntity("upgraded_blast_furnace", () -> BlockEntityType.Builder.of(UpgradedBlastFurnaceBlockEntity::new, BlockRegistry.UPGRADED_BLAST_FURNACE.get()).build(null));
+        public static RegistryObject<BlockEntityType<ChargeDetectorBlockEntity>> CHARGE_DETECTOR_BLOCK_ENTITY = registerBlockEntity("charge_detector", () -> BlockEntityType.Builder.of(ChargeDetectorBlockEntity::new, BlockRegistry.CHARGE_DETECTOR.get()).build(null));
 
         public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(String id, Supplier<BlockEntityType<T>> supplier) {
             return REGISTER.register(id, supplier);

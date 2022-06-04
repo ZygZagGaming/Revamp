@@ -2,6 +2,7 @@ package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.client.overlay.JoltedOverlay;
 import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
+import com.zygzag.revamp.common.block.ArcCrystalBlock;
 import com.zygzag.revamp.common.charge.ArcHandler;
 import com.zygzag.revamp.common.charge.ChunkChargeHandler;
 import com.zygzag.revamp.common.charge.ClientLevelChargeHandler;
@@ -15,6 +16,7 @@ import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.networking.RevampPacketHandler;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -37,6 +39,8 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -89,6 +93,8 @@ public class Revamp {
         modEventBus.addListener(this::doClientStuff);
         modEventBus.addListener(this::registerAttributes);
         modEventBus.addListener(this::registerCapabilities);
+        modEventBus.addListener(this::registerRenderers);
+        modEventBus.addListener(this::registerBlockColorHandlers);
         Registry.register(modEventBus);
 
         // forgeEventBus.addListener(this::doServerStuff);
@@ -365,6 +371,15 @@ public class Revamp {
 
     public void addReloadListeners(final AddReloadListenerEvent event) {
         event.addListener(CONDUCTIVENESS);
+    }
+
+    private void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+
+    }
+
+    private void registerBlockColorHandlers(final ColorHandlerEvent.Block event) {
+        BlockColors colors = event.getBlockColors();
+        colors.register(ArcCrystalBlock::getColor, Registry.BlockRegistry.ARC_CRYSTAL.get());
     }
 
     // private void doServerStuff(final FMLServerStartingEvent event) { }

@@ -46,6 +46,7 @@ public class IridiumChestplateItem extends ArmorItem implements ISocketable {
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
                 comp.append(new TextComponent(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
                 comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                comp.append("\n");
                 text.add(comp);
             }
         }

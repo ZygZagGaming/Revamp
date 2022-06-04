@@ -65,7 +65,7 @@ public class Arc {
     }
 
     public List<Vec3> makeBezierPoints() {
-        return makeBezierPoints((int) (naiveLength() * 4) + 1);
+        return makeBezierPoints((int) (naiveLength() * Constants.BEZIER_ARC_POINTS_PER_BLOCK) + 1);
     }
 
     public List<CircleGeneratorFunction> joints(boolean bezier) {

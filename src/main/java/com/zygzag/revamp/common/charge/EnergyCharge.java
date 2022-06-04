@@ -1,7 +1,6 @@
 package com.zygzag.revamp.common.charge;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.core.BlockPos;
@@ -15,6 +14,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -83,8 +83,13 @@ public class EnergyCharge {
     public void tick() {
         lifetime++;
         Random rng = world.getRandom();
-        Vec3 point = GeneralUtil.randomPointOnCube(pos, rng);
-        if (rng.nextDouble() < Math.abs(charge) / 20f) world.addParticle(GeneralUtil.particle(charge), point.x, point.y, point.z, 0, 0, 0);
+        if (rng.nextDouble() < Math.abs(charge) / 20f) {
+            VoxelShape shape = world.getBlockState(pos).getCollisionShape(world, pos);
+            if (!shape.isEmpty()) {
+                Vec3 point = GeneralUtil.randomPointOnAABB(shape.bounds().inflate(0.05), rng).add(pos.getX() - 0.075, pos.getY() - 0.075, pos.getZ() - 0.075);
+                world.addParticle(GeneralUtil.particle(charge), point.x, point.y, point.z, 0, 0, 0);
+            }
+        }
         if (!canSurvive() || Math.abs(charge) < Constants.EPSILON) remove();
         if (!world.isClientSide) {
             List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, new AABB(pos).inflate(Constants.ARC_RANGE), Constants.CHARGEABLE_PREDICATE);
@@ -130,11 +135,17 @@ public class EnergyCharge {
     public void spread() {
         List<Direction> dirs = Arrays.stream(Direction.values()).filter((it) -> canSpreadTo(pos.relative(it))).toList();
         if (dirs.size() == 0) return;
-        float c = charge;
-        for (Direction dir : dirs) c += GeneralUtil.getChargeAt(world, pos.relative(dir));
-        c /= dirs.size();
-        setCharge(c);
-        for (Direction dir : dirs) if (Revamp.CONDUCTIVENESS.isConductor(world.getBlockState(pos.relative(dir)).getBlock())) GeneralUtil.setChargeAt(world, pos.relative(dir), c);
+        float c = 0;
+        for (Direction dir : dirs) {
+            if (Revamp.CONDUCTIVENESS.isConductor(world.getBlockState(pos.relative(dir)).getBlock())) {
+                float blockCharge = GeneralUtil.getChargeAt(world, pos.relative(dir));
+                c += (charge - blockCharge) / 2;
+                GeneralUtil.setChargeAt(world, pos.relative(dir), (charge + blockCharge) / 2);
+            } else {
+                c += charge / 2;
+            }
+        }
+        setCharge(charge - c);
     }
 
     public static void addOrCreateCharge(Level world, BlockPos pos, float value) {

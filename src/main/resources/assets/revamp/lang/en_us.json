@@ -215,5 +215,9 @@
   "tooltip.revamp.shulker_shell_extra": "Can store up to 8 bowls of different stews",
   "death.attack.shocked": "%1$s was shocked to death",
   "death.attack.shocked.player": "%1$s was shocked to death trying to escape %2$s",
-  "enchantment.revamp.surge_protector": "Surge Protector"
+  "enchantment.revamp.surge_protector": "Surge Protector",
+  "enchantment.revamp.voltage_plus": "Voltage+",
+  "enchantment.revamp.voltage_minus": "Voltage-",
+  "enchantment.revamp.dynamo": "Dynamo",
+  "enchantment.revamp.grounded": "Grounded"
 }

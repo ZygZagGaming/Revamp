@@ -68,7 +68,8 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                 MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
                 comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
                 comp.append(new TextComponent(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
-                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
+
+                comp.append("\n");
                 text.add(comp);
             }
         }

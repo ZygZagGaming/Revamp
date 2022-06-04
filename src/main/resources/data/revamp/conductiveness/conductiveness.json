@@ -23,5 +23,7 @@
   "minecraft:blue_ice": 65,
   "revamp:charge_crystal_positive": 100,
   "revamp:charge_crystal_negative": 100,
+  "revamp:arc_crystal": 100,
+  "revamp:charge_detector": -1,
   "minecraft:air": -1
 }
