@@ -1,6 +1,7 @@
-package com.zygzag.revamp.common.charge;
+package com.zygzag.revamp.common.capability;
 
 import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.charge.Arc;
 import com.zygzag.revamp.common.networking.RevampPacketHandler;
 import com.zygzag.revamp.common.networking.packet.ClientboundEntityChargeSyncPacket;
 import com.zygzag.revamp.common.registry.Registry;

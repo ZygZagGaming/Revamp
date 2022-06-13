@@ -1,5 +1,6 @@
-package com.zygzag.revamp.common.charge;
+package com.zygzag.revamp.common.capability;
 
+import com.zygzag.revamp.common.charge.EnergyCharge;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

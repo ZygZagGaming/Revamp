@@ -52,7 +52,7 @@ public class ChargeParticle extends TextureSheetParticle {
         return 4;
     }
 
-    public void render(VertexConsumer consumer, Camera cam, float partialTicks) {
+    public void render(VertexConsumer consumer, Camera cam, float partialTicks) { // yes, copied decompiled code (mostly)
         Vec3 vec3 = cam.getPosition();
         float f = (float)(Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
         float f1 = (float)(Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());

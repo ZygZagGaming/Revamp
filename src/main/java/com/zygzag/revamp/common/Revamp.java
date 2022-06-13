@@ -3,10 +3,7 @@ package com.zygzag.revamp.common;
 import com.zygzag.revamp.client.overlay.JoltedOverlay;
 import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
 import com.zygzag.revamp.common.block.ArcCrystalBlock;
-import com.zygzag.revamp.common.charge.ArcHandler;
-import com.zygzag.revamp.common.charge.ChunkChargeHandler;
-import com.zygzag.revamp.common.charge.ClientLevelChargeHandler;
-import com.zygzag.revamp.common.charge.EntityChargeHandler;
+import com.zygzag.revamp.common.capability.*;
 import com.zygzag.revamp.common.data.ConductivenessReloadListener;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.RevampedBlaze;
@@ -65,6 +62,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Mod("revamp")
@@ -79,6 +77,7 @@ public class Revamp {
     public static final Capability<EntityChargeHandler> ENTITY_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ChunkChargeHandler> CHUNK_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ClientLevelChargeHandler> CLIENT_LEVEL_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<ServerLevelEnderBookHandler> SERVER_LEVEL_ENDER_BOOK_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ArcHandler> ARC_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
     public static final ConductivenessReloadListener CONDUCTIVENESS = new ConductivenessReloadListener();
@@ -362,6 +361,18 @@ public class Revamp {
                 public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
                     if (cap == ARC_CAPABILITY) {
                         return lazy2.cast();
+                    }
+                    return LazyOptional.empty();
+                }
+            });
+        } else if (event.getObject().dimension() == Level.OVERWORLD) {
+            LazyOptional<ServerLevelEnderBookHandler> lazy = LazyOptional.of(() -> new ServerLevelEnderBookHandler(event.getObject(), new ArrayList<>()));
+            event.addCapability(loc("server_level_ender_book"), new ICapabilityProvider() {
+                @NotNull
+                @Override
+                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                    if (cap == SERVER_LEVEL_ENDER_BOOK_CAPABILITY) {
+                        return lazy.cast();
                     }
                     return LazyOptional.empty();
                 }

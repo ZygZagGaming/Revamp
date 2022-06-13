@@ -1,9 +1,7 @@
 package com.zygzag.revamp.common.networking;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.networking.packet.ClientboundArcCreationPacket;
-import com.zygzag.revamp.common.networking.packet.ClientboundChargeUpdatePacket;
-import com.zygzag.revamp.common.networking.packet.ClientboundEntityChargeSyncPacket;
+import com.zygzag.revamp.common.networking.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -39,6 +37,48 @@ public class RevampPacketHandler {
                 ClientboundEntityChargeSyncPacket::encode,
                 ClientboundEntityChargeSyncPacket::decode,
                 ClientboundEntityChargeSyncPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ServerboundEnderBookPageEditPacket.class,
+                ServerboundEnderBookPageEditPacket::encode,
+                ServerboundEnderBookPageEditPacket::decode,
+                ServerboundEnderBookPageEditPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ServerboundEnderBookInsertionPacket.class,
+                ServerboundEnderBookInsertionPacket::encode,
+                ServerboundEnderBookInsertionPacket::decode,
+                ServerboundEnderBookInsertionPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ServerboundEnderBookDeletionPacket.class,
+                ServerboundEnderBookDeletionPacket::encode,
+                ServerboundEnderBookDeletionPacket::decode,
+                ServerboundEnderBookDeletionPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookPageEditPacket.class,
+                ClientboundEnderBookPageEditPacket::encode,
+                ClientboundEnderBookPageEditPacket::decode,
+                ClientboundEnderBookPageEditPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookInsertionPacket.class,
+                ClientboundEnderBookInsertionPacket::encode,
+                ClientboundEnderBookInsertionPacket::decode,
+                ClientboundEnderBookInsertionPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookDeletionPacket.class,
+                ClientboundEnderBookDeletionPacket::encode,
+                ClientboundEnderBookDeletionPacket::decode,
+                ClientboundEnderBookDeletionPacket::handle
         );
     }
 }

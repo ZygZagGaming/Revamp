@@ -2,7 +2,6 @@ package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.charge.Arc;
-import com.zygzag.revamp.common.charge.ArcHandler;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,9 +9,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ClientboundArcCreationPacket {

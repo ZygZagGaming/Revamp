@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.charge;
 
 import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.capability.ChunkChargeHandler;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.core.BlockPos;

@@ -1,5 +1,6 @@
-package com.zygzag.revamp.common.charge;
+package com.zygzag.revamp.common.capability;
 
+import com.zygzag.revamp.common.charge.Arc;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;

@@ -560,10 +560,7 @@ public class EnderBookEditScreen extends Screen {
 
     public void makeSureThatPageExists(int index) {
         if (index >= pages.size()) {
-            while (index >= pages.size()) pages.add("");
-            isModified = true;
-            clearDisplayCache();
-        }
+        while (index >= pages.size()) pages.add("");
     }
 
     static int findLineFromPos(int[] p_98150_, int p_98151_) {
