@@ -1,9 +1,7 @@
 package com.zygzag.revamp.common.plugin;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
-import com.zygzag.revamp.common.item.recipe.UpgradedBlastFurnaceRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -24,7 +22,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class JEIPlugin implements IModPlugin {
     @Nullable public IRecipeCategory<TransmutationRecipe> transmutationCategory;
-    @Nullable public IRecipeCategory<UpgradedBlastFurnaceRecipe> upgradedBlastingCategory;
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -34,21 +31,18 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(transmutationCategory = new TransmutationCategory(registration.getJeiHelpers()));
-        registration.addRecipeCategories(upgradedBlastingCategory = new UpgradedBlastingCategory(registration.getJeiHelpers()));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         if (Minecraft.getInstance().level != null) {
-            registration.addRecipes(Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(ModRecipeType.TRANSMUTATION), Revamp.loc("transmutation"));
-            registration.addRecipes(Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(ModRecipeType.UPGRADED_BLASTING), Revamp.loc("upgraded_blasting"));
+            registration.addRecipes(TransmutationCategory.TRANSMUTATION_RECIPE_TYPE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.TRANSMUTATION.get()));
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(Registry.ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance(), Revamp.loc("transmutation"));
-        registration.addRecipeCatalyst(Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance(), Revamp.loc("transmutation"));
-        registration.addRecipeCatalyst(Registry.ItemRegistry.UPGRADED_BLAST_FURNACE_ITEM.get().getDefaultInstance(), Revamp.loc("upgraded_blasting"));
+        registration.addRecipeCatalyst(Registry.ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance(), TransmutationCategory.TRANSMUTATION_RECIPE_TYPE);
+        registration.addRecipeCatalyst(Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_PICKAXE.get().getDefaultInstance(), TransmutationCategory.TRANSMUTATION_RECIPE_TYPE);
     }
 }

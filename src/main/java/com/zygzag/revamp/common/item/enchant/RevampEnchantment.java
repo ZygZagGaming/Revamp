@@ -5,7 +5,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
@@ -25,11 +24,11 @@ public abstract class RevampEnchantment extends Enchantment {
 
     @Override
     public Component getFullname(int level) {
-        MutableComponent mutablecomponent = new TranslatableComponent(this.getDescriptionId());
+        MutableComponent mutablecomponent = Component.translatable(this.getDescriptionId());
         mutablecomponent.withStyle(Style.EMPTY.withColor(getColor(level)));
 
         if (level != 1 || this.getMaxLevel() != 1) {
-            mutablecomponent.append(" ").append(new TranslatableComponent("enchantment.level." + level));
+            mutablecomponent.append(" ").append(Component.translatable("enchantment.level." + level));
         }
 
         return mutablecomponent;

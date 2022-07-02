@@ -9,18 +9,18 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.material.Fluids;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -29,22 +29,23 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
         super(codec);
     }
 
+    @Nullable
     public BlockPos correctOrigin(LevelAccessor world, BlockPos old, int maxDistance) {
         int i;
-        for (i = 0; i <= maxDistance; i++) if (world.getBlockState(old.below(i)).getFluidState().is(Fluids.LAVA) && world.getBlockState(old.below(i - 1)).isAir()) return old.below(i);
-        for (i = 0; i <= maxDistance; i++) if (world.getBlockState(old.above(i)).getFluidState().is(Fluids.LAVA) && world.getBlockState(old.above(i + 1)).isAir()) return old.above(i);
-        return old;
+        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.below(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.below(i)).is(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.below(i - 1)).isAir()) return old.below(i - 1);
+        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.above(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.above(i)).is(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.above(i + 1)).isAir()) return old.above(i + 1);
+        return null; // no good origin found
     }
 
     @Override
     public boolean place(FeaturePlaceContext<PlatformFungusConfiguration> ctx) {
         WorldGenLevel world = ctx.level();
         BlockPos origin = correctOrigin(world, ctx.origin(), 7); // origin (should be) 1 block above mycelium
-        while (world.getBlockState(origin).is(Blocks.LAVA)) origin = origin.above();
+        if (origin == null) return false;
         PlatformFungusConfiguration config = ctx.config();
         HashMap<BlockPos, BlockState> toPlace = new HashMap<>();
-        Random rng = world.getRandom();
-        int rootDepth = 2;
+        RandomSource rng = world.getRandom();
+        int rootDepth = 1;
         while (world.getBlockState(origin.below(rootDepth)).getFluidState().is(Fluids.LAVA)) rootDepth++;
 
         generateMushroom(
@@ -72,7 +73,7 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
         return true;
     }
 
-    public void generateVegetation(HashMap<BlockPos, BlockState> toPlace, Random rng) {
+    public void generateVegetation(HashMap<BlockPos, BlockState> toPlace, RandomSource rng) {
         HashMap<BlockPos, BlockState> copy = new HashMap<>(toPlace);
         for (Map.Entry<BlockPos, BlockState> entry : copy.entrySet()) {
             if (entry.getValue().is(Registry.BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get()) || entry.getValue().is(Registry.BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK.get())) {
@@ -114,7 +115,7 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
             IntProvider xOffsetProv,
             IntProvider zOffsetProv,
             int stackSize,
-            Random rng
+            RandomSource rng
     ) {
         generateMushroom(toPlace, config, origin, rootDepth, heightProv, radiusProv, xOffsetProv, zOffsetProv, stackSize, 0, rng);
     }
@@ -130,7 +131,7 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
             IntProvider zOffsetProv,
             int stackSize,
             int i,
-            Random rng
+            RandomSource rng
     ) {
         int height = heightProv.provide(i);
         int radius = radiusProv.provide(i);
@@ -138,8 +139,8 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
         int zOffset = zOffsetProv.provide(i);
         placeCircle(toPlace, origin.offset(xOffset * 0.4, height - 2, zOffset * 0.4), (radius * 0.4), config.ringState);
         placeCircle(toPlace, origin.offset(xOffset, height - 1, zOffset), radius, config.hatState);
-        for (int k = 0; k < rootDepth; k++) toPlace.put(origin.below(k), config.stemState);
-        for (int k = 1; k < height; k++) toPlace.put(origin.above(k), config.stemState);
+        for (int k = 1; k < rootDepth; k++) toPlace.put(origin.below(k), config.stemState);
+        for (int k = 0; k < height; k++) toPlace.put(origin.above(k), config.stemState);
         if (stackSize > i + 1) generateMushroom(toPlace, config, origin.above(height - 1), 0, heightProv, radiusProv, xOffsetProv, zOffsetProv, stackSize, i + 1, rng);
     }
 

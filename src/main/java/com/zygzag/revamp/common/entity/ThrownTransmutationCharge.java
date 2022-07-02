@@ -1,12 +1,10 @@
 package com.zygzag.revamp.common.entity;
 
-import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -15,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -48,7 +47,7 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
             this.level.levelEvent(2002, this.blockPosition(), 0x727175);
             AABB box = getBoundingBox().inflate(5.0);
             List<ItemEntity> entities = level.getEntitiesOfClass(ItemEntity.class, box);
-            List<TransmutationRecipe> recipes = level.getRecipeManager().getAllRecipesFor(ModRecipeType.TRANSMUTATION);
+            List<TransmutationRecipe> recipes = level.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.TRANSMUTATION.get());
             for (ItemEntity itemEntity : entities) {
                 for (TransmutationRecipe recipe : recipes) {
                     SimpleContainer holder = new SimpleContainer(itemEntity.getItem());
@@ -62,5 +61,14 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
             this.discard();
         }
 
+    }
+
+    // revamp: entity methods that I decided to add to all my entities (i would add them to the vanilla Entity class if i could)
+    public Vec3 oldPos() {
+        return new Vec3(xOld, yOld, zOld);
+    }
+
+    public Vec3 position(float partialTick) {
+        return oldPos().lerp(position(), partialTick);
     }
 }

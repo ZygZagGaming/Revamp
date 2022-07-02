@@ -1,5 +1,9 @@
 {
   "textures": [
-    "revamp:charge_particle_negative"
+    "revamp:negative_charge_particle_1",
+    "revamp:negative_charge_particle_2",
+    "revamp:negative_charge_particle_3",
+    "revamp:negative_charge_particle_4",
+    "revamp:negative_charge_particle_5"
   ]
 }

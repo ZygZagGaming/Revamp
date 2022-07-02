@@ -4,6 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.zygzag.revamp.common.capability.Document;
+import com.zygzag.revamp.common.networking.RevampPacketHandler;
+import com.zygzag.revamp.common.networking.packet.ServerboundEnderBookDeletionPacket;
+import com.zygzag.revamp.common.networking.packet.ServerboundEnderBookInsertionPacket;
+import com.zygzag.revamp.common.networking.packet.ServerboundRequestDocumentPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
@@ -24,22 +29,30 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public class EnderBookEditScreen extends Screen {
@@ -47,8 +60,8 @@ public class EnderBookEditScreen extends Screen {
     private static final int TEXT_HEIGHT = 128;
     private static final int IMAGE_WIDTH = 192;
     private static final int IMAGE_HEIGHT = 192;
-    private static final Component EDIT_TITLE_LABEL = new TranslatableComponent("book.editTitle");
-    private static final Component FINALIZE_WARNING_LABEL = new TranslatableComponent("book.finalizeWarning");
+    private static final Component EDIT_TITLE_LABEL = Component.translatable("book.editTitle");
+    private static final Component FINALIZE_WARNING_LABEL = Component.translatable("book.finalizeWarning");
     private static final FormattedCharSequence BLACK_CURSOR = FormattedCharSequence.forward("_", Style.EMPTY.withColor(ChatFormatting.BLACK));
     private static final FormattedCharSequence GRAY_CURSOR = FormattedCharSequence.forward("_", Style.EMPTY.withColor(ChatFormatting.GRAY));
     private final Player owner;
@@ -56,17 +69,11 @@ public class EnderBookEditScreen extends Screen {
     private boolean isModified;
     private int frameTick;
     private int currentPage;
-    private final List<String> pages = Lists.newArrayList();
+    private List<String> pages = Lists.newArrayList();
     private String title = "";
-    private final TextFieldHelper pageEdit = new TextFieldHelper(this::getCurrentPageText, this::setCurrentPageText, this::getClipboard, this::setClipboard, (p_98179_) -> {
-        return p_98179_.length() < 1024 && font.wordWrapHeight(p_98179_, 114) <= 128;
-    });
-    private final TextFieldHelper titleEdit = new TextFieldHelper(() -> {
-        return title;
-    }, (p_98175_) -> {
-        title = p_98175_;
-    }, this::getClipboard, this::setClipboard, (p_98170_) -> {
-        return p_98170_.length() < 16;
+    private boolean readonly = false;
+    private final TextFieldHelper pageEdit = new CustomTextFieldHelper(this::getCurrentPageText, this::setCurrentPageText, this::getClipboard, this::setClipboard, (p_98179_) -> {
+        return !readonly && p_98179_.length() < 1024 && font.wordWrapHeight(p_98179_, TEXT_WIDTH) <= TEXT_HEIGHT;
     });
     private long lastClickTime;
     private int lastIndex = -1;
@@ -76,27 +83,30 @@ public class EnderBookEditScreen extends Screen {
     private final InteractionHand hand;
     @Nullable
     private EnderBookEditScreen.DisplayCache displayCache = EnderBookEditScreen.DisplayCache.EMPTY;
-    private Component pageMsg = TextComponent.EMPTY;
+    private Component pageMsg = Component.empty();
     private final Component ownerText;
 
-    private final int openId;
+    private int openId;
 
-    public EnderBookEditScreen(Player player, ItemStack stack, InteractionHand hand, int documentId) {
+    public EnderBookEditScreen(Player player, ItemStack stack, InteractionHand hand) {
         super(NarratorChatListener.NO_TITLE);
         owner = player;
         book = stack;
         this.hand = hand;
-        this.openId = documentId;
-        CompoundTag compoundtag = stack.getTag();
-        if (compoundtag != null) {
-            BookViewScreen.loadPages(compoundtag, pages::add);
+        CompoundTag compoundtag = stack.getOrCreateTag();
+        if (compoundtag.contains("id")) {
+            openId = compoundtag.getInt("id");
+            RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundRequestDocumentPacket(openId));
+            readonly = compoundtag.getInt("generation") > 1;
+        } else {
+            openId = -1;
         }
 
         if (pages.isEmpty()) {
             pages.add("");
         }
 
-        ownerText = (new TranslatableComponent("book.byAuthor", player.getName())).withStyle(ChatFormatting.DARK_GRAY);
+        ownerText = (Component.translatable("book.byAuthor", player.getName())).withStyle(ChatFormatting.DARK_GRAY);
     }
 
     private void setClipboard(String p_98148_) {
@@ -115,13 +125,20 @@ public class EnderBookEditScreen extends Screen {
 
     public void tick() {
         super.tick();
+        CompoundTag compoundtag = book.getOrCreateTag();
+        if (openId == -1 && compoundtag.contains("id")) {
+            openId = compoundtag.getInt("id");
+            RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundRequestDocumentPacket(openId));
+            readonly = compoundtag.getInt("generation") >= 1;
+        }
         ++frameTick;
+        if (pages.size() > 2 && pages.get(pages.size() - 1).equals("") && currentPage < pages.size() - 2) pages.remove(pages.size() - 1);
     }
 
     protected void init() {
         clearDisplayCache();
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
-        doneButton = addRenderableWidget(new Button(width + 2, 196, 98, 20, CommonComponents.GUI_DONE, (button) -> {
+        doneButton = addRenderableWidget(new Button(width / 2 - 98, 196, 196, 20, CommonComponents.GUI_DONE, (button) -> {
             minecraft.setScreen(null);
             saveChanges(false);
         }));
@@ -230,6 +247,10 @@ public class EnderBookEditScreen extends Screen {
         } else {
             return false;
         }
+    }
+
+    public void setDocument(Document document) {
+        pages = document.pageData;
     }
 
     private boolean bookKeyPressed(int key, int a, int b) {
@@ -445,13 +466,13 @@ public class EnderBookEditScreen extends Screen {
     private EnderBookEditScreen.DisplayCache getDisplayCache() {
         if (displayCache == null) {
             displayCache = rebuildDisplayCache();
-            pageMsg = new TranslatableComponent("book.pageIndicator", currentPage + 1, getNumPages());
+            pageMsg = Component.translatable("book.pageIndicator", currentPage + 1, getNumPages());
         }
 
         return displayCache;
     }
 
-    private void clearDisplayCache() {
+    public void clearDisplayCache() {
         displayCache = null;
     }
 
@@ -472,7 +493,7 @@ public class EnderBookEditScreen extends Screen {
             MutableInt mutableint = new MutableInt();
             MutableBoolean mutableboolean = new MutableBoolean();
             StringSplitter stringsplitter = font.getSplitter();
-            stringsplitter.splitLines(s, 114, Style.EMPTY, true, (style, n, n2) -> {
+            stringsplitter.splitLines(s, TEXT_WIDTH, Style.EMPTY, true, (style, n, n2) -> {
                 int k3 = mutableint.getAndIncrement();
                 String s2 = s.substring(n, n2);
                 mutableboolean.setValue(s2.endsWith("\n"));
@@ -527,25 +548,36 @@ public class EnderBookEditScreen extends Screen {
     }
 
     public void setPageText(int pageId, String text) {
+        makeSureThatPageExists(pageId);
         pages.set(pageId, text);
         isModified = true;
-        clearDisplayCache();
+        if (currentPage == pageId) {
+            if (pageEdit.cursorPos >= text.length()) pageEdit.cursorPos = text.length() - 1;
+            if (pageEdit.selectionPos >= text.length()) pageEdit.selectionPos = text.length() - 1;
+            clearDisplayCache();
+        }
     }
 
     public void insertPageText(int pageId, int index, String text) {
+        makeSureThatPageExists(pageId);
         String page = pages.get(pageId);
         String newPage;
         if (index >= page.length()) {
-            newPage = page + " ".repeat(index - page.length() + 1) + text;
+            newPage = page + " ".repeat(index - page.length()) + text;
         } else {
             newPage = page.substring(0, index) + text + page.substring(index);
         }
-        pages.set(index, newPage);
+        pages.set(pageId, newPage);
         isModified = true;
-        clearDisplayCache();
+        if (pageId == currentPage) {
+            if (pageEdit.cursorPos >= index) pageEdit.cursorPos += text.length();
+            if (pageEdit.selectionPos >= index) pageEdit.selectionPos += text.length();
+            clearDisplayCache();
+        }
     }
 
     public void removePageText(int pageId, int index, int length) {
+        makeSureThatPageExists(pageId);
         String page = pages.get(pageId);
         String newPage;
         if (index >= page.length()) newPage = page;
@@ -555,12 +587,21 @@ public class EnderBookEditScreen extends Screen {
         }
         pages.set(pageId, newPage);
         isModified = true;
-        clearDisplayCache();
+        if (currentPage == pageId) {
+            if (pageEdit.cursorPos >= index + length) pageEdit.cursorPos -= length;
+            else if (pageEdit.cursorPos > index) pageEdit.cursorPos = index;
+            if (pageEdit.selectionPos >= index + length) pageEdit.selectionPos -= length;
+            else if (pageEdit.selectionPos > index) pageEdit.selectionPos = index;
+            clearDisplayCache();
+        }
+        // System.out.println("deleting from " + index + " to " + (index + length) + " turned " + page + " into " + newPage);
     }
 
     public void makeSureThatPageExists(int index) {
         if (index >= pages.size()) {
-        while (index >= pages.size()) pages.add("");
+            while (index >= pages.size()) pages.add("");
+            isModified = true;
+        }
     }
 
     static int findLineFromPos(int[] p_98150_, int p_98151_) {
@@ -657,7 +698,7 @@ public class EnderBookEditScreen extends Screen {
             contents = p_98233_;
             x = p_98234_;
             y = p_98235_;
-            asComponent = (new TextComponent(p_98233_)).setStyle(p_98232_);
+            asComponent = (Component.literal(p_98233_)).setStyle(p_98232_);
         }
     }
 
@@ -669,6 +710,64 @@ public class EnderBookEditScreen extends Screen {
         Pos2i(int p_98249_, int p_98250_) {
             x = p_98249_;
             y = p_98250_;
+        }
+    }
+
+    class CustomTextFieldHelper extends TextFieldHelper {
+        public CustomTextFieldHelper(Supplier<String> getter, Consumer<String> setter, Supplier<String> clipboardGetter, Consumer<String> clipboardSetter, Predicate<String> predicate) {
+            super(getter, setter, clipboardGetter, clipboardSetter, predicate);
+        }
+
+        public void insertText(String text, String insertion) {
+            if (this.selectionPos != this.cursorPos) {
+                text = this.deleteSelection(text);
+                int i = Math.min(this.cursorPos, this.selectionPos);
+                int j = Math.max(this.cursorPos, this.selectionPos);
+                RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
+            }
+
+            this.cursorPos = Mth.clamp(this.cursorPos, 0, text.length());
+            String s = (new StringBuilder(text)).insert(this.cursorPos, insertion).toString();
+            if (this.stringValidator.test(s)) {
+                this.setMessageFn.accept(s);
+                RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookInsertionPacket(openId, currentPage, cursorPos, insertion));
+                this.selectionPos = this.cursorPos = Math.min(s.length(), this.cursorPos + insertion.length());
+            }
+        }
+
+        public void removeCharsFromCursor(int amt) {
+            String s = this.getMessageFn.get();
+            if (!s.isEmpty()) {
+                String s1;
+                if (this.selectionPos != this.cursorPos) {
+                    int i = Math.min(this.cursorPos, this.selectionPos);
+                    int j = Math.max(this.cursorPos, this.selectionPos);
+                    RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
+                    s1 = this.deleteSelection(s);
+                } else {
+                    int i = Util.offsetByCodepoints(s, this.cursorPos, amt);
+                    int j = Math.min(i, this.cursorPos);
+                    int k = Math.max(i, this.cursorPos);
+                    //System.out.println("deleting from " + j + " to " + k);
+                    RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, j, k - j));
+                    s1 = (new StringBuilder(s)).delete(j, k).toString();
+                    if (amt < 0) {
+                        this.selectionPos = this.cursorPos = j;
+                    }
+                }
+
+                this.setMessageFn.accept(s1);
+            }
+
+        }
+
+        public void cut() {
+            String s = this.getMessageFn.get();
+            this.setClipboardFn.accept(this.getSelected(s));
+            int i = Math.min(this.cursorPos, this.selectionPos);
+            int j = Math.max(this.cursorPos, this.selectionPos);
+            RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
+            this.setMessageFn.accept(this.deleteSelection(s));
         }
     }
 }

@@ -1,23 +1,26 @@
 package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.client.overlay.JoltedOverlay;
-import com.zygzag.revamp.client.render.screen.UpgradedBlastFurnaceScreen;
 import com.zygzag.revamp.common.block.ArcCrystalBlock;
 import com.zygzag.revamp.common.capability.*;
+import com.zygzag.revamp.common.charge.EnergyCharge;
 import com.zygzag.revamp.common.data.ConductivenessReloadListener;
 import com.zygzag.revamp.common.entity.EmpoweredWither;
 import com.zygzag.revamp.common.entity.RevampedBlaze;
 import com.zygzag.revamp.common.item.iridium.ISocketable;
-import com.zygzag.revamp.common.item.recipe.ModRecipeType;
-import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.networking.RevampPacketHandler;
 import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.tag.RevampTags;
+import com.zygzag.revamp.common.world.RevampRegion;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -31,11 +34,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.SurfaceRules;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.gui.OverlayRegistry;
@@ -43,6 +48,7 @@ import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -60,10 +66,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import terrablender.api.Regions;
+import terrablender.api.SurfaceRuleManager;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.function.Supplier;
 
 @Mod("revamp")
 @SuppressWarnings("unused")
@@ -73,16 +81,23 @@ public class Revamp {
     public static final TagKey<Block> NEEDS_IRIDIUM_TOOL_TAG = BlockTags.create(new ResourceLocation("revamp:needs_iridium_tool"));
     public static final TagKey<Item> SOCKETABLE_TAG = ItemTags.create(new ResourceLocation("revamp:can_be_socketed"));
     public static final HashMap<String, ResourceLocation> LOCATION_CACHE = new HashMap<>();
-    public static final Capability<RevampedBlaze.Rods> RODS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<EntityChargeHandler> ENTITY_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ChunkChargeHandler> CHUNK_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ClientLevelChargeHandler> CLIENT_LEVEL_CHARGE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<LevelContiguousSectionTracker> LEVEL_CONTIGUOUS_SECTION_TRACKER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ServerLevelEnderBookHandler> SERVER_LEVEL_ENDER_BOOK_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<ArcHandler> ARC_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final WoodType MAGMA_WOOD_TYPE = WoodType.register(WoodType.create("revamp:magma"));
+
+    public static final Supplier<List<TagKey<Block>>> trackedTags = Lazy.of(() -> List.of( //TODO: make this a reload listener
+            RevampTags.MAGMA_NYLIUM_CONNECTABLE.get()
+    ));
 
     public static final ConductivenessReloadListener CONDUCTIVENESS = new ConductivenessReloadListener();
+    private boolean isClient = false;
 
     public Revamp() {
+        WoodType t = MAGMA_WOOD_TYPE; // load it early
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
@@ -93,7 +108,7 @@ public class Revamp {
         modEventBus.addListener(this::registerAttributes);
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(this::registerRenderers);
-        modEventBus.addListener(this::registerBlockColorHandlers);
+        if (isClient) modEventBus.addListener(this::registerBlockColorHandlers);
         Registry.register(modEventBus);
 
         // forgeEventBus.addListener(this::doServerStuff);
@@ -105,8 +120,34 @@ public class Revamp {
         forgeEventBus.addGenericListener(Level.class, this::attachCapabilitiesToLevels);
     }
 
+    private static SurfaceRules.RuleSource makeSurfaceRules() {
+        SurfaceRules.RuleSource magmaNylium = makeStateRule(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK.get());
+        return SurfaceRules.ifTrue(
+                SurfaceRules.isBiome(
+                        Registry.BiomeRegistry.LAVA_GARDENS.getKey()
+                ),
+                SurfaceRules.sequence(
+                        SurfaceRules.ifTrue(
+                                SurfaceRules.ON_FLOOR,
+                                SurfaceRules.ifTrue(
+                                        SurfaceRules.not(SurfaceRules.yBlockCheck(VerticalAnchor.belowTop(5), 0)),
+                                        magmaNylium
+                                )
+                        )
+                )
+        );
+    }
+
+    private static SurfaceRules.RuleSource makeStateRule(Block block) {
+        return SurfaceRules.state(block.defaultBlockState());
+    }
+
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            Regions.register(new RevampRegion(loc("nether"), 2));
+
+            SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.NETHER, MODID, makeSurfaceRules());
+
             ItemStack strengthPot = Items.POTION.getDefaultInstance();
             ItemStack strengthLongPot = Items.POTION.getDefaultInstance();
             ItemStack strengthStrongPot = Items.POTION.getDefaultInstance();
@@ -291,12 +332,17 @@ public class Revamp {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        RecipeType<TransmutationRecipe> r = ModRecipeType.TRANSMUTATION; // force initialization of interface
-        MenuScreens.register(Registry.MenuTypeRegistry.UPGRADED_BLAST_FURNACE_MENU.get(), UpgradedBlastFurnaceScreen::new);
+        isClient = true;
 
         ItemBlockRenderTypes.setRenderLayer(Registry.BlockRegistry.LAVA_VINES_BLOCK.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(Registry.BlockRegistry.MAGMA_TRAPDOOR.get(), RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(Registry.BlockRegistry.MAGMA_DOOR.get(), RenderType.cutoutMipped());
 
         OverlayRegistry.registerOverlayTop("jolted", new JoltedOverlay());
+
+        event.enqueueWork(() -> {
+            Sheets.addWoodType(MAGMA_WOOD_TYPE);
+        });
     }
 
     private void registerAttributes(final EntityAttributeCreationEvent evt) {
@@ -305,7 +351,6 @@ public class Revamp {
     }
 
     private void registerCapabilities(final RegisterCapabilitiesEvent event) {
-        event.register(RevampedBlaze.Rods.class);
         event.register(EntityChargeHandler.class);
         event.register(ChunkChargeHandler.class);
         event.register(ClientLevelChargeHandler.class);
@@ -314,7 +359,25 @@ public class Revamp {
 
     private void attachCapabilitiesToEntities(final AttachCapabilitiesEvent<Entity> event) {
         LazyOptional<EntityChargeHandler> lazy = LazyOptional.of(() -> new EntityChargeHandler(event.getObject(), 0f, 20f));
-        event.addCapability(loc("entity_charge"), new ICapabilityProvider() {
+        event.addCapability(loc("entity_charge"), new ICapabilitySerializable<CompoundTag>() {
+            @Override
+            public CompoundTag serializeNBT() {
+                CompoundTag ct = new CompoundTag();
+                lazy.resolve().ifPresent((handler) -> {
+                    ct.putFloat("charge", handler.getCharge());
+                    ct.putFloat("maxCharge", handler.getMaxCharge());
+                });
+                return ct;
+            }
+
+            @Override
+            public void deserializeNBT(CompoundTag nbt) {
+                lazy.resolve().ifPresent((handler) -> {
+                    handler.setCharge(nbt.getFloat("charge"));
+                    handler.setMaxCharge(nbt.getFloat("maxCharge"));
+                });
+            }
+
             @NotNull
             @Override
             public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -328,7 +391,41 @@ public class Revamp {
 
     private void attachCapabilitiesToChunks(final AttachCapabilitiesEvent<LevelChunk> event) {
         LazyOptional<ChunkChargeHandler> lazy = LazyOptional.of(() -> new ChunkChargeHandler(event.getObject()));
-        event.addCapability(loc("chunk_charge"), new ICapabilityProvider() {
+        event.addCapability(loc("chunk_charge"), new ICapabilitySerializable<CompoundTag>() {
+            @Override
+            public CompoundTag serializeNBT() {
+                CompoundTag ct = new CompoundTag();
+                ListTag positions = new ListTag();
+                ListTag charges = new ListTag();
+                lazy.resolve().ifPresent((handler) -> {
+                    for (Map.Entry<BlockPos, EnergyCharge> entry : handler.charges.entrySet()) {
+                        BlockPos bp = entry.getKey();
+                        ListTag pos = new ListTag();
+                        pos.add(DoubleTag.valueOf(bp.getX()));
+                        pos.add(DoubleTag.valueOf(bp.getY()));
+                        pos.add(DoubleTag.valueOf(bp.getZ()));
+                        positions.add(pos);
+                        charges.add(FloatTag.valueOf(entry.getValue().getCharge()));
+                    }
+                });
+                ct.put("positions", positions);
+                ct.put("charges", charges);
+                return ct;
+            }
+
+            @Override
+            public void deserializeNBT(CompoundTag nbt) {
+                ListTag positions = nbt.getList("positions", Tag.TAG_LIST);
+                ListTag charges = nbt.getList("charges", Tag.TAG_FLOAT);
+                lazy.resolve().ifPresent((handler) -> {
+                    for (int i = 0; i < positions.size() && i < charges.size(); i++) {
+                        ListTag position = positions.getList(i);
+                        float charge = charges.getFloat(i);
+                        BlockPos pos = new BlockPos(position.getDouble(0), position.getDouble(1), position.getDouble(2));
+                        handler.charges.put(pos, new EnergyCharge(charge, pos, handler));
+                    }
+                });
+            }
             @NotNull
             @Override
             public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -365,18 +462,70 @@ public class Revamp {
                     return LazyOptional.empty();
                 }
             });
-        } else if (event.getObject().dimension() == Level.OVERWORLD) {
-            LazyOptional<ServerLevelEnderBookHandler> lazy = LazyOptional.of(() -> new ServerLevelEnderBookHandler(event.getObject(), new ArrayList<>()));
-            event.addCapability(loc("server_level_ender_book"), new ICapabilityProvider() {
+        } else {
+            LazyOptional<LevelContiguousSectionTracker> contiguousLazy = LazyOptional.of(() -> new LevelContiguousSectionTracker(event.getObject()));
+            event.addCapability(loc("contiguous_section_tracker"), new ICapabilitySerializable<CompoundTag>() {
+                @Override
+                public CompoundTag serializeNBT() {
+                    CompoundTag tag = new CompoundTag();
+                    Optional<LevelContiguousSectionTracker> op = contiguousLazy.resolve();
+                    if (op.isPresent()) {
+                        tag = op.get().serializeNBT();
+                    }
+                    return tag;
+                }
+
+                @Override
+                public void deserializeNBT(CompoundTag nbt) {
+                    Optional<LevelContiguousSectionTracker> op = contiguousLazy.resolve();
+                    op.ifPresent(handler -> handler.deserializeNBT(nbt));
+                }
+
                 @NotNull
                 @Override
                 public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-                    if (cap == SERVER_LEVEL_ENDER_BOOK_CAPABILITY) {
-                        return lazy.cast();
+                    if (cap == LEVEL_CONTIGUOUS_SECTION_TRACKER_CAPABILITY) {
+                        return contiguousLazy.cast();
                     }
                     return LazyOptional.empty();
                 }
             });
+
+            if (event.getObject().dimension() == Level.OVERWORLD) {
+                LazyOptional<ServerLevelEnderBookHandler> lazy = LazyOptional.of(() -> new ServerLevelEnderBookHandler(event.getObject(), new ArrayList<>()));
+                event.addCapability(loc("server_level_ender_book"), new ICapabilitySerializable<ListTag>() {
+                    @Override
+                    public ListTag serializeNBT() {
+                        ListTag tag = new ListTag();
+                        lazy.resolve().ifPresent((handler) -> {
+                            for (Document doc : handler.documents) {
+                                tag.add(doc.serializeNBT());
+                            }
+                        });
+                        return tag;
+                    }
+
+                    @Override
+                    public void deserializeNBT(ListTag nbt) {
+                        List<Document> docs = new ArrayList<>();
+                        lazy.resolve().ifPresent((handler) -> {
+                            for (Tag elem : nbt) {
+                                if (elem instanceof ListTag list) docs.add(Document.valueOf(list));
+                            }
+                            handler.documents = docs;
+                        });
+                    }
+
+                    @NotNull
+                    @Override
+                    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+                        if (cap == SERVER_LEVEL_ENDER_BOOK_CAPABILITY) {
+                            return lazy.cast();
+                        }
+                        return LazyOptional.empty();
+                    }
+                });
+            }
         }
     }
 
@@ -385,7 +534,7 @@ public class Revamp {
     }
 
     private void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-
+        event.registerBlockEntityRenderer(Registry.BlockEntityTypeRegistry.CUSTOM_SIGN.get(), SignRenderer::new);
     }
 
     private void registerBlockColorHandlers(final ColorHandlerEvent.Block event) {

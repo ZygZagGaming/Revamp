@@ -1,16 +1,13 @@
 package com.zygzag.revamp.common.registry;
 
 import com.mojang.serialization.Codec;
+import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.block.*;
 import com.zygzag.revamp.common.block.entity.ChargeDetectorBlockEntity;
-import com.zygzag.revamp.common.block.entity.UpgradedBlastFurnaceBlockEntity;
-import com.zygzag.revamp.common.block.menu.UpgradedBlastFurnaceMenu;
+import com.zygzag.revamp.common.block.entity.CustomSignBlockEntity;
 import com.zygzag.revamp.common.entity.*;
 import com.zygzag.revamp.common.entity.effect.SightEffect;
-import com.zygzag.revamp.common.item.EmpowermentStar;
-import com.zygzag.revamp.common.item.EnchantedBowlFoodItem;
-import com.zygzag.revamp.common.item.ShulkerBowlItem;
-import com.zygzag.revamp.common.item.TransmutationCharge;
+import com.zygzag.revamp.common.item.*;
 import com.zygzag.revamp.common.item.enchant.*;
 import com.zygzag.revamp.common.item.iridium.*;
 import com.zygzag.revamp.common.item.iridium.partial.*;
@@ -20,17 +17,19 @@ import com.zygzag.revamp.common.item.tier.IridiumToolTier;
 import com.zygzag.revamp.common.loot.AutosmeltModifier;
 import com.zygzag.revamp.common.loot.ExecutionerModifier;
 import com.zygzag.revamp.common.misc.RuleSource2;
-import com.zygzag.revamp.common.tag.RevampTags;
 import com.zygzag.revamp.common.world.PlatformFungusConfiguration;
 import com.zygzag.revamp.common.world.feature.BetterFortressFeature;
 import com.zygzag.revamp.common.world.feature.PlatformFungusFeature;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.data.worldgen.features.OreFeatures;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,6 +46,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.*;
@@ -58,33 +58,32 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.placement.*;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static com.zygzag.revamp.common.Revamp.MAIN_TAB;
 import static com.zygzag.revamp.common.Revamp.MODID;
@@ -106,13 +105,14 @@ public class Registry {
             FeatureRegistry.REGISTER,
             ConfiguredFeatureRegistry.REGISTER,
             PlacedFeatureRegistry.REGISTER,
-            StructureFeatureRegistry.REGISTER,
-            ConfiguredStructureFeatureRegistry.REGISTER,
+            StructureRegistry.REGISTER,
             BiomeRegistry.REGISTER,
             BiomeSourceRegistry.REGISTER,
             RuleSourceRegistry.REGISTER,
             EntityDataSerializerRegistry.REGISTER,
-            ParticleTypeRegistry.REGISTER
+            ParticleTypeRegistry.REGISTER,
+            RecipeTypeRegistry.REGISTER,
+            StructureTypeRegistry.REGISTER
     );
 
     public static class BlockRegistry {
@@ -122,7 +122,22 @@ public class Registry {
         public static final RegistryObject<Block> MAGMA_FUNGUS_BLOCK = registerBlock("magma_fungus_block", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
         public static final RegistryObject<Block> MAGMA_FUNGUS_CAP_BLOCK = registerBlock("magma_fungus_cap", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
         public static final RegistryObject<Block> MAGMA_FUNGUS_EDGE_BLOCK = registerBlock("magma_fungus_edge", () -> new MagmaFungusBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
-        public static final RegistryObject<Block> MAGMA_FUNGUS_STEM_BLOCK = registerBlock("magma_fungus_stem", () -> new MagmaFungusStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM)));
+        public static final RegistryObject<Block> MAGMA_STEM_BLOCK = registerBlock("magma_stem", () -> new MagmaStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM), false));
+        public static final RegistryObject<Block> STRIPPED_MAGMA_STEM_BLOCK = registerBlock("stripped_magma_stem", () -> new MagmaStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM), true));
+        public static final RegistryObject<Block> MAGMA_HYPHAE_BLOCK = registerBlock("magma_hyphae", () -> new MagmaStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM), false));
+        public static final RegistryObject<Block> STRIPPED_MAGMA_HYPHAE_BLOCK = registerBlock("stripped_magma_hyphae", () -> new MagmaStemBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(2f).sound(SoundType.STEM), true));
+
+        public static final RegistryObject<Block> MAGMA_PLANKS = registerBlock("magma_planks", () -> new Block(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MaterialColor.CRIMSON_STEM).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_SLAB = registerBlock("magma_slab", () -> new SlabBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_PRESSURE_PLATE = registerBlock("magma_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).noCollission().strength(0.5F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_FENCE = registerBlock("magma_fence", () -> new FenceBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_TRAPDOOR = registerBlock("magma_trapdoor", () -> new TrapDoorBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn((a, b, c, d) -> false)));
+        public static final RegistryObject<Block> MAGMA_FENCE_GATE = registerBlock("magma_fence_gate", () -> new FenceGateBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_STAIRS = registerBlock("magma_stairs", () -> new StairBlock(() -> MAGMA_PLANKS.get().defaultBlockState(), BlockBehaviour.Properties.copy(MAGMA_PLANKS.get())));
+        public static final RegistryObject<Block> MAGMA_BUTTON = registerBlock("magma_button", () -> new WoodButtonBlock(BlockBehaviour.Properties.of(Material.DECORATION).noCollission().strength(0.5F).sound(SoundType.WOOD)));
+        public static final RegistryObject<Block> MAGMA_DOOR = registerBlock("magma_door", () -> new DoorBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).strength(3.0F).sound(SoundType.WOOD).noOcclusion()));
+        public static final RegistryObject<Block> MAGMA_SIGN = registerBlock("magma_sign", () -> new CustomStandingSignBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).noCollission().strength(1.0F).sound(SoundType.WOOD), Revamp.MAGMA_WOOD_TYPE));
+        public static final RegistryObject<Block> MAGMA_WALL_SIGN = registerBlock("magma_wall_sign", () -> new CustomWallSignBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD, MAGMA_PLANKS.get().defaultMaterialColor()).noCollission().strength(1.0F).sound(SoundType.WOOD).lootFrom(MAGMA_SIGN), Revamp.MAGMA_WOOD_TYPE));
 
         public static final RegistryObject<Block> MAGMA_PUSTULE_BLOCK = registerBlock("magma_pustule", () -> new MagmaPustuleBlock(BlockBehaviour.Properties.of(Material.NETHER_WOOD).strength(0f).sound(SoundType.NETHER_SPROUTS)));
 
@@ -131,11 +146,10 @@ public class Registry {
         public static final RegistryObject<Block> RAW_IRIDIUM_BLOCK = registerBlock("raw_iridium_block", () -> new Block(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE)));
         //public static final RegistryObject<Block> IRIDIUM_GRATING = registerBlock("iridium_grating", () -> new GrateBlock(BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL).requiresCorrectToolForDrops().strength(1f, 6f).sound(SoundType.METAL)));
         public static final RegistryObject<Block> BLESSED_SOIL = registerBlock("blessed_soil", () -> new BlessedSoilBlock(BlockBehaviour.Properties.copy(Blocks.FARMLAND)));
-        public static final RegistryObject<Block> UPGRADED_BLAST_FURNACE = registerBlock("upgraded_blast_furnace", () -> new UpgradedBlastFurnace(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE)));
         public static final RegistryObject<Block> OSTEUM = registerBlock("osteum", () -> new OsteumBlock(BlockBehaviour.Properties.copy(Blocks.BONE_BLOCK)));
         public static final RegistryObject<Block> GROWING_OSTEUM = registerBlock("growing_osteum", () -> new GrowingOsteumBlock(BlockBehaviour.Properties.copy(Blocks.BONE_BLOCK)));
 
-        public static final RegistryObject<Block> MAGMA_MYCELIUM_BLOCK = registerBlock("magma_mycelium", () -> new MagmaMyceliumBlock(BlockBehaviour.Properties.copy(Blocks.NETHERRACK)));
+        public static final RegistryObject<Block> MAGMA_NYLIUM_BLOCK = registerBlock("magma_nylium", () -> new MagmaNyliumBlock(BlockBehaviour.Properties.copy(Blocks.NETHERRACK)));
 
         public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_NEGATIVE = registerBlock("charge_crystal_negative", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), -20f));
         public static final RegistryObject<Block> CHARGE_CRYSTAL_BLOCK_POSITIVE = registerBlock("charge_crystal_positive", () -> new ChargeCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST), 20f));
@@ -150,6 +164,8 @@ public class Registry {
     public static class ItemRegistry {
         private static final DeferredRegister<Item> REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
         public static final RegistryObject<Item> LAVA_VINES_ITEM = registerBlockItem(BlockRegistry.LAVA_VINES_BLOCK);
+
+        public static final RegistryObject<Item> ENDER_BOOK_ITEM = registerItem("ender_book", () -> new EnderBookItem(new Item.Properties().tab(MAIN_TAB).stacksTo(1)));
 
         public static final RegistryObject<Item> REVAMPED_BLAZE_SPAWN_EGG = registerItem("revamped_blaze_spawn_egg", () -> new ForgeSpawnEggItem(EntityRegistry.REVAMPED_BLAZE, 16167425, 16775294, (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
@@ -196,7 +212,21 @@ public class Registry {
         public static final RegistryObject<Item> MAGMA_FUNGUS_ITEM = registerBlockItem(BlockRegistry.MAGMA_FUNGUS_BLOCK);
         public static final RegistryObject<Item> MAGMA_FUNGUS_CAP_ITEM = registerBlockItem(BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK);
         public static final RegistryObject<Item> MAGMA_FUNGUS_EDGE_ITEM = registerBlockItem(BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK);
-        public static final RegistryObject<Item> MAGMA_FUNGUS_STEM_ITEM = registerBlockItem(BlockRegistry.MAGMA_FUNGUS_STEM_BLOCK);
+        public static final RegistryObject<Item> MAGMA_STEM_ITEM = registerBlockItem(BlockRegistry.MAGMA_STEM_BLOCK);
+        public static final RegistryObject<Item> STRIPPED_MAGMA_STEM_ITEM = registerBlockItem(BlockRegistry.STRIPPED_MAGMA_STEM_BLOCK);
+        public static final RegistryObject<Item> MAGMA_HYPHAE_ITEM = registerBlockItem(BlockRegistry.MAGMA_HYPHAE_BLOCK);
+        public static final RegistryObject<Item> STRIPPED_MAGMA_HYPHAE_ITEM = registerBlockItem(BlockRegistry.STRIPPED_MAGMA_HYPHAE_BLOCK);
+
+        public static final RegistryObject<Item> MAGMA_PLANKS_ITEM = registerBlockItem(BlockRegistry.MAGMA_PLANKS);
+        public static final RegistryObject<Item> MAGMA_SLAB_ITEM = registerBlockItem(BlockRegistry.MAGMA_SLAB);
+        public static final RegistryObject<Item> MAGMA_PRESSURE_PLATE_ITEM = registerBlockItem(BlockRegistry.MAGMA_PRESSURE_PLATE);
+        public static final RegistryObject<Item> MAGMA_FENCE_ITEM = registerBlockItem(BlockRegistry.MAGMA_FENCE);
+        public static final RegistryObject<Item> MAGMA_TRAPDOOR_ITEM = registerBlockItem(BlockRegistry.MAGMA_TRAPDOOR);
+        public static final RegistryObject<Item> MAGMA_FENCE_GATE_ITEM = registerBlockItem(BlockRegistry.MAGMA_FENCE_GATE);
+        public static final RegistryObject<Item> MAGMA_STAIRS_ITEM = registerBlockItem(BlockRegistry.MAGMA_STAIRS);
+        public static final RegistryObject<Item> MAGMA_BUTTON_ITEM = registerBlockItem(BlockRegistry.MAGMA_BUTTON);
+        public static final RegistryObject<Item> MAGMA_DOOR_ITEM = registerBlockItem(BlockRegistry.MAGMA_DOOR);
+        public static final RegistryObject<Item> MAGMA_SIGN_ITEM = registerItem("magma_sign", () -> new SignItem((new Item.Properties()).stacksTo(16).tab(MAIN_TAB), BlockRegistry.MAGMA_SIGN.get(), BlockRegistry.MAGMA_WALL_SIGN.get()));
 
         public static final RegistryObject<Item> MAGMA_PUSTULE_ITEM = registerBlockItem(BlockRegistry.MAGMA_PUSTULE_BLOCK);
 
@@ -205,9 +235,8 @@ public class Registry {
         public static final RegistryObject<Item> RAW_IRIDIUM_BLOCK_ITEM = registerBlockItem(BlockRegistry.RAW_IRIDIUM_BLOCK, new Item.Properties().tab(MAIN_TAB));
         //public static final RegistryObject<Item> IRIDIUM_GRATING_ITEM = registerBlockItem(BlockRegistry.IRIDIUM_GRATING, new Item.Properties().tab(Revamp.MAIN_TAB));
         public static final RegistryObject<Item> BLESSED_SOIL_ITEM = registerBlockItem(BlockRegistry.BLESSED_SOIL, new Item.Properties().tab(MAIN_TAB));
-        public static final RegistryObject<Item> UPGRADED_BLAST_FURNACE_ITEM = registerBlockItem(BlockRegistry.UPGRADED_BLAST_FURNACE, new Item.Properties().tab(MAIN_TAB));
 
-        public static final RegistryObject<Item> MAGMA_MYCELIUM_ITEM = registerBlockItem(BlockRegistry.MAGMA_MYCELIUM_BLOCK);
+        public static final RegistryObject<Item> MAGMA_MYCELIUM_ITEM = registerBlockItem(BlockRegistry.MAGMA_NYLIUM_BLOCK);
 
         public static final RegistryObject<Item> CHARGE_CRYSTAL_NEGATIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_NEGATIVE);
         public static final RegistryObject<Item> CHARGE_CRYSTAL_POSITIVE_ITEM = registerBlockItem(BlockRegistry.CHARGE_CRYSTAL_BLOCK_POSITIVE);
@@ -358,7 +387,7 @@ public class Registry {
         public static final RegistryObject<RecipeSerializer<TransmutationRecipe>> TRANSMUTATION_SERIALIZER = registerRecipeSerializer("transmutation", TransmutationRecipe.TransmutationSerializer::new);
         public static final RegistryObject<RecipeSerializer<EmpowermentRecipe>> EMPOWERMENT_SERIALIZER = registerRecipeSerializer("empowerment", EmpowermentRecipe.EmpowermentSerializer::new);
         public static final RegistryObject<RecipeSerializer<SocketRemoveRecipe>> SOCKET_REMOVE_CRAFTING = registerRecipeSerializer("crafting_special_socket_remove", () -> new SimpleRecipeSerializer<>(SocketRemoveRecipe::new));
-        public static final RegistryObject<RecipeSerializer<UpgradedBlastFurnaceRecipe>> UPGRADED_BLAST_FURNACE_SERIALIZER = registerRecipeSerializer("upgraded_blasting", UpgradedBlastFurnaceRecipe.UpgradedBlastingSerializer::new);
+        public static final RegistryObject<RecipeSerializer<EnderBookCopyRecipe>> ENDER_BOOK_COPY_CRAFTING = registerRecipeSerializer("crafting_special_ender_book_copy", () -> new SimpleRecipeSerializer<>(EnderBookCopyRecipe::new));
 
         public static <T extends Recipe<?>> RegistryObject<RecipeSerializer<T>> registerRecipeSerializer(String id, Supplier<RecipeSerializer<T>> supplier) {
             return REGISTER.register(id, supplier);
@@ -374,7 +403,7 @@ public class Registry {
                         .sized(1.1F, 3.75F)
                         .clientTrackingRange(10));
         public static final RegistryObject<EntityType<RevampedBlaze>> REVAMPED_BLAZE = registerEntity("revamped_blaze", () ->
-                EntityType.Builder.of(RevampedBlaze::new, MobCategory.MONSTER)
+                EntityType.Builder.<RevampedBlaze>of(RevampedBlaze::new, MobCategory.MONSTER)
                         .fireImmune()
                         .sized(0.8F, 1.85F)
                         .clientTrackingRange(10));
@@ -426,8 +455,30 @@ public class Registry {
 
     public static class BlockEntityTypeRegistry {
         private static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MODID);
-        public static RegistryObject<BlockEntityType<UpgradedBlastFurnaceBlockEntity>> UPGRADED_BLAST_FURNACE_BLOCK_ENTITY = registerBlockEntity("upgraded_blast_furnace", () -> BlockEntityType.Builder.of(UpgradedBlastFurnaceBlockEntity::new, BlockRegistry.UPGRADED_BLAST_FURNACE.get()).build(null));
+
         public static RegistryObject<BlockEntityType<ChargeDetectorBlockEntity>> CHARGE_DETECTOR_BLOCK_ENTITY = registerBlockEntity("charge_detector", () -> BlockEntityType.Builder.of(ChargeDetectorBlockEntity::new, BlockRegistry.CHARGE_DETECTOR.get()).build(null));
+        public static RegistryObject<BlockEntityType<CustomSignBlockEntity>> CUSTOM_SIGN = registerBlockEntity("custom_sign", () -> BlockEntityType.Builder.of(CustomSignBlockEntity::new,
+                Blocks.OAK_SIGN,
+                Blocks.SPRUCE_SIGN,
+                Blocks.BIRCH_SIGN,
+                Blocks.ACACIA_SIGN,
+                Blocks.JUNGLE_SIGN,
+                Blocks.DARK_OAK_SIGN,
+                Blocks.OAK_WALL_SIGN,
+                Blocks.SPRUCE_WALL_SIGN,
+                Blocks.BIRCH_WALL_SIGN,
+                Blocks.ACACIA_WALL_SIGN,
+                Blocks.JUNGLE_WALL_SIGN,
+                Blocks.DARK_OAK_WALL_SIGN,
+                Blocks.CRIMSON_SIGN,
+                Blocks.CRIMSON_WALL_SIGN,
+                Blocks.WARPED_SIGN,
+                Blocks.WARPED_WALL_SIGN,
+                Blocks.MANGROVE_SIGN,
+                Blocks.MANGROVE_WALL_SIGN,
+                BlockRegistry.MAGMA_SIGN.get(),
+                BlockRegistry.MAGMA_WALL_SIGN.get()
+        ).build(null));
 
         public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBlockEntity(String id, Supplier<BlockEntityType<T>> supplier) {
             return REGISTER.register(id, supplier);
@@ -436,7 +487,6 @@ public class Registry {
 
     public static class MenuTypeRegistry {
         private static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
-        public static final RegistryObject<MenuType<UpgradedBlastFurnaceMenu>> UPGRADED_BLAST_FURNACE_MENU = registerMenu("upgraded_blast_furnace", () -> new MenuType<>(UpgradedBlastFurnaceMenu::new));
 
         public static <T extends AbstractFurnaceMenu> RegistryObject<MenuType<T>> registerMenu(String id, Supplier<MenuType<T>> supplier) {
             return REGISTER.register(id, supplier);
@@ -452,12 +502,35 @@ public class Registry {
         }
     }
 
-    public static class StructureFeatureRegistry {
-        private static final DeferredRegister<StructureFeature<?>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.STRUCTURE_FEATURE_REGISTRY, MODID);
-        public static final RegistryObject<BetterFortressFeature> BETTER_FORTRESS = registerStructureFeature("better_fortress", () -> new BetterFortressFeature(NoneFeatureConfiguration.CODEC));
+    public static class StructureRegistry {
+        private static final DeferredRegister<Structure> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.STRUCTURE_REGISTRY, MODID);
+        public static final Supplier<WeightedRandomList<MobSpawnSettings.SpawnerData>> BETTER_FORTRESS_ENEMIES = () -> WeightedRandomList.create(new MobSpawnSettings.SpawnerData(EntityRegistry.REVAMPED_BLAZE.get(), 5, 2, 3), new MobSpawnSettings.SpawnerData(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4), new MobSpawnSettings.SpawnerData(EntityType.WITHER_SKELETON, 8, 5, 5), new MobSpawnSettings.SpawnerData(EntityType.SKELETON, 2, 5, 5), new MobSpawnSettings.SpawnerData(EntityType.MAGMA_CUBE, 3, 4, 4));
 
-        public static <S extends StructureFeature<FC>, FC extends FeatureConfiguration> RegistryObject<S> registerStructureFeature(String id, Supplier<S> supplier) {
+        public static final Supplier<HolderSet<Biome>> BETTER_FORTRESS_BIOMES = Lazy.of(() -> HolderSet.direct(Stream.of(
+                Biomes.CRIMSON_FOREST,
+                Biomes.WARPED_FOREST,
+                Biomes.SOUL_SAND_VALLEY,
+                Biomes.BASALT_DELTAS,
+                Biomes.NETHER_WASTES,
+                BiomeRegistry.LAVA_GARDENS.getKey()
+        ).map(ForgeRegistries.BIOMES::getHolder).filter(Optional::isPresent).map(Optional::get).toList())); // probably worst way to do this; TODO: fix later
+
+        public static final RegistryObject<BetterFortressFeature> BETTER_FORTRESS = registerStructure("better_fortress", () -> new BetterFortressFeature(structure(BETTER_FORTRESS_BIOMES.get(), Map.of(MobCategory.MONSTER, new StructureSpawnOverride(StructureSpawnOverride.BoundingBoxType.PIECE, BETTER_FORTRESS_ENEMIES.get())), GenerationStep.Decoration.UNDERGROUND_DECORATION, TerrainAdjustment.NONE)));
+
+        public static <S extends Structure> RegistryObject<S> registerStructure(String id, Supplier<S> supplier) {
             return REGISTER.register(id, supplier);
+        }
+
+        private static Structure.StructureSettings structure(TagKey<Biome> tag, Map<MobCategory, StructureSpawnOverride> spawns, GenerationStep.Decoration deco, TerrainAdjustment adjustment) {
+            return new Structure.StructureSettings(biomes(tag), spawns, deco, adjustment);
+        }
+
+        private static Structure.StructureSettings structure(HolderSet<Biome> biomes, Map<MobCategory, StructureSpawnOverride> spawns, GenerationStep.Decoration deco, TerrainAdjustment adjustment) {
+            return new Structure.StructureSettings(biomes, spawns, deco, adjustment);
+        }
+
+        private static HolderSet<Biome> biomes(TagKey<Biome> tag) {
+            return HolderSet.direct(ForgeRegistries.BIOMES.tags().getTag(tag).stream().map(Holder::direct).toList());
         }
     }
 
@@ -472,28 +545,6 @@ public class Registry {
         public static final RegistryObject<ConfiguredFeature<?, ?>> PLATFORM_FUNGUS_CONFIGURED = registerConfiguredFeature("platform_fungus", () -> new ConfiguredFeature<>(FeatureRegistry.PLATFORM_FUNGUS_FEATURE.get(), PlatformFungusConfiguration.defaultConfig()));
 
         public static <C extends ConfiguredFeature<FC, F>, FC extends FeatureConfiguration, F extends Feature<FC>> RegistryObject<ConfiguredFeature<?, ?>> registerConfiguredFeature(String id, Supplier<C> supplier) {
-            return REGISTER.register(id, supplier);
-        }
-    }
-
-    public static class ConfiguredStructureFeatureRegistry {
-        private static final DeferredRegister<ConfiguredStructureFeature<?, ?>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, MODID);
-        public static final RegistryObject<ConfiguredStructureFeature<?, ?>> BETTER_FORTRESS_CONFIGURED = registerConfiguredStructureFeature("better_fortress", () ->
-                StructureFeatureRegistry.BETTER_FORTRESS.get().configured(
-                        NoneFeatureConfiguration.INSTANCE,
-                        RevampTags.HAS_BETTER_FORTRESS.get(),
-                        false,
-                        Map.of(
-                                MobCategory.MONSTER,
-                                new StructureSpawnOverride(
-                                        StructureSpawnOverride.BoundingBoxType.PIECE,
-                                        BetterFortressFeature.FORTRESS_ENEMIES
-                                )
-                        )
-                )
-        );
-
-        public static <FC extends FeatureConfiguration, F extends StructureFeature<FC>> RegistryObject<ConfiguredStructureFeature<?, ?>> registerConfiguredStructureFeature(String id, Supplier<ConfiguredStructureFeature<FC, F>> supplier) {
             return REGISTER.register(id, supplier);
         }
     }
@@ -515,7 +566,6 @@ public class Registry {
         private static final DeferredRegister<Biome> REGISTER = DeferredRegister.create(ForgeRegistries.BIOMES, MODID);
         public static final RegistryObject<Biome> LAVA_GARDENS = registerBiome("lava_gardens", () -> new Biome.BiomeBuilder()
                 .precipitation(Biome.Precipitation.NONE)
-                .biomeCategory(Biome.BiomeCategory.NETHER)
                 .temperature(1f)
                 .temperatureAdjustment(Biome.TemperatureModifier.NONE)
                 .downfall(0f)
@@ -530,7 +580,7 @@ public class Registry {
                 .mobSpawnSettings(
                         new MobSpawnSettings.Builder()
                                 .addSpawn(MobCategory.MONSTER,
-                                        new MobSpawnSettings.SpawnerData(EntityType.MAGMA_CUBE, 10, 3, 5)
+                                        new MobSpawnSettings.SpawnerData(EntityRegistry.REVAMPED_BLAZE.get(), 1, 1, 1)
                                 )
                                 .build()
                 )
@@ -549,7 +599,7 @@ public class Registry {
 
     public static class RuleSourceRegistry {
         private static final DeferredRegister<Codec<? extends SurfaceRules.RuleSource>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.RULE_REGISTRY, MODID);
-        public static final RegistryObject<Codec<SurfaceRules.RuleSource>> MAGMA_MYCELIUM_RULE_SOURCE = registerRuleSource("magma_mycelium", () -> Codec.unit(new RuleSource2(BlockRegistry.MAGMA_MYCELIUM_BLOCK)));
+        public static final RegistryObject<Codec<SurfaceRules.RuleSource>> MAGMA_MYCELIUM_RULE_SOURCE = registerRuleSource("magma_mycelium", () -> Codec.unit(new RuleSource2(BlockRegistry.MAGMA_NYLIUM_BLOCK)));
 
         public static <K extends Codec<S>, S extends SurfaceRules.RuleSource> RegistryObject<K> registerRuleSource(String id, Supplier<K> supplier) {
             return REGISTER.register(id, supplier);
@@ -557,42 +607,9 @@ public class Registry {
     }
 
     public static class EntityDataSerializerRegistry {
-        private static final DeferredRegister<DataSerializerEntry> REGISTER = DeferredRegister.create(ForgeRegistries.Keys.DATA_SERIALIZERS, MODID);
-        public static final RegistryObject<DataSerializerEntry> ROD_SERIALIZER_ENTRY = registerDataSerializerEntry("rods", () -> new DataSerializerEntry(
-                new EntityDataSerializer<RevampedBlaze.Rods>() {
-                    @Override
-                    public void write(FriendlyByteBuf buf, RevampedBlaze.Rods rods) {
-                        buf.writeInt(rods.numRods());
-                        buf.writeUUID(rods.blazeUUID);
-                        for (RevampedBlaze.Rod rod : rods.rods) {
-                            buf.writeUtf(rod.type().toString());
-                            buf.writeDouble(rod.pos().x());
-                            buf.writeDouble(rod.pos().y());
-                            buf.writeDouble(rod.pos().z());
-                        }
-                    }
+        private static final DeferredRegister<EntityDataSerializer<?>> REGISTER = DeferredRegister.create(ForgeRegistries.Keys.DATA_SERIALIZERS, MODID);
 
-                    @Override
-                    public RevampedBlaze.Rods read(FriendlyByteBuf buf) {
-                        int n = buf.readInt();
-                        UUID uuid = buf.readUUID();
-                        List<RevampedBlaze.Rod> r = new ArrayList<>();
-                        for (int i = 0; i < n; i++) {
-                            RevampedBlaze.RodType type = RevampedBlaze.RodType.valueOf(buf.readUtf());
-                            Vec3 pos = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
-                            r.add(new RevampedBlaze.Rod(type, pos));
-                        }
-                        return new RevampedBlaze.Rods(r, uuid);
-                    }
-
-                    @Override
-                    public RevampedBlaze.Rods copy(RevampedBlaze.Rods rods) {
-                        return new RevampedBlaze.Rods(rods.rods, rods.blazeUUID);
-                    }
-                }
-        ));
-
-        public static RegistryObject<DataSerializerEntry> registerDataSerializerEntry(String id, Supplier<DataSerializerEntry> supplier) {
+        public static <T> RegistryObject<EntityDataSerializer<T>> registerEntityDataSerializer(String id, Supplier<EntityDataSerializer<T>> supplier) {
             return REGISTER.register(id, supplier);
         }
     }
@@ -611,6 +628,36 @@ public class Registry {
         private static final DeferredRegister<Codec<? extends BiomeSource>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.BIOME_SOURCE_REGISTRY, MODID);
 
         public static <K extends Codec<S>, S extends BiomeSource> RegistryObject<K> registerBiomeSource(String id, Supplier<K> supplier) {
+            return REGISTER.register(id, supplier);
+        }
+    }
+
+    public static class RecipeTypeRegistry {
+        private static final DeferredRegister<RecipeType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
+
+        public static final RegistryObject<RecipeType<TransmutationRecipe>> TRANSMUTATION = registerRecipeType("transmutation");
+        public static final RegistryObject<RecipeType<EmpowermentRecipe>> EMPOWERMENT = registerRecipeType("empowerment");
+
+        public static <T extends Recipe<?>> RegistryObject<RecipeType<T>> registerRecipeType(String id, Supplier<RecipeType<T>> recipeTypeSupplier) {
+            return REGISTER.register(id, recipeTypeSupplier);
+        }
+
+        public static <T extends Recipe<?>> RegistryObject<RecipeType<T>> registerRecipeType(String id) {
+            return registerRecipeType(id, () -> new RecipeType<T>() {
+                @Override
+                public String toString() {
+                    return id;
+                }
+            });
+        }
+    }
+
+    public static class StructureTypeRegistry {
+        private static final DeferredRegister<StructureType<?>> REGISTER = DeferredRegister.create(net.minecraft.core.Registry.STRUCTURE_TYPE_REGISTRY, MODID);
+
+        public static final RegistryObject<StructureType<BetterFortressFeature>> BETTER_FORTRESS = registerStructureType("better_fortress", () -> () -> BetterFortressFeature.CODEC);
+
+        public static <T extends Structure> RegistryObject<StructureType<T>> registerStructureType(String id, Supplier<StructureType<T>> supplier) {
             return REGISTER.register(id, supplier);
         }
     }

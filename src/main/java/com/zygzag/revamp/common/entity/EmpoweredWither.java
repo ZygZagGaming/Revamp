@@ -7,7 +7,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -185,7 +186,7 @@ public class EmpoweredWither extends WitherBoss {
         return this.subEntities;
     }
 
-    public void recreateFromPacket(ClientboundAddMobPacket packet) {
+    public void recreateFromPacket(ClientboundAddEntityPacket packet) {
         super.recreateFromPacket(packet);
         EmpoweredWitherHeadPart[] parts = this.getSubEntities();
 
@@ -283,7 +284,6 @@ public class EmpoweredWither extends WitherBoss {
         LivingEntity target = getTarget();
         if (this.isControlledByLocalInstance()) {
             this.lerpSteps = 0;
-            this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
         }
 
 
@@ -765,5 +765,14 @@ public class EmpoweredWither extends WitherBoss {
             double sin2 = cos * Math.sin(rot + Math.PI / 2);
             world.addParticle(new DustParticleOptions(new Vector3f((float)r, (float)g, (float)b), 1), x + randomX + cos2, y + sin + randomY, z + randomZ + sin2, 1, 1, 1);
         }
+    }
+
+    // revamp: entity methods that I decided to add to all my entities (i would add them to the vanilla Entity class if i could)
+    public Vec3 oldPos() {
+        return new Vec3(xOld, yOld, zOld);
+    }
+
+    public Vec3 position(float partialTick) {
+        return oldPos().lerp(position(), partialTick);
     }
 }

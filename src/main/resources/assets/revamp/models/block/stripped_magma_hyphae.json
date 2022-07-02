@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "revamp:block/stripped_magma_stem_side",
+    "side": "revamp:block/stripped_magma_stem_side"
+  }
+}

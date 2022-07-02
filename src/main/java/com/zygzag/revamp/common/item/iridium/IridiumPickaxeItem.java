@@ -1,6 +1,5 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
 import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
@@ -10,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -32,7 +29,6 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.RegEx;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -51,25 +47,24 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
         MutableComponent m;
         if (s != Socket.NONE && world != null) {
             String str = hasUseAbility() ? "use" : "passive";
-            MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
-            t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+            MutableComponent t = Component.translatable("socketed.revamp").withStyle(ChatFormatting.GRAY);
+            t.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
             text.add(t);
 
             Socket socket = getSocket();
-            text.add(new TextComponent(""));
-            if (str.equals("passive")) m = new TranslatableComponent(str + ".revamp").withStyle(ChatFormatting.GRAY);
+            text.add(Component.literal(""));
+            if (str.equals("passive")) m = Component.translatable(str + ".revamp").withStyle(ChatFormatting.GRAY);
             else m = Minecraft.getInstance().options.keyUse.getKey().getDisplayName().copy().withStyle(ChatFormatting.GRAY);
-            m.append(new TextComponent( ": ").withStyle(ChatFormatting.GRAY));
-            m.append(new TranslatableComponent( str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
+            m.append(Component.literal( ": ").withStyle(ChatFormatting.GRAY));
+            m.append(Component.translatable( str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
-            text.add(new TranslatableComponent("description." + str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()));
+            text.add(Component.translatable("description." + str + "_ability.revamp.pickaxe." + socket.name().toLowerCase()));
             if (hasCooldown()) {
-                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
-                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
-
-                comp.append("\n");
+                MutableComponent comp = Component.translatable("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(Component.literal(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                text.add(Component.literal("\n"));
                 text.add(comp);
             }
         }
@@ -143,7 +138,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                     if (!player.getCooldowns().isOnCooldown(this)) {
                         AABB box = player.getBoundingBox().inflate(5.0);
                         List<ItemEntity> entities = world.getEntitiesOfClass(ItemEntity.class, box);
-                        List<TransmutationRecipe> recipes = world.getRecipeManager().getAllRecipesFor(ModRecipeType.TRANSMUTATION);
+                        List<TransmutationRecipe> recipes = world.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.TRANSMUTATION.get());
                         int n = 0;
                         for (ItemEntity itemEntity : entities) {
                             for (TransmutationRecipe recipe : recipes) {

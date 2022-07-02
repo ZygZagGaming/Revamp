@@ -2,6 +2,7 @@ package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.charge.Arc;
+import com.zygzag.revamp.util.ClientUtils;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,13 +40,6 @@ public class ClientboundArcCreationPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupp) {
-        NetworkEvent.Context ctx = ctxSupp.get();
-        Level world = Minecraft.getInstance().level;
-        if (world != null && world.isClientSide) {
-            GeneralUtil.ifCapability(world, Revamp.ARC_CAPABILITY, (handler) -> {
-                handler.add(arc);
-            });
-        }
-        ctx.setPacketHandled(true);
+        if (Minecraft.getInstance().level.isClientSide) ClientUtils.createArc(ctxSupp, arc);
     }
 }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PP",
+    "PP",
+    "PP"
+  ],
+  "key": {
+    "P": {
+      "item": "revamp:magma_planks"
+    }
+  },
+  "result": {
+    "item": "revamp:magma_door",
+    "count": 3
+  }
+}

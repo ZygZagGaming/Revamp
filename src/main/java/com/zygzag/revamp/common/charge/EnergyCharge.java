@@ -2,12 +2,14 @@ package com.zygzag.revamp.common.charge;
 
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.capability.ChunkChargeHandler;
+import com.zygzag.revamp.common.tag.RevampTags;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -83,7 +85,7 @@ public class EnergyCharge {
 
     public void tick() {
         lifetime++;
-        Random rng = world.getRandom();
+        RandomSource rng = world.getRandom();
         if (rng.nextDouble() < Math.abs(charge) / 20f) {
             VoxelShape shape = world.getBlockState(pos).getCollisionShape(world, pos);
             if (!shape.isEmpty()) {
@@ -93,7 +95,8 @@ public class EnergyCharge {
         }
         if (!canSurvive() || Math.abs(charge) < Constants.EPSILON) remove();
         if (!world.isClientSide) {
-            List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, new AABB(pos).inflate(Constants.ARC_RANGE), Constants.CHARGEABLE_PREDICATE);
+            float range = world.getBlockState(pos).is(RevampTags.EXTENDED_ARCS.get()) ? Constants.EXTENDED_ARC_RANGE : Constants.ARC_RANGE;
+            List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, new AABB(pos).inflate(range), Constants.CHARGEABLE_PREDICATE);
             LivingEntity living = GeneralUtil.minByOrNull(entities, (e) -> e.distanceToSqr(Vec3.atCenterOf(pos)));
             if (living != null) GeneralUtil.ifCapability(living, Revamp.ENTITY_CHARGE_CAPABILITY, (handler) -> {
                 float c = handler.getCharge();

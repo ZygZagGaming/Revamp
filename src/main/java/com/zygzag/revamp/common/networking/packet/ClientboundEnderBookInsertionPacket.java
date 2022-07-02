@@ -25,9 +25,11 @@ public record ClientboundEnderBookInsertionPacket(int documentId, int pageId, in
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupplier) {
+        NetworkEvent.Context ctx = ctxSupplier.get();
         Screen scr = Minecraft.getInstance().screen;
         if (scr instanceof EnderBookEditScreen screen && screen.getDocumentId() == documentId) {
             screen.insertPageText(pageId, index, text);
         }
+        ctx.setPacketHandled(true);
     }
 }

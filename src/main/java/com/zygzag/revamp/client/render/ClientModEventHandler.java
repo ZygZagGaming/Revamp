@@ -1,13 +1,11 @@
 package com.zygzag.revamp.client.render;
 
 import com.zygzag.revamp.client.particle.ChargeParticle;
-import com.zygzag.revamp.client.render.entity.EmpoweredWitherRenderer;
-import com.zygzag.revamp.client.render.entity.HomingWitherSkullRenderer;
-import com.zygzag.revamp.client.render.entity.RevampedBlazeRenderer;
-import com.zygzag.revamp.client.render.entity.ThrownAxeRenderer;
+import com.zygzag.revamp.client.render.entity.*;
 import com.zygzag.revamp.client.render.entity.model.EmpoweredWitherModel;
 import com.zygzag.revamp.client.render.entity.model.RevampedBlazeModel;
 import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.common.entity.BlazeRodEntity;
 import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;

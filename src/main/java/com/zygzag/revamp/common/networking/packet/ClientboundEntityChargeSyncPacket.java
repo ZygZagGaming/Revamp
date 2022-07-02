@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.Revamp;
+import com.zygzag.revamp.util.ClientUtils;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,22 +32,11 @@ public class ClientboundEntityChargeSyncPacket {
 
     @Nullable
     public static ClientboundEntityChargeSyncPacket decode(FriendlyByteBuf buf) {
-        Level world = Minecraft.getInstance().level;
-        if (world == null) return null;
-        return new ClientboundEntityChargeSyncPacket(buf.readUUID(), buf.readFloat(), buf.readFloat());
+        if (Minecraft.getInstance().level.isClientSide) return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
+        else return null;
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
-        Level world = Minecraft.getInstance().level;
-        //System.out.println("received sync packet w/ charge: " + newCharge + " and max charge: " + newMaxCharge);
-        if (world != null && world.isClientSide) {
-            Entity entity = world.getEntities().get(uuid);
-            if (entity != null) GeneralUtil.ifCapability(entity, Revamp.ENTITY_CHARGE_CAPABILITY, (handler) -> {
-                handler.setCharge(newCharge);
-                handler.setMaxCharge(newMaxCharge);
-            });
-        }
-        ctx.setPacketHandled(true);
+        if (Minecraft.getInstance().level.isClientSide) ClientUtils.syncEntityCharge(ctxSupplier, uuid, newCharge, newMaxCharge);
     }
 }

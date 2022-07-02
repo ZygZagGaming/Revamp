@@ -1,6 +1,8 @@
 package com.zygzag.revamp.client.render.entity.model;
 
+import com.zygzag.revamp.common.entity.BlazeRodEntity;
 import com.zygzag.revamp.common.entity.RevampedBlaze;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -39,38 +41,31 @@ public class RevampedBlazeModel extends HierarchicalModel<RevampedBlaze> {
     }
 
     @Override
-    public void setupAnim(RevampedBlaze blaze, float a, float b, float counter, float yRot, float xRot) {
+    public void setupAnim(RevampedBlaze blaze, float animSpeed, float animPos, float ageInTicks, float headYRot, float headXRot) {
+        head.xRot = headXRot * ((float)Math.PI / 180F);
+        head.yRot = headYRot * ((float)Math.PI / 180F);
+    }
+
+    @Override
+    public void prepareMobModel(RevampedBlaze blaze, float animSpeed, float animPos, float partialTick) {
         int numRods = blaze.numRods();
-        Vec3 current = blaze.position();
-        Vec3 old = new Vec3(blaze.xOld, blaze.yOld, blaze.zOld);
-        // System.out.println("current: " + current + " old: " + old);
-        Vec3 delta = old.subtract(current).scale(50.0);
-        head.xRot = xRot * ((float)Math.PI / 180F);
-        head.yRot = yRot * ((float)Math.PI / 180F);
+        Vec3 blazePos = blaze.position(partialTick);
         float d = 0;
         if (numRods <= 8) d = 8;
         if (numRods <= 4) d = 16;
         head.y = d;
-        float k = counter * (float) Math.PI * -0.1f;
         int i = 0;
         while (i < numRods) {
             ModelPart rod = rods[i];
-            if (i < 4) {
-                rod.setPos((float) (Math.cos(k) * 9 + delta.x()), (float) (-4 + Math.cos(i * 2 + counter / 2) + d + delta.y()), (float) (Math.sin(k) * 9 + delta.z()));
-            } else if (i < 8) {
-                if (i == 4) k = counter * (float) Math.PI * 0.05f;
-                rod.setPos((float) (Math.cos(k) * 8 + delta.x() * 2), (float) (4 + Math.cos(i * 2 + counter / 2) + d + delta.y() * 2), (float) (Math.sin(k) * 7 + delta.z() * 2));
-            } else {
-                if (i == 8) k = counter * (float) Math.PI * -0.025f;
-                rod.setPos((float) (Math.cos(k) * 7 + delta.x() * 3), (float) (12 + Math.cos( i * 2 + counter / 2) + d + delta.y() * 3), (float) (Math.sin(k) * 5 + delta.z() * 3));
-            }
-            k += Math.PI / 2;
+            BlazeRodEntity rodEntity = blaze.getRod(i);
+            Vec3 rodPos = rodEntity.position(partialTick).subtract(blazePos);
+            Vec3 pos = GeneralUtil.rotateAbout(rodPos.scale(16), Vec3.ZERO, Math.PI, (blaze.yBodyRot(partialTick) * Math.PI / 180)).add(-1, 16, -1);
+            rod.setPos((float) pos.x, (float) pos.y, (float) pos.z);
             i++;
         }
         for (int j = numRods; j < 12; j++) {
             rods[j].setPos(0f, 1000f, 0f);
         }
-
     }
 
 

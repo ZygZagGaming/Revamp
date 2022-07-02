@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -69,7 +68,7 @@ public class TransmutationRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeType.TRANSMUTATION;
+        return Registry.RecipeTypeRegistry.TRANSMUTATION.get();
     }
 
     public Ingredient getInItem() {
@@ -84,7 +83,7 @@ public class TransmutationRecipe implements Recipe<SimpleContainer> {
         return rate;
     }
 
-    public static class TransmutationSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<TransmutationRecipe> {
+    public static class TransmutationSerializer implements RecipeSerializer<TransmutationRecipe> {
 
         @Override
         public TransmutationRecipe fromJson(ResourceLocation id, JsonObject obj) {
@@ -113,7 +112,7 @@ public class TransmutationRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, TransmutationRecipe recipe) {
-            ResourceLocation id = recipe.outItem.getRegistryName();
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(recipe.outItem);
             if (id == null) id = new ResourceLocation("minecraft:air");
             buf.writeUtf(id.toString());
             recipe.inItem.toNetwork(buf);

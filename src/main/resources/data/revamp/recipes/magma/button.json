@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "revamp:magma_planks"
+    }
+  ],
+  "result": {
+    "item": "revamp:magma_button",
+    "count": 1
+  }
+}

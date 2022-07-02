@@ -14,7 +14,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -68,15 +67,15 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return new EmpowermentSerializer();
+        return Registry.RecipeSerializerRegistry.EMPOWERMENT_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipeType.EMPOWERMENT;
+        return Registry.RecipeTypeRegistry.EMPOWERMENT.get();
     }
 
-    public static class EmpowermentSerializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<EmpowermentRecipe> {
+    public static class EmpowermentSerializer implements RecipeSerializer<EmpowermentRecipe> {
 
         @Override
         public EmpowermentRecipe fromJson(ResourceLocation id, JsonObject obj) {
@@ -99,8 +98,8 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, EmpowermentRecipe recipe) {
-            buf.writeUtf(Objects.requireNonNull(recipe.inEntity.getRegistryName()).toString());
-            buf.writeUtf(Objects.requireNonNull(recipe.outEntity.getRegistryName()).toString());
+            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(recipe.inEntity)).toString());
+            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(recipe.inEntity)).toString());
             recipe.item.toNetwork(buf);
         }
     }

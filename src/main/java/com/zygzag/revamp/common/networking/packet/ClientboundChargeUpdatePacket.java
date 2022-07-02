@@ -1,10 +1,8 @@
 package com.zygzag.revamp.common.networking.packet;
 
-import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.charge.EnergyCharge;
-import com.zygzag.revamp.util.GeneralUtil;
+import com.zygzag.revamp.util.ClientUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.ChunkPos;
@@ -12,8 +10,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class ClientboundChargeUpdatePacket {
@@ -41,40 +39,16 @@ public class ClientboundChargeUpdatePacket {
         buf.writeInt(pos.z);
     }
 
-    @Nullable
     public static ClientboundChargeUpdatePacket decode(FriendlyByteBuf buf) {
-        Map<BlockPos, EnergyCharge> map = new HashMap<>();
-        List<BlockPos> toRemove = new ArrayList<>();
-        ClientLevel world = Minecraft.getInstance().level;
-        if (world != null) {
-            int n = buf.readInt();
-            for (int i = 0; i < n; i++) {
-                BlockPos pos = buf.readBlockPos();
-                map.put(pos, EnergyCharge.decode(buf, world));
-            }
-            int k = buf.readInt();
-            for (int i = 0; i < k; i++) {
-                toRemove.add(buf.readBlockPos());
-            }
-            return new ClientboundChargeUpdatePacket(map, toRemove, new ChunkPos(buf.readInt(), buf.readInt()));
-        }
-        return null;
+        if (Minecraft.getInstance().level.isClientSide) return ClientUtils.decodeClientboundChargeUpdatePacket(buf);
+        else return null;
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context ctx = contextSupplier.get();
         ctx.enqueueWork(() ->
-            // Make sure it's only executed on the physical client
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                ClientLevel world = Minecraft.getInstance().level;
-                if (world != null) {
-                    GeneralUtil.ifCapability(world, Revamp.CLIENT_LEVEL_CHARGE_CAPABILITY, (handler) -> {
-                        handler.charges.putAll(toSync);
-                        for (BlockPos pos : toRemove) {
-                            handler.charges.remove(pos);
-                        }
-                    });
-                }
+                ClientUtils.chargeUpdate(toSync, toRemove);
             })
         );
         ctx.setPacketHandled(true);

@@ -18,6 +18,9 @@ public class RevampTags {
     public static final Lazy<TagKey<EntityType<?>>> BLAZE_COMFORTABLE = () -> EntityTypeTags.create("revamp:blaze_comfortable");
     public static final Lazy<TagKey<Block>> COPPER_ORES = () -> BlockTags.create(new ResourceLocation("forge:ores/copper"));
     public static final Lazy<TagKey<Block>> OSTEUM_REPLACEABLE = () -> BlockTags.create(new ResourceLocation("revamp:osteum_replaceable"));
-    public static final Lazy<TagKey<Biome>> HAS_BETTER_FORTRESS = () -> BiomeTags.create("revamp:has_better_fortress");
+    public static final Lazy<TagKey<Block>> MAGMA_NYLIUM_CONNECTABLE = () -> BlockTags.create(new ResourceLocation("revamp:magma_nylium_connectable"));
+    public static final Lazy<TagKey<Block>> MAGMA_STEMS = () -> BlockTags.create(new ResourceLocation("revamp:magma_stems"));
+    public static final Lazy<TagKey<Biome>> HAS_BETTER_FORTRESS = () -> BiomeTags.create("revamp:has_structure/better_fortress");
     public static final Lazy<TagKey<Block>> MAGMA_FUNGUS_REPLACEABLE = () -> BlockTags.create(Revamp.loc("magma_fungus_replaceable"));
+    public static final Lazy<TagKey<Block>> EXTENDED_ARCS = () -> BlockTags.create(Revamp.loc("extended_arcs"));
 }

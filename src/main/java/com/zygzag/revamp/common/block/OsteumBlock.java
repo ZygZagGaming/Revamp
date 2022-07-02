@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -135,13 +136,13 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rng) {
         if (rng.nextDouble() < 0.25) {
             grow(state, world, pos, rng, 0);
         }
     }
 
-    public void grow(BlockState state, ServerLevel world, BlockPos pos, Random rng, int amount) {
+    public void grow(BlockState state, ServerLevel world, BlockPos pos, RandomSource rng, int amount) {
         ArrayList<Direction> dirs = new ArrayList<>(Arrays.stream(Direction.values()).toList());
         if (amount == 10) return;
         for (Direction dir : dirs)

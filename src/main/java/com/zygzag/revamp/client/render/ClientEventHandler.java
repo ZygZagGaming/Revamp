@@ -10,7 +10,7 @@ import com.zygzag.revamp.common.capability.ClientLevelChargeHandler;
 import com.zygzag.revamp.common.capability.EntityChargeHandler;
 import com.zygzag.revamp.common.charge.*;
 import com.zygzag.revamp.common.entity.effect.SightEffect;
-import com.zygzag.revamp.util.Constants;
+import com.zygzag.revamp.util.ClientConstants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,7 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.List;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Revamp.MODID)
+@Mod.EventBusSubscriber(modid = Revamp.MODID, value = Dist.CLIENT)
 public class ClientEventHandler {
 
     @SubscribeEvent
@@ -43,7 +44,7 @@ public class ClientEventHandler {
         PoseStack stack = event.getPoseStack();
         MultiBufferSource.BufferSource src = event.getLevelRenderer().renderBuffers.bufferSource();
 
-        VertexConsumer buffer = src.getBuffer(Constants.TEST);
+        VertexConsumer buffer = src.getBuffer(ClientConstants.TEST);
         Player player = mc.player;
         VoxelShape box = Shapes.box(0.01, 0.01, 0.01, 0.99, 0.99, 0.99);
         if (player != null) {
@@ -55,7 +56,7 @@ public class ClientEventHandler {
             int pbz = player.getBlockZ();
             Vec3 pos = mc.gameRenderer.getMainCamera().getPosition();
             stack.translate(-pos.x, -pos.y, -pos.z);
-            Constants.TEST.setupRenderState();
+            ClientConstants.TEST.setupRenderState();
             RenderSystem.disableDepthTest();
             for (Map.Entry<MobEffect, MobEffectInstance> entry : player.getActiveEffectsMap().entrySet()) {
                 MobEffect effect = entry.getKey();
@@ -85,8 +86,8 @@ public class ClientEventHandler {
                 }
             }
             RenderSystem.enableDepthTest();
-            Constants.TEST.clearRenderState();
-            src.endBatch(Constants.TEST);
+            ClientConstants.TEST.clearRenderState();
+            src.endBatch(ClientConstants.TEST);
             stack.popPose();
 
             stack.pushPose();

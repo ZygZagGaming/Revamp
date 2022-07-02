@@ -8,8 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -40,6 +38,7 @@ import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -208,24 +207,24 @@ public class IridiumScepterItem extends Item implements ISocketable {
         Item i = s.i;
         MutableComponent m;
         if (s != Socket.NONE && world != null) {
-            MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
-            t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+            MutableComponent t = Component.translatable("socketed.revamp").withStyle(ChatFormatting.GRAY);
+            t.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
             text.add(t);
 
             Socket socket = getSocket();
-            text.add(new TextComponent(""));
+            text.add(Component.literal(""));
             m = Minecraft.getInstance().options.keyUse.getKey().getDisplayName().copy().withStyle(ChatFormatting.GRAY);
-            m.append(new TextComponent( ": ").withStyle(ChatFormatting.GRAY));
-            m.append(new TranslatableComponent("use_ability.revamp.scepter." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
+            m.append(Component.literal( ": ").withStyle(ChatFormatting.GRAY));
+            m.append(Component.translatable("use_ability.revamp.scepter." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
-            text.add(new TranslatableComponent("description.use_ability.revamp.scepter." + socket.name().toLowerCase()));
+            text.add(Component.translatable("description.use_ability.revamp.scepter." + socket.name().toLowerCase()));
             if (hasCooldown()) {
-                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
-                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
-                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
-                comp.append("\n");
+                MutableComponent comp = Component.translatable("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(Component.literal(Float.toString(getCooldown(stack, world) / 20f) + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(Component.translatable("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(Component.literal("\n"));
                 text.add(comp);
             }
         }

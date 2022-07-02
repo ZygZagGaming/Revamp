@@ -6,7 +6,6 @@
   "mixins": [
     "BlockMixin",
     "CropBlockMixin",
-    "DimensionTypeMixin",
     "PistonStructureResolverMixin",
     "ServerPlayerMixin",
     "LivingEntityMixin",

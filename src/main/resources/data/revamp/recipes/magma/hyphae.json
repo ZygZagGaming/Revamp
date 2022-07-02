@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PP",
+    "PP"
+  ],
+  "key": {
+    "P": {
+      "item": "revamp:magma_stem"
+    }
+  },
+  "result": {
+    "item": "revamp:magma_hyphae",
+    "count": 3
+  }
+}

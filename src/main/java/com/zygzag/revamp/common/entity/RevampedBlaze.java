@@ -1,19 +1,21 @@
 package com.zygzag.revamp.common.entity;
 
-import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.common.tag.RevampTags;
+import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -25,15 +27,16 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.PartEntity;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
@@ -41,30 +44,138 @@ import java.util.function.Predicate;
 @MethodsReturnNonnullByDefault
 public class RevampedBlaze extends Monster {
     public static final EntityDataAccessor<Boolean> DATA_IS_GUARD = SynchedEntityData.defineId(RevampedBlaze.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Rods> DATA_RODS = SynchedEntityData.defineId(RevampedBlaze.class, (EntityDataSerializer<Rods>) Registry.EntityDataSerializerRegistry.ROD_SERIALIZER_ENTRY.get().getSerializer());
     private static final EntityDimensions threeLayers = new EntityDimensions(0.6f, 1.8f, false);
     private static final EntityDimensions twoLayers = new EntityDimensions(0.6f, 1.3f, false);
     private static final EntityDimensions oneLayer = new EntityDimensions(0.6f, 0.6f, false);
     private static final EntityDimensions head = new EntityDimensions(0.4f, 0.4f, false);
+    private final BlazeRodEntity[] rods;
+    private int randomNum;
+    public List<Vec3> positions = new LinkedList<>();
+    public static final int ticksBackToCachePositions = 8;
+
+    public RevampedBlaze(EntityType<? extends RevampedBlaze> type, Level world) {
+        this(type, world, (int) (Math.random() * 13));
+    }
+
+    public RevampedBlaze(EntityType<? extends RevampedBlaze> type, Level world, int numRods) {
+        super(type, world);
+        this.moveControl = new FlyingMoveControl(this, 12, true);
+        rods = new BlazeRodEntity[12];
+        for (int i = 0; i < ticksBackToCachePositions; i++) positions.add(position());
+        if (!level.isClientSide) {
+            this.randomNum = world.random.nextInt(16);
+            for (int i = 0; i < numRods; i++) {
+                rods[i] = new BlazeRodEntity(this, i, randomNum / 16f * Math.PI / 2);
+            }
+        }
+    }
+
+    public BlazeRodEntity getRod(int i) {
+        return rods[i];
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public @Nullable PartEntity<?>[] getParts() {
+        BlazeRodEntity[] arr = new BlazeRodEntity[GeneralUtil.count(rods, Objects::nonNull)];
+        int c = 0;
+        for (BlazeRodEntity rod : rods) {
+            if (rod != null) {
+                arr[c] = rod;
+                c++;
+            }
+        }
+        return arr;
+    }
+
+    @Override
+    public MobCategory getClassification(boolean forSpawnCount) {
+        return MobCategory.MONSTER;
+    }
 
     @Override
     protected AABB makeBoundingBox() {
         return getDimensions(Pose.STANDING).makeBoundingBox(position());
     }
 
-    public Rods getRods() {
-        return entityData.get(DATA_RODS);
-    }
-
     @Override
     public void tick() {
-        Vec3 old = position();
+        this.yBodyRotO = yBodyRot;
+        setOldPosAndRot();
         super.tick();
         this.dimensions = getDimensions(Pose.STANDING);
         this.eyeHeight = getEyeHeight(Pose.STANDING);
-        xOld = old.x();
-        yOld = old.y();
-        zOld = old.z();
+        refreshPositions();
+        for (BlazeRodEntity rod : rods) {
+            if (rod != null) rod.tick();
+        }
+    }
+
+    public void refreshPositions() {
+        positions.remove(ticksBackToCachePositions - 1);
+        positions.add(0, position());
+    }
+
+    public Vec3 pastPosition(int ticksBack) {
+        if (ticksBack > ticksBackToCachePositions) ticksBack = ticksBackToCachePositions;
+        return positions.get(ticksBack - 1);
+    }
+
+    public int totalLayers() {
+        return (int) Math.ceil(numRods() / 4f);
+    }
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return new ClientboundAddEntityPacket(this, numRods() | (randomNum << 4));
+    }
+
+    public void recreateFromPacket(ClientboundAddEntityPacket packet) {
+        super.recreateFromPacket(packet);
+        this.randomNum = packet.getData() >> 4;
+        for (int i = 0; i < (packet.getData() & 0b1111); i++) {
+            rods[i] = new BlazeRodEntity(this, i, randomNum / 16f * Math.PI / 2);
+        }
+        BlazeRodEntity[] parts = this.getSubEntities();
+
+        for (int i = 0; i < parts.length; ++i) {
+            if (parts[i] != null) parts[i].setId(i + packet.getId());
+        }
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        ListTag list = new ListTag();
+        for (BlazeRodEntity rod : rods) {
+            if (rod != null) {
+                CompoundTag rodTag = new CompoundTag();
+                rodTag.putString("type", rod.type.toString());
+                rodTag.putString("state", rod.state.toString());
+                list.add(rodTag);
+            }
+        }
+        tag.put("rods", list);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        ListTag list = tag.getList("rods", Tag.TAG_COMPOUND);
+        int i = 0;
+        for (Tag t : list) {
+            if (t instanceof CompoundTag ct) {
+                BlazeRodEntity rod = new BlazeRodEntity(this, i, randomNum / 16f * Math.PI / 2);
+                rod.type = BlazeRodEntity.Type.valueOf(ct.getString("type"));
+                rod.state = BlazeRodEntity.State.valueOf(ct.getString("state"));
+                rods[i] = rod;
+                i++;
+            }
+        }
     }
 
     @Override
@@ -74,19 +185,6 @@ public class RevampedBlaze extends Monster {
         else if (n > 4) return twoLayers;
         else if (n > 0) return oneLayer;
         else return head;
-    }
-
-    public RevampedBlaze(EntityType<? extends RevampedBlaze> type, Level world) {
-        super(type, world);
-        this.moveControl = new FlyingMoveControl(this, 12, true);
-        if (!level.isClientSide) {
-            Rods j = new Rods(this);
-            int k = (int) (Math.random() * 13);
-            for (int i = 0; i < k; i++) {
-                j.rods.add(new Rod(RodType.REGULAR, position()));
-            }
-            entityData.set(DATA_RODS, j);
-        }
     }
 
     @Override
@@ -100,7 +198,7 @@ public class RevampedBlaze extends Monster {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 6.0D).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.FLYING_SPEED, 0.6).add(Attributes.FOLLOW_RANGE, 40.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 6.0D).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.FLYING_SPEED, 3).add(Attributes.FOLLOW_RANGE, 40.0D);
     }
 
     @Override
@@ -112,14 +210,12 @@ public class RevampedBlaze extends Monster {
     protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(DATA_IS_GUARD, false);
-        entityData.define(DATA_RODS, new Rods(this));
     }
 
     protected void registerGoals() {
-        this.goalSelector.addGoal(3, new BlazeEvadeEntitiesGoal(this, (entity) -> !entity.getType().is(RevampTags.BLAZE_COMFORTABLE.get()) && (!(entity instanceof Player player) || !player.getAbilities().instabuild)));
+        this.goalSelector.addGoal(3, new BlazeEvadeEntitiesGoal(this, (entity) -> !entity.getType().is(RevampTags.BLAZE_COMFORTABLE.get()) && (!(entity instanceof Player player) || !(player.getAbilities().instabuild || player.isSpectator()))));
         this.goalSelector.addGoal(4, new BlazeAttackGoal(this));
-        this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D, 0.0F));
+        this.goalSelector.addGoal(5, new BlazeWanderRandomGoal());
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
@@ -135,7 +231,7 @@ public class RevampedBlaze extends Monster {
     }
 
     public int numRods() {
-        return getRods().numRods();
+        return rods == null ? 0 : GeneralUtil.count(rods, Objects::nonNull);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -180,73 +276,9 @@ public class RevampedBlaze extends Monster {
         return true;
     }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag nbt) {
-        super.readAdditionalSaveData(nbt);
-        ListTag k = nbt.getList("rods", Tag.TAG_COMPOUND);
-        List<Rod> l = new ArrayList<>();
-        for (Tag tag : k) {
-            CompoundTag cTag = (CompoundTag) tag;
-            RodType type = RodType.valueOf(cTag.getString("type"));
-            double x = cTag.getDouble("x");
-            double y = cTag.getDouble("y");
-            double z = cTag.getDouble("z");
-            Vec3 pos = new Vec3(x, y, z);
-            Rod rod = new Rod(type, pos);
-            l.add(rod);
-        }
-        setRods(new Rods(l, getUUID()));
-    }
-
-    public void setRods(Rods rods) {
-        entityData.set(DATA_RODS, rods);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        ListTag listTag = new ListTag();
-        Rods rods = getRods();
-        for (Rod rod : rods.rods) {
-            CompoundTag rodTag = new CompoundTag();
-            rodTag.putString("type", rod.type.toString());
-            rodTag.putDouble("x", rod.pos.x);
-            rodTag.putDouble("y", rod.pos.y);
-            rodTag.putDouble("z", rod.pos.z);
-            listTag.add(rodTag);
-        }
-        tag.put("rods", listTag);
-    }
-
-    public static class Rods {
-        public List<Rod> rods;
-        public UUID blazeUUID;
-        public Rods(List<Rod> rods, UUID blazeUUID) {
-            this.rods = rods;
-            this.blazeUUID = blazeUUID;
-        }
-
-        public Rods(RevampedBlaze blaze) {
-            this(new ArrayList<>(), blaze.getUUID());
-        }
-
-        public int numRods() {
-            return rods.size();
-        }
-    }
-
-    public record Rod(RodType type, Vec3 pos) { }
-
-    public enum RodType {
-        REGULAR,
-        NONE,
-        SHIELD,
-        DART
-    }
-
     public State getState() {
         if (isOnGuard()) return State.GUARD;
-        int n = getRods().numRods();
+        int n = numRods();
         if (n <= 2) return State.PASSIVE;
         else if (n <= 4) return State.NEUTRAL_EVASIVE;
         else if (n <= 8) return State.NEUTRAL;
@@ -261,10 +293,14 @@ public class RevampedBlaze extends Monster {
         GUARD(3, false); // tries to remain in the same place while attacking on sight
         public int balls;
         public boolean isEvasive;
-        State(int balls, boolean isEvasive) {
+        State (int balls, boolean isEvasive) {
             this.balls = balls;
             this.isEvasive = isEvasive;
         }
+    }
+
+    public BlazeRodEntity[] getSubEntities() {
+        return this.rods;
     }
 
     public int numFireballs() {
@@ -273,6 +309,27 @@ public class RevampedBlaze extends Monster {
 
     public boolean isEvasive() {
         return getState().isEvasive;
+    }
+
+    class BlazeWanderRandomGoal extends Goal {
+        @Override
+        public void tick() {
+            if (level.random.nextFloat() < 0.01) {
+                Vec3 rand = GeneralUtil.randVectorNormalized(level.random).scale(8.0 * level.random.nextFloat());
+                Vec3 newPos = position().add(rand);
+                if (GeneralUtil.clearPathExists(position(), newPos, level, RevampedBlaze.this))
+                    getMoveControl().setWantedPosition(newPos.x(), newPos.y(), newPos.z(), 1);
+            }
+        }
+
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
+
+        @Override
+        public boolean canUse() {
+            return true;
+        }
     }
 
     static class BlazeAttackGoal extends Goal {
@@ -417,5 +474,26 @@ public class RevampedBlaze extends Monster {
                 }
             }
         }
+    }
+
+    public double yBodyRot(float partialTick) {
+        return Mth.rotLerp(partialTick, yBodyRotO, yBodyRot);
+    }
+
+    public double yHeadRot(float partialTick) {
+        return Mth.rotLerp(partialTick, yHeadRotO, yHeadRot);
+    }
+
+    public double yRot(float partialTick) {
+        return Mth.rotLerp(partialTick, yRot, yRotO);
+    }
+
+    // revamp: entity methods that I decided to add to all my entities (i would add them to the vanilla Entity class if i could)
+    public Vec3 oldPos() {
+        return new Vec3(xOld, yOld, zOld);
+    }
+
+    public Vec3 position(float partialTick) {
+        return oldPos().lerp(position(), partialTick);
     }
 }

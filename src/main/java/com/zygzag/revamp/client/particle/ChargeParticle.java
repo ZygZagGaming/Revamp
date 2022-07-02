@@ -9,12 +9,12 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
 @ParametersAreNonnullByDefault
@@ -30,7 +30,7 @@ public class ChargeParticle extends TextureSheetParticle {
     private SpriteSet sprites;
     protected ChargeParticle(ClientLevel world, double x, double y, double z, SpriteSet sprites) {
         super(world, x, y, z);
-        Random rng = world.random;
+        RandomSource rng = world.random;
         this.lifetime = rng.nextInt(LIFETIME_MIN, LIFETIME_MAX);
         /*this.xd = rng.nextGaussian(0, MOTION_STDDEV);
         this.yd = rng.nextGaussian(0, MOTION_STDDEV);
@@ -38,7 +38,7 @@ public class ChargeParticle extends TextureSheetParticle {
         this.sprites = sprites;
         if (sprites instanceof ParticleEngine.MutableSpriteSet mss) setSprite(mss.sprites.get(0));
         else setSprite(sprites.get(rng));
-        r = rng.nextFloat((float) (Math.PI * 2));
+        r = rng.nextFloat() * (float) (Math.PI * 2);
         r2 = r + (rng.nextBoolean() ? -1 : 1) * SHAKE_AMT;
         roll = r;
         state = RotationState.MIN;

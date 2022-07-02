@@ -2,6 +2,7 @@ package com.zygzag.revamp.common.networking;
 
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.networking.packet.*;
+import com.zygzag.revamp.util.ClientUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -14,9 +15,9 @@ public class RevampPacketHandler {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );
+    static int id = -1;
 
     public static void registerMessages() {
-        int id = -1;
         INSTANCE.registerMessage(
                 id++,
                 ClientboundChargeUpdatePacket.class,
@@ -37,6 +38,34 @@ public class RevampPacketHandler {
                 ClientboundEntityChargeSyncPacket::encode,
                 ClientboundEntityChargeSyncPacket::decode,
                 ClientboundEntityChargeSyncPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookPageEditPacket.class,
+                ClientboundEnderBookPageEditPacket::encode,
+                ClientboundEnderBookPageEditPacket::decode,
+                ClientboundEnderBookPageEditPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookInsertionPacket.class,
+                ClientboundEnderBookInsertionPacket::encode,
+                ClientboundEnderBookInsertionPacket::decode,
+                ClientboundEnderBookInsertionPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundEnderBookDeletionPacket.class,
+                ClientboundEnderBookDeletionPacket::encode,
+                ClientboundEnderBookDeletionPacket::decode,
+                ClientboundEnderBookDeletionPacket::handle
+        );
+        INSTANCE.registerMessage(
+                id++,
+                ClientboundSendDocumentPacket.class,
+                ClientboundSendDocumentPacket::encode,
+                ClientboundSendDocumentPacket::decode,
+                ClientboundSendDocumentPacket::handle
         );
         INSTANCE.registerMessage(
                 id++,
@@ -61,24 +90,10 @@ public class RevampPacketHandler {
         );
         INSTANCE.registerMessage(
                 id++,
-                ClientboundEnderBookPageEditPacket.class,
-                ClientboundEnderBookPageEditPacket::encode,
-                ClientboundEnderBookPageEditPacket::decode,
-                ClientboundEnderBookPageEditPacket::handle
-        );
-        INSTANCE.registerMessage(
-                id++,
-                ClientboundEnderBookInsertionPacket.class,
-                ClientboundEnderBookInsertionPacket::encode,
-                ClientboundEnderBookInsertionPacket::decode,
-                ClientboundEnderBookInsertionPacket::handle
-        );
-        INSTANCE.registerMessage(
-                id++,
-                ClientboundEnderBookDeletionPacket.class,
-                ClientboundEnderBookDeletionPacket::encode,
-                ClientboundEnderBookDeletionPacket::decode,
-                ClientboundEnderBookDeletionPacket::handle
+                ServerboundRequestDocumentPacket.class,
+                ServerboundRequestDocumentPacket::encode,
+                ServerboundRequestDocumentPacket::decode,
+                ServerboundRequestDocumentPacket::handle
         );
     }
 }

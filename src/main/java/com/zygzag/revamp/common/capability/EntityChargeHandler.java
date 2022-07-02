@@ -8,6 +8,7 @@ import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 public class EntityChargeHandler {
-    public int ticksSinceLastModified = 40;
+    public int ticksSinceLastModified = 500;
     public static final DamageSource SHOCKED_DAMAGE_SOURCE = new DamageSource("shocked");
     private final Entity entity;
     private float charge;
@@ -151,7 +152,7 @@ public class EntityChargeHandler {
         }
         if (Math.random() < Math.abs(charge) / 20) {
             Level world = entity.level;
-            Random rng = world.getRandom();
+            RandomSource rng = world.getRandom();
             Vec3 pos = GeneralUtil.randomPointOnAABB(entity.getBoundingBox(), rng).add(entity.position());
             world.addParticle(GeneralUtil.particle(getCharge()), pos.x, pos.y, pos.z, 0, 0, 0);
         }

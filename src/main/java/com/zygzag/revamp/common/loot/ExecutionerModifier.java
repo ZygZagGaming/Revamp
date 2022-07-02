@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.loot;
 
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -15,8 +16,6 @@ import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class ExecutionerModifier extends LootModifier {
     Item itemOut;
@@ -33,7 +32,7 @@ public class ExecutionerModifier extends LootModifier {
 
     @NotNull
     @Override
-    protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         if (!generatedLoot.contains(Items.WITHER_SKELETON_SKULL.getDefaultInstance())) { // if it ain't already have skull
             ItemStack item = itemOut.getDefaultInstance();
             Entity entity = context.getParam(LootContextParams.THIS_ENTITY);
@@ -58,7 +57,7 @@ public class ExecutionerModifier extends LootModifier {
         @Override
         public JsonObject write(ExecutionerModifier instance) {
             JsonObject json = makeConditions(instance.conditions);
-            ResourceLocation name = instance.itemOut.getRegistryName();
+            ResourceLocation name = ForgeRegistries.ITEMS.getKey(instance.itemOut);
             if (name != null) json.addProperty("item_to_drop", name.toString());
             return json;
         }

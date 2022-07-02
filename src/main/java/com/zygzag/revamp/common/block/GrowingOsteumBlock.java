@@ -5,6 +5,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,7 +43,7 @@ public class GrowingOsteumBlock extends Block {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rng) {
         if (rng.nextDouble() < 0.125) {
             if (state.getValue(STAGE) != 5) world.setBlockAndUpdate(pos, state.setValue(STAGE, state.getValue(STAGE) + 1));
             else world.setBlockAndUpdate(pos, ((OsteumBlock) Registry.BlockRegistry.OSTEUM.get()).getStateForAxis(state.getValue(DIRECTION).getAxis()));

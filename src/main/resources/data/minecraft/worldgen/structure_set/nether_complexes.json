@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "minecraft:bastion_remnant",
+      "weight": 3
+    },
+    {
+      "structure": "revamp:better_fortress",
+      "weight": 2
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 30084232,
+    "spacing": 27,
+    "separation": 4
+  }
+}

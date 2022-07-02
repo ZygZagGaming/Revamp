@@ -4,6 +4,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -131,7 +132,7 @@ public class LavaVinesBlock extends HorizontalDirectionalBlock implements Boneme
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, Random rng) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rng) {
         if (rng.nextDouble() < 0.25) {
             Direction facing = state.getValue(FACING);
             if (world.getBlockState(pos.relative(facing)).isAir()) {
@@ -147,11 +148,11 @@ public class LavaVinesBlock extends HorizontalDirectionalBlock implements Boneme
         return (state2.is(this) && state2.getBlock() instanceof LavaVinesBlock b && b.isValidBonemealTarget(world, pos2, state2, bool)) || state2.isAir();
     }
 
-    public boolean isBonemealSuccess(Level world, Random rng, BlockPos pos, BlockState state) {
+    public boolean isBonemealSuccess(Level world, RandomSource rng, BlockPos pos, BlockState state) {
         return true;
     }
 
-    public void performBonemeal(ServerLevel world, Random rng, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel world, RandomSource rng, BlockPos pos, BlockState state) {
         Direction dir = state.getValue(FACING);
 
         BlockState kState = world.getBlockState(pos.relative(dir));
@@ -165,7 +166,7 @@ public class LavaVinesBlock extends HorizontalDirectionalBlock implements Boneme
                 if (world.getBlockState(k).isAir()) {
                     world.setBlockAndUpdate(k, state.setValue(TYPE, Type.END));
                     world.setBlockAndUpdate(k.relative(dir, -1), state.setValue(TYPE, Type.MIDDLE));
-                }
+                } else break;
             }
         }
     }

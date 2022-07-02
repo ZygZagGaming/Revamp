@@ -1,0 +1,17 @@
+{
+  "values": [
+    "revamp:magma_stem",
+    "revamp:stripped_magma_stem",
+    "revamp:magma_hyphae",
+    "revamp:stripped_magma_hyphae",
+    "revamp:magma_pressure_plate",
+    "revamp:magma_fence",
+    "revamp:magma_trapdoor",
+    "revamp:magma_fence_gate",
+    "revamp:magma_stairs",
+    "revamp:magma_slab",
+    "revamp:magma_planks",
+    "revamp:magma_door",
+    "revamp:magma_sign"
+  ]
+}

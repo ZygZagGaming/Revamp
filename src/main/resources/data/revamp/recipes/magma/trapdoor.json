@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "revamp:magma_planks"
+    }
+  },
+  "result": {
+    "item": "revamp:magma_trapdoor",
+    "count": 2
+  }
+}

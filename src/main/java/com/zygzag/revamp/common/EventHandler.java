@@ -1,21 +1,21 @@
 package com.zygzag.revamp.common;
 
-import com.zygzag.revamp.common.charge.ChunkChargeHandler;
-import com.zygzag.revamp.common.charge.EntityChargeHandler;
+import com.zygzag.revamp.common.capability.ChunkChargeHandler;
+import com.zygzag.revamp.common.capability.EntityChargeHandler;
 import com.zygzag.revamp.common.item.iridium.IridiumChestplateItem;
 import com.zygzag.revamp.common.item.iridium.IridiumShovelItem;
 import com.zygzag.revamp.common.item.iridium.Socket;
 import com.zygzag.revamp.common.item.recipe.EmpowermentRecipe;
 import com.zygzag.revamp.common.item.recipe.ItemAndEntityHolder;
-import com.zygzag.revamp.common.item.recipe.ModRecipeType;
 import com.zygzag.revamp.common.registry.Registry;
 import com.zygzag.revamp.common.tag.RevampTags;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -29,40 +29,30 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Revamp.MODID)
 public class EventHandler {
-
-    @SubscribeEvent
-    public static void biomeLoadingEvent(BiomeLoadingEvent event) {
-        BiomeGenerationSettingsBuilder settings = event.getGeneration();
-        if (!event.getCategory().equals(Biome.BiomeCategory.NETHER) && !event.getCategory().equals(Biome.BiomeCategory.THEEND)) {
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_SMALL_PLACED.getHolder().get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_LARGE_PLACED.getHolder().get());
-            settings.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, Registry.PlacedFeatureRegistry.IRIDIUM_BURIED_PLACED.getHolder().get());
-        }
-    }
 
     @SubscribeEvent
     public static void onHurt(final LivingDamageEvent evt) {
@@ -132,7 +122,6 @@ public class EventHandler {
                     if (time < 11834 || time > 22300) evt.setAmount(evt.getAmount() * 1.2f);
                 } else if (item == Registry.IridiumGearRegistry.AMETHYST_SOCKETED_IRIDIUM_SWORD.get()) {
                     if (time >= 11834 && time <= 22300) evt.setAmount(evt.getAmount() * 1.2f);
-                    System.out.println(time);
                 }
 
                 if (chestItem == Registry.IridiumGearRegistry.SKULL_SOCKETED_IRIDIUM_CHESTPLATE.get()) {
@@ -147,7 +136,7 @@ public class EventHandler {
     public static void onUse(PlayerInteractEvent.EntityInteract evt) {
         ItemStack stack = evt.getItemStack();
         Level world = evt.getWorld();
-        List<EmpowermentRecipe> recipes = world.getRecipeManager().getAllRecipesFor(ModRecipeType.EMPOWERMENT);
+        List<EmpowermentRecipe> recipes = world.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.EMPOWERMENT.get());
         ItemAndEntityHolder holder = new ItemAndEntityHolder(stack, evt.getTarget());
         for (EmpowermentRecipe recipe : recipes) {
             if (recipe.matches(holder, world)) {
@@ -211,7 +200,7 @@ public class EventHandler {
     @SubscribeEvent
     public static void tooltipEvent(ItemTooltipEvent event) {
         List<Component> list = event.getToolTip();
-        if (event.getItemStack().is(Items.SHULKER_SHELL)) list.add(new TranslatableComponent("tooltip.revamp.shulker_shell_extra").withStyle(ChatFormatting.DARK_GRAY));
+        if (event.getItemStack().is(Items.SHULKER_SHELL)) list.add(Component.translatable("tooltip.revamp.shulker_shell_extra").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @SubscribeEvent
@@ -231,6 +220,22 @@ public class EventHandler {
         Iterable<Entity> entities = world.getEntities().getAll();
         for (Entity entity : entities) {
             GeneralUtil.ifCapability(entity, Revamp.ENTITY_CHARGE_CAPABILITY, EntityChargeHandler::tick);
+        }
+
+        GeneralUtil.ifCapability(world, Revamp.LEVEL_CONTIGUOUS_SECTION_TRACKER_CAPABILITY, (handler) -> {
+            handler.sectionTrackers.forEach((tag, tracker) -> {
+                tracker.printSections();
+            });
+        });
+    }
+
+    @SubscribeEvent
+    public static void blockUpdate(BlockEvent.NeighborNotifyEvent event) {
+        LevelAccessor accessor = event.getWorld();
+        if (accessor instanceof Level world) {
+            GeneralUtil.ifCapability(world, Revamp.LEVEL_CONTIGUOUS_SECTION_TRACKER_CAPABILITY, (handler) -> {
+                handler.update(event.getPos());
+            });
         }
     }
 }

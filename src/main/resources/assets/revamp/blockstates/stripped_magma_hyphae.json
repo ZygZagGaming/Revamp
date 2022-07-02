@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "revamp:block/stripped_magma_hyphae",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "revamp:block/stripped_magma_hyphae"
+    },
+    "axis=z": {
+      "model": "revamp:block/stripped_magma_hyphae",
+      "x": 90
+    }
+  }
+}

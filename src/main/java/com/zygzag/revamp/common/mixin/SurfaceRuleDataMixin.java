@@ -59,7 +59,7 @@ public class SurfaceRuleDataMixin {
     private static final SurfaceRules.RuleSource ENDSTONE = makeStateRule(Blocks.END_STONE);
 
     private static final SurfaceRules.RuleSource MAGMA_BLOCK = makeStateRule(Blocks.MAGMA_BLOCK);
-    private static final SurfaceRules.RuleSource MAGMA_MYCELIUM = makeStateRule2(Registry.BlockRegistry.MAGMA_MYCELIUM_BLOCK);
+    private static final SurfaceRules.RuleSource MAGMA_MYCELIUM = makeStateRule2(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK);
 
     @Inject(cancellable = true, at = @At("HEAD"), method = "nether()Lnet/minecraft/world/level/levelgen/SurfaceRules$RuleSource;")
     private static void nether(CallbackInfoReturnable<SurfaceRules.RuleSource> callback) {

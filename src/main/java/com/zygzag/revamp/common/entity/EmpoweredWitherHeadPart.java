@@ -84,4 +84,13 @@ public class EmpoweredWitherHeadPart extends PartEntity<EmpoweredWither> {
     public boolean shouldBeSaved() {
         return false;
     }
+
+    // revamp: entity methods that I decided to add to all my entities (i would add them to the vanilla Entity class if i could)
+    public Vec3 oldPos() {
+        return new Vec3(xOld, yOld, zOld);
+    }
+
+    public Vec3 position(float partialTick) {
+        return oldPos().lerp(position(), partialTick);
+    }
 }

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "revamp:block/magma_slab"
+    },
+    "type=double": {
+      "model": "revamp:block/magma_planks"
+    },
+    "type=top": {
+      "model": "revamp:block/magma_slab_top"
+    }
+  }
+}

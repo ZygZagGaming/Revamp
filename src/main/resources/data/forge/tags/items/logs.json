@@ -1,0 +1,14 @@
+{
+  "values": [
+    "#forge:logs/oak",
+    "#forge:logs/birch",
+    "#forge:logs/spruce",
+    "#forge:logs/dark_oak",
+    "#forge:logs/acacia",
+    "#forge:logs/jungle",
+    "#forge:logs/crimson",
+    "#forge:logs/warped",
+    "#forge:logs/mangrove",
+    "#forge:logs/magma"
+  ]
+}

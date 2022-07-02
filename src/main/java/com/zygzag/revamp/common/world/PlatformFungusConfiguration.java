@@ -37,7 +37,7 @@ public class PlatformFungusConfiguration implements FeatureConfiguration {
 
     public static PlatformFungusConfiguration defaultConfig() {
         return new PlatformFungusConfiguration(
-                Registry.BlockRegistry.MAGMA_FUNGUS_STEM_BLOCK.get().defaultBlockState(),
+                Registry.BlockRegistry.MAGMA_STEM_BLOCK.get().defaultBlockState(),
                 Registry.BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get().defaultBlockState(),
                 Blocks.GRASS.defaultBlockState(),
                 Blocks.NETHER_SPROUTS.defaultBlockState(),

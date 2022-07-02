@@ -72,7 +72,10 @@
   "item.revamp.partial_iridium_hoe_1": "Iridium-Plated Netherite Hoe",
   "item.revamp.transmutation_charge": "Transmutation Charge",
   "block.revamp.magma_fungus_block": "Magma Fungus Block",
-  "block.revamp.magma_fungus_stem": "Magma Fungus Stem",
+  "block.revamp.magma_stem": "Magma Stem",
+  "block.revamp.stripped_magma_stem": "Stripped Magma Stem",
+  "block.revamp.magma_hyphae": "Magma Hyphae",
+  "block.revamp.stripped_magma_hyphae": "Stripped Magma Hyphae",
   "block.revamp.magma_fungus_cap": "Magma Fungus Cap",
   "block.revamp.magma_fungus_edge": "Magma Fungus Edge",
 
@@ -138,7 +141,7 @@
   "use_ability.revamp.scepter.wither_skull": "Memento Mori",
   "description.use_ability.revamp.scepter.wither_skull": "Smites nearby undead mobs and drops their essences. (NYI)",
   "use_ability.revamp.scepter.amethyst": "Refraction",
-  "description.use_ability.revamp.scepter.amethyst": "Gives you and nearby players Blindness and Glowing for a few seconds.",
+  "description.use_ability.revamp.scepter.amethyst": "Gives you and nearby mobs Blindness and Glowing for a few seconds.",
 
   "use_ability.revamp.pickaxe.emerald": "Magic Siphon",
   "description.use_ability.revamp.pickaxe.emerald": "Harvests and collects all nearby ores.",
@@ -211,7 +214,7 @@
   "block.revamp.magma_pustule": "Magma Pustule",
   "item.revamp.revamped_blaze_spawn_egg": "Revamped Blaze Spawn Egg",
   "block.revamp.lava_vines": "Lava Vines",
-  "block.revamp.magma_mycelium": "Magma Mycelium",
+  "block.revamp.magma_nylium": "Magma Nylium",
   "tooltip.revamp.shulker_shell_extra": "Can store up to 8 bowls of different stews",
   "death.attack.shocked": "%1$s was shocked to death",
   "death.attack.shocked.player": "%1$s was shocked to death trying to escape %2$s",
@@ -219,5 +222,17 @@
   "enchantment.revamp.voltage_plus": "Voltage+",
   "enchantment.revamp.voltage_minus": "Voltage-",
   "enchantment.revamp.dynamo": "Dynamo",
-  "enchantment.revamp.grounded": "Grounded"
+  "enchantment.revamp.grounded": "Grounded",
+  "item.revamp.ender_book": "Ender Book",
+  "block.revamp.blessed_soil": "Blessed Soil",
+  "block.revamp.magma_planks": "Magma Planks",
+  "block.revamp.magma_slab": "Magma Slab",
+  "block.revamp.magma_pressure_plate": "Magma Pressure Plate",
+  "block.revamp.magma_fence": "Magma Fence",
+  "block.revamp.magma_trapdoor": "Magma Trapdoor",
+  "block.revamp.magma_fence_gate": "Magma Fence Gate",
+  "block.revamp.magma_stairs": "Magma Stairs",
+  "block.revamp.magma_button": "Magma Button",
+  "block.revamp.magma_door": "Magma Door",
+  "block.revamp.magma_sign": "Magma Sign"
 }

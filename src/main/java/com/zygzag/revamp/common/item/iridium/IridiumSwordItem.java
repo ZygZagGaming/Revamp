@@ -7,8 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.monster.Monster;
@@ -21,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -38,25 +37,25 @@ public class IridiumSwordItem extends SwordItem implements ISocketable {
         MutableComponent m;
         if (s != Socket.NONE && world != null) {
             String str = hasCooldown() ? "use" : "passive";
-            MutableComponent t = new TranslatableComponent("socketed.revamp").withStyle(ChatFormatting.GRAY);
-            t.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
+            MutableComponent t = Component.translatable("socketed.revamp").withStyle(ChatFormatting.GRAY);
+            t.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
             t.append(((MutableComponent) i.getName(i.getDefaultInstance())).withStyle(ChatFormatting.GOLD));
             text.add(t);
 
             Socket socket = getSocket();
-            text.add(new TextComponent(""));
-            if (str.equals("passive")) m = new TranslatableComponent(str + ".revamp").withStyle(ChatFormatting.GRAY);
+            text.add(Component.literal(""));
+            if (str.equals("passive")) m = Component.translatable(str + ".revamp").withStyle(ChatFormatting.GRAY);
             else m = Minecraft.getInstance().options.keyUse.getKey().getDisplayName().copy().withStyle(ChatFormatting.GRAY);
-            m.append(new TextComponent( ": ").withStyle(ChatFormatting.GRAY));
-            m.append(new TranslatableComponent( str + "_ability.revamp.sword." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
+            m.append(Component.literal( ": ").withStyle(ChatFormatting.GRAY));
+            m.append(Component.translatable( str + "_ability.revamp.sword." + socket.name().toLowerCase()).withStyle(ChatFormatting.GOLD));
             text.add(m);
-            text.add(new TranslatableComponent("description." + str + "_ability.revamp.sword." + socket.name().toLowerCase()));
+            text.add(Component.translatable("description." + str + "_ability.revamp.sword." + socket.name().toLowerCase()));
             if (hasCooldown()) {
-                MutableComponent comp = new TranslatableComponent("revamp.cooldown").withStyle(ChatFormatting.GRAY);
-                comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-                comp.append(new TextComponent(getCooldown(stack, world) / 20f + " ").withStyle(ChatFormatting.GOLD));
-                comp.append(new TranslatableComponent("revamp.seconds").withStyle(ChatFormatting.GRAY));
-                comp.append("\n");
+                MutableComponent comp = Component.translatable("revamp.cooldown").withStyle(ChatFormatting.GRAY);
+                comp.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
+                comp.append(Component.literal(getCooldown(stack, world) / 20f + " ").withStyle(ChatFormatting.GOLD));
+                comp.append(Component.translatable("revamp.seconds").withStyle(ChatFormatting.GRAY));
+                text.add(Component.literal("\n"));
                 text.add(comp);
             }
         }

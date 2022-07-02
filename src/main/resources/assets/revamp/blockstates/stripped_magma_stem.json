@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "revamp:block/stripped_magma_stem_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "revamp:block/stripped_magma_stem"
+    },
+    "axis=z": {
+      "model": "revamp:block/stripped_magma_stem_horizontal",
+      "x": 90
+    }
+  }
+}

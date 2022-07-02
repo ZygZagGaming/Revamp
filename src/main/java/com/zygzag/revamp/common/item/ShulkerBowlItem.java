@@ -7,8 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +19,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
 import java.util.List;
 
 @MethodsReturnNonnullByDefault
@@ -102,10 +101,10 @@ public class ShulkerBowlItem extends BowlFoodItem {
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> text, TooltipFlag flag) {
         super.appendHoverText(stack, world, text, flag);
         int n = getNumberOfStews(stack.getOrCreateTag());
-        MutableComponent comp = new TranslatableComponent("revamp.contains").withStyle(ChatFormatting.GRAY);
-        comp.append(new TextComponent(": ").withStyle(ChatFormatting.GRAY));
-        comp.append(new TextComponent(n + " ").withStyle(ChatFormatting.GOLD));
-        comp.append(new TranslatableComponent(n == 1 ? "revamp.stew" : "revamp.stews").withStyle(ChatFormatting.GRAY));
+        MutableComponent comp = Component.translatable("revamp.contains").withStyle(ChatFormatting.GRAY);
+        comp.append(Component.literal(": ").withStyle(ChatFormatting.GRAY));
+        comp.append(Component.literal(n + " ").withStyle(ChatFormatting.GOLD));
+        comp.append(Component.translatable(n == 1 ? "revamp.stew" : "revamp.stews").withStyle(ChatFormatting.GRAY));
         text.add(comp);
     }
 }

@@ -49,8 +49,6 @@ public class Constants {
     public static int LAPIS_ORE_COLOR = 0x345ec3;
     public static int REDSTONE_ORE_COLOR = 0xaa0f01;
 
-    public static RenderType.CompositeRenderType TEST = RenderType.create("test", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, RenderType.CompositeState.builder().setShaderState(RenderType.RENDERTYPE_LINES_SHADER).setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty())).setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING).setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY).setOutputState(RenderType.OUTLINE_TARGET).setWriteMaskState(RenderType.COLOR_DEPTH_WRITE).setDepthTestState(RenderType.NO_DEPTH_TEST).setCullState(RenderType.NO_CULL).createCompositeState(true));
-
     public static final boolean RENDER_BEZIER_ARCS = true;
     public static final float BEZIER_ARC_POINTS_PER_BLOCK = 1.5f;
     public static final double ARC_RANDOMNESS = RENDER_BEZIER_ARCS ? 1.75 : 0.75;
@@ -58,7 +56,8 @@ public class Constants {
     public static final float SURGE_PROTECTOR_DAMAGE_MULTIPLIER = 0.25f;
     public static final float EPSILON = 1e-5f;
     public static final float CHARGE_DECAY_RATE = 0.0125f;
-    public static final float ARC_RANGE = 6f;
+    public static final float ARC_RANGE = 1f;
+    public static final float EXTENDED_ARC_RANGE = 6f;
     public static final float CHARGE_SPEED_MULTIPLIER = 0.0025f;
     public static final float CHARGE_ATTACK_SPEED_MULTIPLIER = 0.1f;
     public static final float VOLTAGE_ENCHANTMENT_CHARGE_PER_TICK = (1/120f);
