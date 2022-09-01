@@ -1,7 +1,7 @@
 package com.zygzag.revamp.common.block;
 
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import com.zygzag.revamp.common.tag.RevampTags;
-import com.zygzag.revamp.common.registry.Registry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -155,7 +155,7 @@ public class OsteumBlock extends Block implements BucketPickup, LiquidBlockConta
                             grow(otherState, world, relative, rng, amount + 1);
                         else world.setBlockAndUpdate(relative, otherState.setValue(getProperty(dir.getAxis()), true).setValue(getProperty(dir), OsteumSideState.NORMAL).setValue(getProperty(dir.getOpposite()), OsteumSideState.NORMAL));
                     } else if (otherState.is(RevampTags.OSTEUM_REPLACEABLE.get()))
-                        world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) Registry.BlockRegistry.GROWING_OSTEUM.get()).getStateForDirection(dir));
+                        world.setBlockAndUpdate(relative, ((GrowingOsteumBlock) BlockRegistry.GROWING_OSTEUM.get()).getStateForDirection(dir));
                 }
             }
     }

@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.item.iridium;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EnchantmentRegistry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -38,7 +38,6 @@ import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.*;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -242,7 +241,7 @@ public class IridiumScepterItem extends Item implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case EMERALD -> {
                 return Constants.EMERALD_SCEPTER_COOLDOWN / (cooldownLevel + 1);

@@ -1,9 +1,12 @@
 package com.zygzag.revamp.common.loot;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -12,12 +15,30 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class ExecutionerModifier extends LootModifier {
+
+    public static Codec<ExecutionerModifier> CODEC = RecordCodecBuilder.create(
+            inst -> codecStart(inst)
+                    .and(
+                            inst.group(
+                                    ForgeRegistries.ITEMS.getCodec()
+                                            .fieldOf("item_to_drop")
+                                            .forGetter(
+                                                    (it) -> it.itemOut
+                                            )
+                            ).t1()
+                    )
+                    .apply(
+                            inst,
+                            ExecutionerModifier::new
+                    )
+    );
+
     Item itemOut;
 
     /**
@@ -45,21 +66,8 @@ public class ExecutionerModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static class Serializer extends GlobalLootModifierSerializer<ExecutionerModifier> {
-
-        @Override
-        public ExecutionerModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] ailootcondition) {
-            String id = object.get("item_to_drop").getAsString();
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
-            return new ExecutionerModifier(ailootcondition, item);
-        }
-
-        @Override
-        public JsonObject write(ExecutionerModifier instance) {
-            JsonObject json = makeConditions(instance.conditions);
-            ResourceLocation name = ForgeRegistries.ITEMS.getKey(instance.itemOut);
-            if (name != null) json.addProperty("item_to_drop", name.toString());
-            return json;
-        }
+    @Override
+    public Codec<? extends IGlobalLootModifier> codec() {
+        return CODEC;
     }
 }

@@ -1,7 +1,8 @@
 package com.zygzag.revamp.common.item.recipe;
 
 import com.google.gson.JsonObject;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.RecipeSerializerRegistry;
+import com.zygzag.revamp.common.registry.RecipeTypeRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -63,12 +64,12 @@ public class TransmutationRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.RecipeSerializerRegistry.TRANSMUTATION_SERIALIZER.get();
+        return RecipeSerializerRegistry.TRANSMUTATION_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return Registry.RecipeTypeRegistry.TRANSMUTATION.get();
+        return RecipeTypeRegistry.TRANSMUTATION.get();
     }
 
     public Ingredient getInItem() {

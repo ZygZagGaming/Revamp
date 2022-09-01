@@ -2,11 +2,10 @@ package com.zygzag.revamp.common.item.recipe;
 
 import com.zygzag.revamp.common.item.iridium.ISocketable;
 import com.zygzag.revamp.common.item.iridium.Socket;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.RecipeSerializerRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -63,6 +62,6 @@ public class SocketRemoveRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.RecipeSerializerRegistry.SOCKET_REMOVE_CRAFTING.get();
+        return RecipeSerializerRegistry.SOCKET_REMOVE_CRAFTING.get();
     }
 }

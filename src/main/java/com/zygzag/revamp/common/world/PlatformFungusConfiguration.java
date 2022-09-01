@@ -2,7 +2,7 @@ package com.zygzag.revamp.common.world;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -37,12 +37,12 @@ public class PlatformFungusConfiguration implements FeatureConfiguration {
 
     public static PlatformFungusConfiguration defaultConfig() {
         return new PlatformFungusConfiguration(
-                Registry.BlockRegistry.MAGMA_STEM_BLOCK.get().defaultBlockState(),
-                Registry.BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get().defaultBlockState(),
+                BlockRegistry.MAGMA_STEM_BLOCK.get().defaultBlockState(),
+                BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get().defaultBlockState(),
                 Blocks.GRASS.defaultBlockState(),
                 Blocks.NETHER_SPROUTS.defaultBlockState(),
-                Registry.BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK.get().defaultBlockState(),
-                Registry.BlockRegistry.MAGMA_FUNGUS_BLOCK.get().defaultBlockState()
+                BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK.get().defaultBlockState(),
+                BlockRegistry.MAGMA_FUNGUS_BLOCK.get().defaultBlockState()
         );
     }
 }

@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common.item.iridium;
 
 import com.mojang.datafixers.util.Pair;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
+import com.zygzag.revamp.common.registry.EnchantmentRegistry;
+import com.zygzag.revamp.common.registry.MobEffectRegistry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -29,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -91,7 +92,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         return socket == Socket.AMETHYST ? Constants.AMETHYST_HOE_COOLDOWN / (cooldownLevel + 1) : 0;
     }
 
@@ -129,7 +130,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
                         case EMERALD -> {
                             InteractionResult result = super.useOn(context);
                             if (!world.isClientSide) {
-                                world.setBlock(blockpos, Registry.BlockRegistry.BLESSED_SOIL.get().defaultBlockState().setValue(FarmBlock.MOISTURE, world.getBlockState(blockpos).getValue(FarmBlock.MOISTURE)), 0);
+                                world.setBlock(blockpos, BlockRegistry.BLESSED_SOIL.get().defaultBlockState().setValue(FarmBlock.MOISTURE, world.getBlockState(blockpos).getValue(FarmBlock.MOISTURE)), 0);
                             }
                             return result;
                         }
@@ -145,7 +146,7 @@ public class IridiumHoeItem extends HoeItem implements ISocketable {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (socket == Socket.AMETHYST && !player.getCooldowns().isOnCooldown(stack.getItem())) {
-            player.addEffect(new MobEffectInstance(Registry.MobEffectRegistry.GREEN_THUMB_EFFECT.get(), 600, 1));
+            player.addEffect(new MobEffectInstance(MobEffectRegistry.GREEN_THUMB_EFFECT.get(), 600, 1));
             ISocketable.addCooldown(player, stack, Constants.AMETHYST_HOE_COOLDOWN);
             int r = 2 + (int) (Math.random() * 3);
             stack.hurtAndBreak(r, player, (e) -> {});

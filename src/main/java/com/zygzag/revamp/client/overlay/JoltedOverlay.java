@@ -6,15 +6,16 @@ import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import java.awt.*;
 
-public class JoltedOverlay implements IIngameOverlay {
+public class JoltedOverlay implements IGuiOverlay {
     public enum PosOrNeg {POSITIVE, NEGATIVE}
     public static ResourceLocation getLoc(int frame, PosOrNeg posOrNeg) {
         return Revamp.loc("textures/misc/jolted_" + posOrNeg.toString().toLowerCase() + "_" + frame + ".png");
@@ -26,7 +27,7 @@ public class JoltedOverlay implements IIngameOverlay {
     private int counter = 0;
 
     @Override
-    public void render(ForgeIngameGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+    public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
         Player player = Minecraft.getInstance().player;
         counter++;
         if (player != null) {

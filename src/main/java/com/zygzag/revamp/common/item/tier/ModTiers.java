@@ -1,7 +1,7 @@
 package com.zygzag.revamp.common.item.tier;
 
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.ItemRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.LazyLoadedValue;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @MethodsReturnNonnullByDefault
 public enum ModTiers implements Tier {
     IRIDIUM(5, 2589, 8.85F, 5.5F, 18, () -> {
-        return Ingredient.of(Registry.ItemRegistry.IRIDIUM_PLATING.get());
+        return Ingredient.of(ItemRegistry.IRIDIUM_PLATING.get());
     });
 
     private final int level;

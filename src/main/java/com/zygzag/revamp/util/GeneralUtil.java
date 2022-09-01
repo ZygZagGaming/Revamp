@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Matrix3f;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.charge.EnergyCharge;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.ParticleTypeRegistry;
 import com.zygzag.revamp.common.tag.RevampTags;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -293,8 +293,8 @@ public class GeneralUtil {
     }
 
     public static SimpleParticleType particle(double charge) {
-        if (charge > 0) return Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get();
-        else return Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get();
+        if (charge > 0) return ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get();
+        else return ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get();
     }
 
     public static float getChargeAt(Level world, BlockPos pos) {
@@ -640,6 +640,37 @@ public class GeneralUtil {
         return checked.size() == nodes.size();
     }
 
+    public static <T> Map<T, List<T>> getEdges(List<T> nodes, BiPredicate<T, T> connectPredicate) {
+        Map<T, List<T>> connections = new HashMap<>();
+        for (T node : nodes) {
+            List<T> neighbors = new LinkedList<>();
+            for (T other : nodes) {
+                if (connectPredicate.test(node, other)) neighbors.add(other);
+            }
+            connections.put(node, neighbors);
+        }
+        return connections;
+    }
+
+    public static <T> boolean pathExists(T a, T b, List<T> nodes, Map<T, List<T>> edges) {
+        LinkedList<T> checked = new LinkedList<>();
+        LinkedList<T> queue = new LinkedList<>(List.of(a));
+        while (!queue.isEmpty()) {
+            T node = queue.pop();
+            checked.add(node);
+            List<T> neighbors = edges.get(node);
+            for (T neighbor : neighbors) {
+                if (neighbor == b) return true;
+                if (!checked.contains(neighbor)) queue.add(neighbor);
+            }
+        }
+        return false;
+    }
+
+    public static <T> boolean pathExists(T a, T b, List<T> nodes, BiPredicate<T, T> connectPredicate) {
+        return pathExists(a, b, nodes, getEdges(nodes, connectPredicate));
+    }
+
     public static <A, B> List<B> map(List<A> list, Function<A, B> func) {
         List<B> l = new ArrayList<>();
         for (A elem : list) l.add(func.apply(elem));
@@ -665,5 +696,82 @@ public class GeneralUtil {
         B acc = start;
         for (A elem : list) acc = func.apply(acc, elem);
         return acc;
+    }
+
+    public static int staticRandom(double chance, RandomSource rng) {
+        return ((int) chance) + (rng.nextDouble() < chance % 1 ? 1 : 0);
+    }
+
+    public static void repeat(int times, Runnable func) {
+        for (int i = 0; i < times; i++) func.run();
+    }
+
+    public static <T, O extends Comparable<O>> List<T> orderedBy(List<T> list, Function<T, O> func) {
+        if (list.size() <= 1) return list;
+        int pivotIndex = list.size() / 2;
+        T pivot = list.get(pivotIndex);
+        O comp = func.apply(pivot);
+        int i = 0;
+        List<T> lower = new ArrayList<>(), greater = new ArrayList<>();
+        while (i < list.size()) {
+            T elem = list.get(i);
+            if (func.apply(elem).compareTo(comp) < 0) lower.add(elem);
+            else greater.add(elem);
+
+            if (i == pivotIndex) i += 2;
+            else i++;
+        }
+        List<T> fin = orderedBy(lower, func);
+        fin.add(pivot);
+        fin.addAll(orderedBy(greater, func));
+        return fin;
+    }
+
+    public static <T extends Comparable<T>> List<T> ordered(List<T> list) {
+        return orderedBy(list, (it) -> it);
+    }
+
+    public static <T extends Comparable<T>> void insert(List<T> list, T elem) {
+        int i = 0;
+        while (list.get(i).compareTo(elem) < 0) i++;
+        list.add(i, elem);
+    }
+
+    public static <T, O extends Comparable<O>> void insertBy(List<T> list, T elem, Function<T, O> func) {
+        int i = 0;
+        O k = func.apply(elem);
+        while (func.apply(list.get(i)).compareTo(k) < 0) i++;
+        list.add(i, elem);
+    }
+
+    public static <T extends Comparable<T>> void insertAll(List<T> list, List<T> toInsert) {
+        for (T elem : toInsert) insert(list, elem);
+    }
+
+    public static <T, O extends Comparable<O>> void insertAllBy(List<T> list, List<T> toInsert, Function<T, O> func) {
+        for (T elem : toInsert) insertBy(list, elem, func);
+    }
+
+    public static <T> List<T> search(List<T> nodes, BiPredicate<T, T> connectionPredicate) {
+        return search(nodes, nodes.get(0), getEdges(nodes, connectionPredicate));
+    }
+
+    public static <T> List<T> search(List<T> nodes, Map<T, List<T>> edges) {
+        return search(nodes, nodes.get(0), edges);
+    }
+
+    public static <T> List<T> search(List<T> nodes, T startingNode, BiPredicate<T, T> connectionPredicate) {
+        return search(nodes, startingNode, getEdges(nodes, connectionPredicate));
+    }
+
+    public static <T> List<T> search(List<T> nodes, T startingNode, Map<T, List<T>> edges) {
+        LinkedList<T> checked = new LinkedList<>();
+        LinkedList<T> queue = new LinkedList<>(List.of(startingNode));
+        while (!queue.isEmpty()) {
+            T nodeToCheck = queue.pop();
+            checked.add(nodeToCheck);
+            queue.addAll(edges.get(nodeToCheck));
+        }
+        return checked;
     }
 }

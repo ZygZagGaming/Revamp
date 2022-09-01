@@ -2,7 +2,7 @@ package com.zygzag.revamp.common.plugin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.ItemRegistry;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -42,7 +42,7 @@ public class TransmutationCategory implements IRecipeCategory<TransmutationRecip
         background = guiHelper.drawableBuilder(RECIPE_GUI_VANILLA, 0, 220, 82, 34)
                 .addPadding(0, 10, 0, 0)
                 .build();
-        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Registry.ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
+        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, ItemRegistry.TRANSMUTATION_CHARGE.get().getDefaultInstance());
     }
 
     public static final RecipeType<TransmutationRecipe> TRANSMUTATION_RECIPE_TYPE = RecipeType.create("revamp", "transmutation", TransmutationRecipe.class);

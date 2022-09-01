@@ -2,7 +2,7 @@ package com.zygzag.revamp.common.mixin;
 
 import com.zygzag.revamp.common.block.ConditionalStickyBlock;
 import com.zygzag.revamp.common.block.OsteumBlock;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -112,7 +112,7 @@ public class PistonStructureResolverMixin {
                         callback.setReturnValue(false);
                         break;
                     }
-                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(Registry.BlockRegistry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED) && toPush.contains(lastPos)) {
+                    if (blockstate.getPistonPushReaction() == PushReaction.DESTROY || (lastState.is(BlockRegistry.OSTEUM.get()) && lastState.getValue(OsteumBlock.getProperty(pushDirection)) == OsteumBlock.OsteumSideState.SHARPENED) && toPush.contains(lastPos)) {
                         this.toDestroy.add(blockpos1);
                         callback.setReturnValue(true);
                         break;

@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common.entity;
 
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EntityRegistry;
+import com.zygzag.revamp.common.registry.ItemRegistry;
+import com.zygzag.revamp.common.registry.RecipeTypeRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
@@ -26,15 +28,15 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
     }
 
     public ThrownTransmutationCharge(Level world, double xPos, double yPos, double zPos) {
-        super(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), xPos, yPos, zPos, world);
+        super(EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), xPos, yPos, zPos, world);
     }
 
     public ThrownTransmutationCharge(Level world, LivingEntity thrower) {
-        super(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), thrower, world);
+        super(EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), thrower, world);
     }
 
     protected Item getDefaultItem() {
-        return Registry.ItemRegistry.TRANSMUTATION_CHARGE.get();
+        return ItemRegistry.TRANSMUTATION_CHARGE.get();
     }
 
     protected float getGravity() {
@@ -47,7 +49,7 @@ public class ThrownTransmutationCharge extends ThrowableItemProjectile {
             this.level.levelEvent(2002, this.blockPosition(), 0x727175);
             AABB box = getBoundingBox().inflate(5.0);
             List<ItemEntity> entities = level.getEntitiesOfClass(ItemEntity.class, box);
-            List<TransmutationRecipe> recipes = level.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.TRANSMUTATION.get());
+            List<TransmutationRecipe> recipes = level.getRecipeManager().getAllRecipesFor(RecipeTypeRegistry.TRANSMUTATION.get());
             for (ItemEntity itemEntity : entities) {
                 for (TransmutationRecipe recipe : recipes) {
                     SimpleContainer holder = new SimpleContainer(itemEntity.getItem());

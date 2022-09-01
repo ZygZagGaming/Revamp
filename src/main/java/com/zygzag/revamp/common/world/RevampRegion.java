@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.world;
 
 import com.mojang.datafixers.util.Pair;
+import com.zygzag.revamp.common.registry.BiomeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +29,7 @@ public class RevampRegion extends Region {
                 ParameterUtils.Weirdness.FULL_RANGE,
                 ParameterUtils.Depth.FULL_RANGE,
                 0,
-                com.zygzag.revamp.common.registry.Registry.BiomeRegistry.LAVA_GARDENS.getKey()
+                BiomeRegistry.LAVA_GARDENS.getKey()
         );
     }
 }

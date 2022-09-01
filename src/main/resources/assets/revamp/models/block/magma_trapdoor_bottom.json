@@ -2,5 +2,6 @@
   "parent": "minecraft:block/template_orientable_trapdoor_bottom",
   "textures": {
     "texture": "revamp:block/magma_trapdoor"
-  }
+  },
+  "render_types": "cutout_mipped"
 }

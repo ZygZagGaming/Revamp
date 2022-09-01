@@ -27,6 +27,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -495,5 +497,11 @@ public class RevampedBlaze extends Monster {
 
     public Vec3 position(float partialTick) {
         return oldPos().lerp(position(), partialTick);
+    }
+
+    @Override
+    protected void dropFromLootTable(DamageSource source, boolean idfk) {
+        super.dropFromLootTable(source, idfk);
+        spawnAtLocation(new ItemStack(Items.BLAZE_ROD, numRods()));
     }
 }

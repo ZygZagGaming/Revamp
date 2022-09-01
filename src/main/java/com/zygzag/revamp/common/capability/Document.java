@@ -29,6 +29,11 @@ public class Document {
 
     public Document(List<String> pageData) {
         this.pageData = pageData;
+        removeEmptyEndingPages();
+    }
+
+    public void removeEmptyEndingPages() {
+        while (pageData.size() > 1 && pageData.get(pageData.size() - 1).equals("")) pageData.remove(pageData.size() - 1);
     }
 
     public void insertText(int pageId, int index, String text) {
@@ -41,6 +46,7 @@ public class Document {
             newPage = page.substring(0, index) + text + page.substring(index);
         }
         pageData.set(pageId, newPage);
+        removeEmptyEndingPages();
     }
 
     public void deleteText(int pageId, int index, int length) {
@@ -54,12 +60,13 @@ public class Document {
             else newPage = page.substring(0, index) + page.substring(index + length);
         }
         pageData.set(pageId, newPage);
-        //System.out.println("deleting from " + index + " to " + (index + length) + " turned " + page + " into " + newPage);
+        removeEmptyEndingPages();
     }
 
     public void setPage(int pageId, String text) {
         while (pageId >= pageData.size()) pageData.add("");
         pageData.set(pageId, text);
+        removeEmptyEndingPages();
     }
 
     public ListTag serializeNBT() {

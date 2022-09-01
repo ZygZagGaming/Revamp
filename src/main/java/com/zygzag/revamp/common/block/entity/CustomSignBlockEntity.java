@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.block.entity;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockEntityTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -13,6 +13,6 @@ public class CustomSignBlockEntity extends SignBlockEntity {
 
     @Override
     public BlockEntityType<?> getType() {
-        return Registry.BlockEntityTypeRegistry.CUSTOM_SIGN.get();
+        return BlockEntityTypeRegistry.CUSTOM_SIGN.get();
     }
 }

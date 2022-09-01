@@ -2,7 +2,7 @@ package com.zygzag.revamp.common.world.feature;
 
 
 import com.google.common.collect.Lists;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -883,7 +883,7 @@ public class BetterFortressPieces {
                     p_228362_.setBlock(blockpos, Blocks.SPAWNER.defaultBlockState(), 2);
                     BlockEntity blockentity = p_228362_.getBlockEntity(blockpos);
                     if (blockentity instanceof SpawnerBlockEntity sbe) {
-                       sbe.getSpawner().setEntityId(Registry.EntityRegistry.REVAMPED_BLAZE.get());
+                       sbe.getSpawner().setEntityId(EntityRegistry.REVAMPED_BLAZE.get());
                     }
                 }
             }

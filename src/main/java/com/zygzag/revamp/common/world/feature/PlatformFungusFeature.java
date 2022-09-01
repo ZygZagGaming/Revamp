@@ -2,7 +2,7 @@ package com.zygzag.revamp.common.world.feature;
 
 import com.mojang.serialization.Codec;
 import com.zygzag.revamp.common.block.LavaVinesBlock;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import com.zygzag.revamp.common.tag.RevampTags;
 import com.zygzag.revamp.common.world.PlatformFungusConfiguration;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -32,8 +32,8 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
     @Nullable
     public BlockPos correctOrigin(LevelAccessor world, BlockPos old, int maxDistance) {
         int i;
-        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.below(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.below(i)).is(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.below(i - 1)).isAir()) return old.below(i - 1);
-        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.above(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.above(i)).is(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.above(i + 1)).isAir()) return old.above(i + 1);
+        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.below(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.below(i)).is(BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.below(i - 1)).isAir()) return old.below(i - 1);
+        for (i = 0; i <= maxDistance; i++) if ((world.getBlockState(old.above(i)).getFluidState().is(Fluids.LAVA) || world.getBlockState(old.above(i)).is(BlockRegistry.MAGMA_NYLIUM_BLOCK.get())) && world.getBlockState(old.above(i + 1)).isAir()) return old.above(i + 1);
         return null; // no good origin found
     }
 
@@ -76,19 +76,19 @@ public class PlatformFungusFeature extends Feature<PlatformFungusConfiguration> 
     public void generateVegetation(HashMap<BlockPos, BlockState> toPlace, RandomSource rng) {
         HashMap<BlockPos, BlockState> copy = new HashMap<>(toPlace);
         for (Map.Entry<BlockPos, BlockState> entry : copy.entrySet()) {
-            if (entry.getValue().is(Registry.BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get()) || entry.getValue().is(Registry.BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK.get())) {
+            if (entry.getValue().is(BlockRegistry.MAGMA_FUNGUS_CAP_BLOCK.get()) || entry.getValue().is(BlockRegistry.MAGMA_FUNGUS_EDGE_BLOCK.get())) {
                 for (Direction dir : Direction.values()) {
                     if (dir != Direction.DOWN) {
                         BlockPos bp2 = entry.getKey().relative(dir);
                         BlockState k = toPlace.getOrDefault(bp2, null);
                         if (k == null || k.isAir()) {
                             if (dir == Direction.UP) {
-                                if (rng.nextDouble() < 0.125) toPlace.put(bp2, Registry.BlockRegistry.MAGMA_PUSTULE_BLOCK.get().defaultBlockState());
+                                if (rng.nextDouble() < 0.125) toPlace.put(bp2, BlockRegistry.MAGMA_PUSTULE_BLOCK.get().defaultBlockState());
                             } else {
                                 int n = 0;
                                 while (rng.nextDouble() < 0.25 && n < 5) n++;
                                 for (int i = 0; i < n; i++) {
-                                    BlockState k2 =  Registry.BlockRegistry.LAVA_VINES_BLOCK.get().defaultBlockState().setValue(LavaVinesBlock.FACING, dir);
+                                    BlockState k2 =  BlockRegistry.LAVA_VINES_BLOCK.get().defaultBlockState().setValue(LavaVinesBlock.FACING, dir);
                                     if (i != n - 1) k2 = k2.setValue(LavaVinesBlock.TYPE, LavaVinesBlock.Type.MIDDLE);
                                     toPlace.put(bp2.relative(dir, i), k2);
                                 }

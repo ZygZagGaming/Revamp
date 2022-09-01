@@ -1,0 +1,7 @@
+  {
+  "variants": {
+    "": {
+      "model": "revamp:block/shulkstone_block"
+    }
+  }
+}

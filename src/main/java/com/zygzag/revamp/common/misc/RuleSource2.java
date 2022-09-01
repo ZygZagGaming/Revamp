@@ -1,7 +1,7 @@
 package com.zygzag.revamp.common.misc;
 
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.RuleSourceRegistry;
 import net.minecraft.util.KeyDispatchDataCodec;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.SurfaceRules;
@@ -11,7 +11,7 @@ public record RuleSource2(RegistryObject<Block> obj) implements SurfaceRules.Rul
 
     @Override
     public KeyDispatchDataCodec<? extends SurfaceRules.RuleSource> codec() {
-        return new KeyDispatchDataCodec<>(Registry.RuleSourceRegistry.MAGMA_MYCELIUM_RULE_SOURCE.get());
+        return new KeyDispatchDataCodec<>(RuleSourceRegistry.MAGMA_MYCELIUM_RULE_SOURCE.get());
     }
 
     @Override

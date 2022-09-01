@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common.item.iridium;
 
 import com.zygzag.revamp.common.item.recipe.TransmutationRecipe;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EnchantmentRegistry;
+import com.zygzag.revamp.common.registry.MobEffectRegistry;
+import com.zygzag.revamp.common.registry.RecipeTypeRegistry;
 import com.zygzag.revamp.util.Constants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -77,7 +79,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
 
     @Override
     public int getCooldown(ItemStack stack, Level world) {
-        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
+        int cooldownLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.COOLDOWN_ENCHANTMENT.get(), stack);
         switch (socket) {
             case AMETHYST -> {
                 return Constants.AMETHYST_PICKAXE_COOLDOWN / (cooldownLevel + 1);
@@ -138,7 +140,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                     if (!player.getCooldowns().isOnCooldown(this)) {
                         AABB box = player.getBoundingBox().inflate(5.0);
                         List<ItemEntity> entities = world.getEntitiesOfClass(ItemEntity.class, box);
-                        List<TransmutationRecipe> recipes = world.getRecipeManager().getAllRecipesFor(Registry.RecipeTypeRegistry.TRANSMUTATION.get());
+                        List<TransmutationRecipe> recipes = world.getRecipeManager().getAllRecipesFor(RecipeTypeRegistry.TRANSMUTATION.get());
                         int n = 0;
                         for (ItemEntity itemEntity : entities) {
                             for (TransmutationRecipe recipe : recipes) {
@@ -159,7 +161,7 @@ public class IridiumPickaxeItem extends PickaxeItem implements ISocketable {
                 }
                 case AMETHYST -> {
                     if (!player.getCooldowns().isOnCooldown(this)) {
-                        player.addEffect(new MobEffectInstance(Registry.MobEffectRegistry.SIGHT_EFFECT.get(), 1200, 1));
+                        player.addEffect(new MobEffectInstance(MobEffectRegistry.SIGHT_EFFECT.get(), 1200, 1));
                         ISocketable.addCooldown(player, stack, Constants.AMETHYST_PICKAXE_COOLDOWN);
                     }
                     return InteractionResultHolder.consume(stack);

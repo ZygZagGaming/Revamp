@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.block;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -19,7 +19,7 @@ public class MagmaStemBlock extends RotatedPillarBlock {
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction action, boolean simulate) {
         if (action == ToolActions.AXE_STRIP) {
-            if (!isStripped) return Registry.BlockRegistry.STRIPPED_MAGMA_STEM_BLOCK.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
+            if (!isStripped) return BlockRegistry.STRIPPED_MAGMA_STEM_BLOCK.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
             else return state;
         } else return state;
     }

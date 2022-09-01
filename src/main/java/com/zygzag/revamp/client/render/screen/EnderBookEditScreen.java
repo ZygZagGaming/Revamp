@@ -17,7 +17,6 @@ import net.minecraft.Util;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.chat.NarratorChatListener;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,10 +27,10 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
-import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -45,7 +44,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
@@ -72,8 +70,8 @@ public class EnderBookEditScreen extends Screen {
     private List<String> pages = Lists.newArrayList();
     private String title = "";
     private boolean readonly = false;
-    private final TextFieldHelper pageEdit = new CustomTextFieldHelper(this::getCurrentPageText, this::setCurrentPageText, this::getClipboard, this::setClipboard, (p_98179_) -> {
-        return !readonly && p_98179_.length() < 1024 && font.wordWrapHeight(p_98179_, TEXT_WIDTH) <= TEXT_HEIGHT;
+    private final TextFieldHelper pageEdit = new CustomTextFieldHelper(this::getCurrentPageText, this::setCurrentPageText, this::getClipboard, this::setClipboard, (text) -> {
+        return !readonly && text.length() < 1024 && font.wordWrapHeight(text, TEXT_WIDTH) <= TEXT_HEIGHT;
     });
     private long lastClickTime;
     private int lastIndex = -1;
@@ -89,7 +87,7 @@ public class EnderBookEditScreen extends Screen {
     private int openId;
 
     public EnderBookEditScreen(Player player, ItemStack stack, InteractionHand hand) {
-        super(NarratorChatListener.NO_TITLE);
+        super(Component.translatable("revamp.ender_book_screen"));
         owner = player;
         book = stack;
         this.hand = hand;
@@ -739,24 +737,28 @@ public class EnderBookEditScreen extends Screen {
             String s = this.getMessageFn.get();
             if (!s.isEmpty()) {
                 String s1;
+                Object packet;
                 if (this.selectionPos != this.cursorPos) {
                     int i = Math.min(this.cursorPos, this.selectionPos);
                     int j = Math.max(this.cursorPos, this.selectionPos);
-                    RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
+                    packet = new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i);
                     s1 = this.deleteSelection(s);
                 } else {
                     int i = Util.offsetByCodepoints(s, this.cursorPos, amt);
                     int j = Math.min(i, this.cursorPos);
                     int k = Math.max(i, this.cursorPos);
                     //System.out.println("deleting from " + j + " to " + k);
-                    RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, j, k - j));
+                    packet = new ServerboundEnderBookDeletionPacket(openId, currentPage, j, k - j);
                     s1 = (new StringBuilder(s)).delete(j, k).toString();
                     if (amt < 0) {
                         this.selectionPos = this.cursorPos = j;
                     }
                 }
 
-                this.setMessageFn.accept(s1);
+                if (this.stringValidator.test(s1)) {
+                    RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
+                    this.setMessageFn.accept(s1);
+                }
             }
 
         }
@@ -766,8 +768,11 @@ public class EnderBookEditScreen extends Screen {
             this.setClipboardFn.accept(this.getSelected(s));
             int i = Math.min(this.cursorPos, this.selectionPos);
             int j = Math.max(this.cursorPos, this.selectionPos);
-            RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
-            this.setMessageFn.accept(this.deleteSelection(s));
+            String s1 = this.deleteSelection(s);
+            if (this.stringValidator.test(s1)) {
+                RevampPacketHandler.INSTANCE.send(PacketDistributor.SERVER.with(null), new ServerboundEnderBookDeletionPacket(openId, currentPage, i, j - i));
+                this.setMessageFn.accept(s1);
+            }
         }
     }
 }

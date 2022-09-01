@@ -101,6 +101,7 @@ public class EnergyCharge {
             if (living != null) GeneralUtil.ifCapability(living, Revamp.ENTITY_CHARGE_CAPABILITY, (handler) -> {
                 float c = handler.getCharge();
                 handler.setCharge(c + charge);
+
                 Vec3 entityPos = living.getBoundingBox().getCenter();
                 Vec3 thisPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 new Arc(thisPos, entityPos, (int) Math.abs(charge)).sendToClients();

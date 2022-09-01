@@ -5,12 +5,12 @@ import com.zygzag.revamp.client.render.entity.*;
 import com.zygzag.revamp.client.render.entity.model.EmpoweredWitherModel;
 import com.zygzag.revamp.client.render.entity.model.RevampedBlazeModel;
 import com.zygzag.revamp.common.Revamp;
-import com.zygzag.revamp.common.entity.BlazeRodEntity;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EntityRegistry;
+import com.zygzag.revamp.common.registry.ParticleTypeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -25,16 +25,16 @@ public class ClientModEventHandler {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(Registry.EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
-        event.registerEntityRenderer(Registry.EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlazeRenderer::new);
-        event.registerEntityRenderer(Registry.EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
-        event.registerEntityRenderer(Registry.EntityRegistry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
-        event.registerEntityRenderer(Registry.EntityRegistry.THROWN_AXE.get(), ThrownAxeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlazeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.THROWN_AXE.get(), ThrownAxeRenderer::new);
     }
 
     @SubscribeEvent
-    public static void registerParticleProviders(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particleEngine.register(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get(), ChargeParticle.Provider::new);
-        Minecraft.getInstance().particleEngine.register(Registry.ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get(), ChargeParticle.Provider::new);
+    public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.register(ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_POSITIVE.get(), ChargeParticle.Provider::new);
+        event.register(ParticleTypeRegistry.CHARGE_PARTICLE_TYPE_NEGATIVE.get(), ChargeParticle.Provider::new);
     }
 }

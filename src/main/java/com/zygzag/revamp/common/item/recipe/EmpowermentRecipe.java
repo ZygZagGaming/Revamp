@@ -1,7 +1,9 @@
 package com.zygzag.revamp.common.item.recipe;
 
 import com.google.gson.JsonObject;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.ItemRegistry;
+import com.zygzag.revamp.common.registry.RecipeSerializerRegistry;
+import com.zygzag.revamp.common.registry.RecipeTypeRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +59,7 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public ItemStack getResultItem() {
-        return Registry.ItemRegistry.EMPOWERMENT_STAR_ITEM.get().getDefaultInstance();
+        return ItemRegistry.EMPOWERMENT_STAR_ITEM.get().getDefaultInstance();
     }
 
     @Override
@@ -67,20 +69,20 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Registry.RecipeSerializerRegistry.EMPOWERMENT_SERIALIZER.get();
+        return RecipeSerializerRegistry.EMPOWERMENT_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return Registry.RecipeTypeRegistry.EMPOWERMENT.get();
+        return RecipeTypeRegistry.EMPOWERMENT.get();
     }
 
     public static class EmpowermentSerializer implements RecipeSerializer<EmpowermentRecipe> {
 
         @Override
         public EmpowermentRecipe fromJson(ResourceLocation id, JsonObject obj) {
-            EntityType<?> in = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(obj.get("base").getAsString()));
-            EntityType<?> out = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(obj.get("out").getAsString()));
+            EntityType<?> in = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(obj.get("base").getAsString()));
+            EntityType<?> out = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(obj.get("out").getAsString()));
             Ingredient item = Ingredient.fromJson(obj.get("item"));
             assert out != null && in != null;
             return new EmpowermentRecipe(in, out, item, id);
@@ -89,8 +91,8 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
         @Nullable
         @Override
         public EmpowermentRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            EntityType<?> in = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(buf.readUtf()));
-            EntityType<?> out = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(buf.readUtf()));
+            EntityType<?> in = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(buf.readUtf()));
+            EntityType<?> out = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(buf.readUtf()));
             Ingredient item = Ingredient.fromNetwork(buf);
             assert out != null && in != null;
             return new EmpowermentRecipe(in, out, item, id);
@@ -98,8 +100,8 @@ public class EmpowermentRecipe implements Recipe<ItemAndEntityHolder> {
 
         @Override
         public void toNetwork(FriendlyByteBuf buf, EmpowermentRecipe recipe) {
-            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(recipe.inEntity)).toString());
-            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(recipe.inEntity)).toString());
+            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(recipe.inEntity)).toString());
+            buf.writeUtf(Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.getKey(recipe.inEntity)).toString());
             recipe.item.toNetwork(buf);
         }
     }

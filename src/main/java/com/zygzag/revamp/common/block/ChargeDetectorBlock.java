@@ -1,7 +1,7 @@
 package com.zygzag.revamp.common.block;
 
 import com.zygzag.revamp.common.block.entity.ChargeDetectorBlockEntity;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockEntityTypeRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -66,7 +66,7 @@ public class ChargeDetectorBlock extends DiodeBlock implements EntityBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return world.isClientSide || type != Registry.BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get() ? null : helper(type, Registry.BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), ChargeDetectorBlockEntity::serverTick);
+        return world.isClientSide || type != BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get() ? null : helper(type, BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), ChargeDetectorBlockEntity::serverTick);
     }
 
     @SuppressWarnings("unchecked")

@@ -4,5 +4,6 @@
     "top": "revamp:block/magma_door_top",
     "bottom": "revamp:block/magma_door_bottom"
   },
-  "ambientocclusion": true
+  "ambientocclusion": true,
+  "render_types": "cutout_mipped"
 }

@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.block.entity;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BlockEntityTypeRegistry;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,7 +15,7 @@ import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 public class ChargeDetectorBlockEntity extends BlockEntity {
     public int output = 0;
     public ChargeDetectorBlockEntity(BlockPos pos, BlockState state) {
-        super(Registry.BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), pos, state);
+        super(BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), pos, state);
     }
 
     public static float chargeToSignalStrength(float charge) {

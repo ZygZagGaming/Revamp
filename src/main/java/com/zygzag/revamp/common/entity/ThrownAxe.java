@@ -1,6 +1,7 @@
 package com.zygzag.revamp.common.entity;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EntityRegistry;
+import com.zygzag.revamp.common.registry.IridiumGearRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,8 +14,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ItemSupplier;
@@ -24,11 +23,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.checkerframework.checker.units.qual.K;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -42,11 +39,11 @@ public class ThrownAxe extends AbstractArrow implements ItemSupplier {
 
     public ThrownAxe(EntityType<? extends ThrownAxe> type, Level world) {
         super(type, world);
-        this.item = Registry.IridiumGearRegistry.IRIDIUM_AXE.get().getDefaultInstance();
+        this.item = IridiumGearRegistry.IRIDIUM_AXE.get().getDefaultInstance();
     }
 
     public ThrownAxe(Level world, Player owner, ItemStack item) {
-        super(Registry.EntityRegistry.THROWN_AXE.get(), owner, world);
+        super(EntityRegistry.THROWN_AXE.get(), owner, world);
         this.item = item.copy();
     }
 

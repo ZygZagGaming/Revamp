@@ -1,7 +1,8 @@
 package com.zygzag.revamp.common.mixin;
 
 import com.zygzag.revamp.common.misc.RuleSource2;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.BiomeRegistry;
+import com.zygzag.revamp.common.registry.BlockRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.world.level.biome.Biomes;
@@ -59,7 +60,7 @@ public class SurfaceRuleDataMixin {
     private static final SurfaceRules.RuleSource ENDSTONE = makeStateRule(Blocks.END_STONE);
 
     private static final SurfaceRules.RuleSource MAGMA_BLOCK = makeStateRule(Blocks.MAGMA_BLOCK);
-    private static final SurfaceRules.RuleSource MAGMA_MYCELIUM = makeStateRule2(Registry.BlockRegistry.MAGMA_NYLIUM_BLOCK);
+    private static final SurfaceRules.RuleSource MAGMA_MYCELIUM = makeStateRule2(BlockRegistry.MAGMA_NYLIUM_BLOCK);
 
     @Inject(cancellable = true, at = @At("HEAD"), method = "nether()Lnet/minecraft/world/level/levelgen/SurfaceRules$RuleSource;")
     private static void nether(CallbackInfoReturnable<SurfaceRules.RuleSource> callback) {
@@ -243,7 +244,7 @@ public class SurfaceRuleDataMixin {
                     ),
                     SurfaceRules.ifTrue(
                             SurfaceRules.isBiome(
-                                    Registry.BiomeRegistry.LAVA_GARDENS.getKey()
+                                    BiomeRegistry.LAVA_GARDENS.getKey()
                             ),
                             SurfaceRules.sequence(
                                     SurfaceRules.ifTrue(

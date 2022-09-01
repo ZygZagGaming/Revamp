@@ -234,5 +234,7 @@
   "block.revamp.magma_stairs": "Magma Stairs",
   "block.revamp.magma_button": "Magma Button",
   "block.revamp.magma_door": "Magma Door",
-  "block.revamp.magma_sign": "Magma Sign"
+  "block.revamp.magma_sign": "Magma Sign",
+  "block.revamp.shulkstone_block": "Shulkstone Block",
+  "block.revamp.shulkstone_cannon": "Shulkstone Cannon"
 }

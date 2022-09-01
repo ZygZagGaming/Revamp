@@ -1,18 +1,14 @@
 package com.zygzag.revamp.common.world.feature;
 
 import com.mojang.serialization.Codec;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.StructureTypeRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.random.WeightedRandomList;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
-import net.minecraft.world.level.levelgen.structure.structures.NetherFortressStructure;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -51,6 +47,6 @@ public class BetterFortressFeature extends Structure {
     }
 
     public StructureType<?> type() {
-        return Registry.StructureTypeRegistry.BETTER_FORTRESS.get();
+        return StructureTypeRegistry.BETTER_FORTRESS.get();
     }
 }

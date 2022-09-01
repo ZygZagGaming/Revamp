@@ -4,7 +4,7 @@ import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.charge.Arc;
 import com.zygzag.revamp.common.networking.RevampPacketHandler;
 import com.zygzag.revamp.common.networking.packet.ClientboundEntityChargeSyncPacket;
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.EnchantmentRegistry;
 import com.zygzag.revamp.util.Constants;
 import com.zygzag.revamp.util.GeneralUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
-import java.util.Random;
 
 public class EntityChargeHandler {
     public int ticksSinceLastModified = 500;
@@ -83,7 +82,7 @@ public class EntityChargeHandler {
                 float decayRate = Constants.CHARGE_DECAY_RATE;
                 if (entity instanceof LivingEntity living) {
                     ItemStack feet = living.getItemBySlot(EquipmentSlot.FEET);
-                    int lv = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.GROUNDED_ENCHANTMENT.get(), feet);
+                    int lv = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.GROUNDED_ENCHANTMENT.get(), feet);
                     if (lv == 1) decayRate = Constants.GROUNDED_ENCHANTMENT_1_DECAY_RATE;
                     else if (lv == 2) decayRate = Constants.GROUNDED_ENCHANTMENT_2_DECAY_RATE;
                 }
@@ -97,7 +96,7 @@ public class EntityChargeHandler {
 
             if (entity instanceof LivingEntity living) {
                 ItemStack legs = living.getItemBySlot(EquipmentSlot.LEGS);
-                int dynamoLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.DYNAMO_ENCHANTMENT.get(), legs);
+                int dynamoLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.DYNAMO_ENCHANTMENT.get(), legs);
                 AttributeInstance speedInstance = living.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (speedInstance != null) {
                     if (speedInstance.getModifier(Constants.SPEED_MODIFIER_JOLTED_UUID) != null) {
@@ -115,13 +114,13 @@ public class EntityChargeHandler {
 
                 if (counter % 8 == 0) {
                     ItemStack chestplate = living.getItemBySlot(EquipmentSlot.CHEST);
-                    int plusLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.VOLTAGE_PLUS_ENCHANTMENT.get(), chestplate);
-                    int minusLevel = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.VOLTAGE_MINUS_ENCHANTMENT.get(), chestplate);
+                    int plusLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.VOLTAGE_PLUS_ENCHANTMENT.get(), chestplate);
+                    int minusLevel = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.VOLTAGE_MINUS_ENCHANTMENT.get(), chestplate);
                     float c = 0;
                     if (plusLevel > 0)
-                        c += Registry.EnchantmentRegistry.VOLTAGE_PLUS_ENCHANTMENT.get().getChargePerTick() * 8;
+                        c += EnchantmentRegistry.VOLTAGE_PLUS_ENCHANTMENT.get().getChargePerTick() * 8;
                     if (minusLevel > 0)
-                        c += Registry.EnchantmentRegistry.VOLTAGE_MINUS_ENCHANTMENT.get().getChargePerTick() * 8;
+                        c += EnchantmentRegistry.VOLTAGE_MINUS_ENCHANTMENT.get().getChargePerTick() * 8;
                     setCharge(getCharge() + c);
                 }
 
@@ -164,7 +163,7 @@ public class EntityChargeHandler {
         if (entity instanceof LivingEntity living) {
             helmet = living.getItemBySlot(EquipmentSlot.HEAD);
         }
-        int level = EnchantmentHelper.getItemEnchantmentLevel(Registry.EnchantmentRegistry.SURGE_PROTECTOR_ENCHANTMENT.get(), helmet);
+        int level = EnchantmentHelper.getItemEnchantmentLevel(EnchantmentRegistry.SURGE_PROTECTOR_ENCHANTMENT.get(), helmet);
         float amountToChange = Math.min(Math.abs(charge) - getMaxCharge(), getMaxCharge());
         setCharge(getCharge() - Math.signum(charge) * amountToChange);
         if (level > 0) {

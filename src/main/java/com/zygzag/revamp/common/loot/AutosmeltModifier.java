@@ -1,6 +1,8 @@
 package com.zygzag.revamp.common.loot;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
@@ -10,13 +12,15 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class AutosmeltModifier extends LootModifier {
+    public static Codec<AutosmeltModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, AutosmeltModifier::new));
+
     /**
      * Constructs a LootModifier.
      *
@@ -42,16 +46,8 @@ public class AutosmeltModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static class Serializer extends GlobalLootModifierSerializer<AutosmeltModifier> {
-
-        @Override
-        public AutosmeltModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] ailootcondition) {
-            return new AutosmeltModifier(ailootcondition);
-        }
-
-        @Override
-        public JsonObject write(AutosmeltModifier instance) {
-            return makeConditions(instance.conditions);
-        }
+    @Override
+    public Codec<? extends IGlobalLootModifier> codec() {
+        return CODEC;
     }
 }

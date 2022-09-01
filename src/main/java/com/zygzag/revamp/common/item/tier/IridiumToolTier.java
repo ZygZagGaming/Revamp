@@ -1,6 +1,6 @@
 package com.zygzag.revamp.common.item.tier;
 
-import com.zygzag.revamp.common.registry.Registry;
+import com.zygzag.revamp.common.registry.ItemRegistry;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -57,6 +57,6 @@ public enum IridiumToolTier implements Tier {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.of(Registry.ItemRegistry.IRIDIUM_PLATING.get());
+        return Ingredient.of(ItemRegistry.IRIDIUM_PLATING.get());
     }
 }
