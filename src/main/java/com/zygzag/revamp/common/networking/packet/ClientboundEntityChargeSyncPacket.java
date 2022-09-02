@@ -32,11 +32,10 @@ public class ClientboundEntityChargeSyncPacket {
 
     @Nullable
     public static ClientboundEntityChargeSyncPacket decode(FriendlyByteBuf buf) {
-        if (Minecraft.getInstance().level.isClientSide) return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
-        else return null;
+        return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupplier) {
-        if (Minecraft.getInstance().level.isClientSide) ClientUtils.syncEntityCharge(ctxSupplier, uuid, newCharge, newMaxCharge);
+        ClientUtils.syncEntityCharge(ctxSupplier, uuid, newCharge, newMaxCharge);
     }
 }

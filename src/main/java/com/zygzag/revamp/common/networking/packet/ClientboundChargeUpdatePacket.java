@@ -40,8 +40,7 @@ public class ClientboundChargeUpdatePacket {
     }
 
     public static ClientboundChargeUpdatePacket decode(FriendlyByteBuf buf) {
-        if (Minecraft.getInstance().level.isClientSide) return ClientUtils.decodeClientboundChargeUpdatePacket(buf);
-        else return null;
+        return ClientUtils.decodeClientboundChargeUpdatePacket(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
