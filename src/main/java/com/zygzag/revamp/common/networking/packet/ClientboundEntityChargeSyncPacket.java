@@ -1,16 +1,7 @@
 package com.zygzag.revamp.common.networking.packet;
 
-import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.util.ClientUtils;
-import com.zygzag.revamp.util.GeneralUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
