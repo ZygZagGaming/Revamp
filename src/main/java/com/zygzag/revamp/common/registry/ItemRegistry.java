@@ -97,6 +97,7 @@ public class ItemRegistry extends Registry<Item> {
     public static final RegistryObject<Item> ARC_CRYSTAL_ITEM = registerBlockItem(BlockRegistry.ARC_CRYSTAL);
     public static final RegistryObject<Item> SHULKSTONE_BLOCK = registerBlockItem(BlockRegistry.SHULKSTONE_BLOCK);
     public static final RegistryObject<Item> SHULKSTONE_CANNON = registerBlockItem(BlockRegistry.SHULKSTONE_CANNON);
+    public static final RegistryObject<Item> EMBELLISHED_SHULKSTONE_CANNON = registerBlockItem(BlockRegistry.EMBELLISHED_SHULKSTONE_BLOCK);
 
     public ItemRegistry(DeferredRegister<Item> register, String modid) {
         super(register, modid);

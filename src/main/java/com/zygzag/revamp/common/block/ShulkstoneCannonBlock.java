@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -62,5 +63,15 @@ public class ShulkstoneCannonBlock extends Block implements SimpleWaterloggedBlo
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
         return state;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos otherPos, boolean idfk) {
+        if (!world.isClientSide) {
+            boolean flag = world.hasNeighborSignal(pos);
+            if (flag != state.getValue(BlockStateProperties.POWERED)) {
+                world.setBlock(pos, state.setValue(BlockStateProperties.POWERED, flag), 2);
+            }
+        }
     }
 }
