@@ -15,7 +15,7 @@ public class RevampPacketHandler {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );
-    static int id = -1;
+    static int id = 5;
 
     public static void registerMessages() {
         INSTANCE.registerMessage(

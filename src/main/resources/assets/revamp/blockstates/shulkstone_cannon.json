@@ -1,7 +1,29 @@
   {
   "variants": {
-    "": {
+    "facing=up": {
       "model": "revamp:block/shulkstone_cannon"
+    },
+    "facing=down": {
+      "model": "revamp:block/shulkstone_cannon",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "revamp:block/shulkstone_cannon",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "revamp:block/shulkstone_cannon",
+      "x": 270
+    },
+    "facing=east": {
+      "model": "revamp:block/shulkstone_cannon",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "revamp:block/shulkstone_cannon",
+      "x": 270,
+      "y": 90
     }
   }
 }

@@ -10,8 +10,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.function.Supplier;
-
 import static com.zygzag.revamp.common.Revamp.MODID;
 
 public class BlockRegistry extends Registry<Block> {
@@ -55,7 +53,7 @@ public class BlockRegistry extends Registry<Block> {
     public static final RegistryObject<Block> CHARGE_DETECTOR = INSTANCE.register("charge_detector", () -> new ChargeDetectorBlock(BlockBehaviour.Properties.of(Material.DECORATION).instabreak().sound(SoundType.WOOD)));
     public static final RegistryObject<Block> ARC_CRYSTAL = INSTANCE.register("arc_crystal", () -> new ArcCrystalBlock(BlockBehaviour.Properties.of(Material.AMETHYST)));
     public static final RegistryObject<Block> SHULKSTONE_BLOCK = INSTANCE.register("shulkstone_block", () -> new Block(BlockBehaviour.Properties.copy(Blocks.PURPUR_BLOCK).strength(200f, 1200f)));
-    public static final RegistryObject<Block> SHULKSTONE_CANNON = INSTANCE.register("shulkstone_cannon", () -> new Block(BlockBehaviour.Properties.copy(Blocks.PURPUR_BLOCK).strength(200f, 1200f)));
+    public static final RegistryObject<Block> SHULKSTONE_CANNON = INSTANCE.register("shulkstone_cannon", () -> new ShulkstoneCannonBlock(BlockBehaviour.Properties.copy(Blocks.PURPUR_BLOCK).strength(200f, 1200f)));
 
     private BlockRegistry(DeferredRegister<Block> register, String modid) {
         super(register, modid);
