@@ -53,6 +53,7 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -93,7 +94,6 @@ public class Revamp {
     ));
 
     public static final ConductivenessReloadListener CONDUCTIVENESS = new ConductivenessReloadListener();
-    private boolean isClient = false;
 
     public Revamp() {
         WoodType t = MAGMA_WOOD_TYPE; // load it early
@@ -107,7 +107,7 @@ public class Revamp {
         modEventBus.addListener(this::registerAttributes);
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(this::registerRenderers);
-        if (isClient) modEventBus.addListener(this::registerBlockColorHandlers);
+        modEventBus.addListener(this::registerBlockColorHandlers);
         Registry.register(modEventBus);
 
         // forgeEventBus.addListener(this::doServerStuff);
@@ -163,8 +163,6 @@ public class Revamp {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        isClient = true;
-
         event.enqueueWork(() -> {
             Sheets.addWoodType(MAGMA_WOOD_TYPE);
         });
@@ -267,7 +265,7 @@ public class Revamp {
     }
 
     private void attachCapabilitiesToLevels(final AttachCapabilitiesEvent<Level> event) {
-        if (event.getObject().isClientSide) {
+        if (event.getObject().isClientSide()) {
             LazyOptional<ClientLevelChargeHandler> lazy = LazyOptional.of(() -> new ClientLevelChargeHandler(event.getObject()));
             event.addCapability(loc("client_level_charge"), new ICapabilityProvider() {
                 @NotNull
@@ -367,8 +365,7 @@ public class Revamp {
     }
 
     private void registerBlockColorHandlers(final RegisterColorHandlersEvent.Block event) {
-        BlockColors colors = event.getBlockColors();
-        colors.register(ArcCrystalBlock::getColor, BlockRegistry.ARC_CRYSTAL.get());
+        event.register(ArcCrystalBlock::getColor, BlockRegistry.ARC_CRYSTAL.get());
     }
 
     // private void doServerStuff(final FMLServerStartingEvent event) { }

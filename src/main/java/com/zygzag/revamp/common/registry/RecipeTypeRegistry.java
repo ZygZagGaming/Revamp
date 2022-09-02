@@ -21,7 +21,7 @@ public class RecipeTypeRegistry extends Registry<RecipeType<?>> {
     }
 
     public static <T extends Recipe<?>> RegistryObject<RecipeType<T>> registerRecipeType(String id) {
-        return INSTANCE.register(id, () -> new RecipeType<>() {
+        return INSTANCE.register(id, () -> new RecipeType<T>() {
             @Override
             public String toString() {
                 return id;
