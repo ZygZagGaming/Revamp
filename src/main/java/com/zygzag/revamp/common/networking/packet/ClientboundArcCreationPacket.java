@@ -5,6 +5,9 @@ import com.zygzag.revamp.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -37,6 +40,8 @@ public class ClientboundArcCreationPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupp) {
-        ClientUtils.createArc(ctxSupp, arc);
+    	NetworkEvent.Context ctx = ctxSupp.get();
+    	ClientUtils.createArc(arc);
+    	ctx.setPacketHandled(true);
     }
 }

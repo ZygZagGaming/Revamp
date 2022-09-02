@@ -7,6 +7,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
@@ -32,10 +36,12 @@ public class ClientboundEntityChargeSyncPacket {
 
     @Nullable
     public static ClientboundEntityChargeSyncPacket decode(FriendlyByteBuf buf) {
-        return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
+    	return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupplier) {
-        ClientUtils.syncEntityCharge(ctxSupplier, uuid, newCharge, newMaxCharge);
+    	NetworkEvent.Context ctx = ctxSupplier.get();
+    	ClientUtils.syncEntityCharge(uuid, newCharge, newMaxCharge);
+    	ctx.setPacketHandled(true);
     }
 }
