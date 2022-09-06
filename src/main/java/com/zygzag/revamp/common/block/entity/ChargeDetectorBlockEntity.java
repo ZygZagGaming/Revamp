@@ -15,7 +15,7 @@ import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
 public class ChargeDetectorBlockEntity extends BlockEntity {
     public int output = 0;
     public ChargeDetectorBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), pos, state);
+        super(BlockEntityTypeRegistry.CHARGE_DETECTOR.get(), pos, state);
     }
 
     public static float chargeToSignalStrength(float charge) {

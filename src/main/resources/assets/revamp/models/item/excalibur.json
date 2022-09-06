@@ -1,0 +1,11 @@
+{
+  "loader": "forge:separate_transforms",
+  "base": {
+    "parent": "revamp:item/excalibur_world"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "revamp:item/excalibur_gui"
+    }
+  }
+}

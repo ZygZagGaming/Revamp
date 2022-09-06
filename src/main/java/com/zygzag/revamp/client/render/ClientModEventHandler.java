@@ -7,7 +7,7 @@ import com.zygzag.revamp.client.render.entity.model.RevampedBlazeModel;
 import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.common.registry.EntityRegistry;
 import com.zygzag.revamp.common.registry.ParticleTypeRegistry;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.ShulkerBulletRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -28,8 +28,11 @@ public class ClientModEventHandler {
         event.registerEntityRenderer(EntityRegistry.EMPOWERED_WITHER.get(), EmpoweredWitherRenderer::new);
         event.registerEntityRenderer(EntityRegistry.REVAMPED_BLAZE.get(), RevampedBlazeRenderer::new);
         event.registerEntityRenderer(EntityRegistry.TRANSMUTATION_BOTTLE_ENTITY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.THROWN_GLOID_BALL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(EntityRegistry.HOMING_WITHER_SKULL.get(), HomingWitherSkullRenderer::new);
         event.registerEntityRenderer(EntityRegistry.THROWN_AXE.get(), ThrownAxeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CANNON_SHULKER_BULLET.get(), ShulkerBulletRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.GLOID_BUBBLE.get(), GloidBubbleRenderer::new);
     }
 
     @SubscribeEvent

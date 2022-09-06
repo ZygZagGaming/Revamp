@@ -8,14 +8,16 @@ import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.ForgeTier;
 
 import java.util.function.Supplier;
 
 @MethodsReturnNonnullByDefault
-public enum ModTiers implements Tier {
-    IRIDIUM(5, 2589, 8.85F, 5.5F, 18, () -> {
+public class ModTiers {
+    public static final ForgeTier IRIDIUM = new ForgeTier(5, 2589, 8.85F, 5.5F, 18, Revamp.NEEDS_IRIDIUM_TOOL_TAG, () -> {
         return Ingredient.of(ItemRegistry.IRIDIUM_PLATING.get());
-    });
+    }),
+    EXCALIBUR = new ForgeTier(3, 950, 9.5f, 3.5f, 50, Revamp.NEEDS_IRIDIUM_TOOL_TAG, () -> Ingredient.EMPTY);
 
     private final int level;
     private final int uses;

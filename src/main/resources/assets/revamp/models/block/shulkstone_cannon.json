@@ -2,7 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "revamp:block/shulkstone_cannon"
+		"0": "revamp:block/shulkstone_cannon",
+		"particle": "revamp:block/shulkstone_cannon"
 	},
 	"elements": [
 		{

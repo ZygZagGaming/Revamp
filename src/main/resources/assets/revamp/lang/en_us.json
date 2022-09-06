@@ -20,6 +20,8 @@
   "item.minecraft.lingering_potion.effect.sight": "Lingering Potion of Sight",
   "effect.revamp.sight": "Sight",
   "effect.revamp.green_thumb": "Green Thumb",
+  "effect.revamp.reach": "Reach",
+  "effect.revamp.weightlessness": "Weightlessness",
   "item.revamp.empowerment_star": "Empowerment Star (NYI)",
   "item.revamp.iridium_plating": "Iridium Plating",
   "item.revamp.shulker_bowl": "Shulker Bowl of Stew",
@@ -78,6 +80,7 @@
   "block.revamp.stripped_magma_hyphae": "Stripped Magma Hyphae",
   "block.revamp.magma_fungus_cap": "Magma Fungus Cap",
   "block.revamp.magma_fungus_edge": "Magma Fungus Edge",
+  "item.revamp.gloid_ball": "Gloid Ball",
 
   "item.revamp.rot_essence": "Essence of Rot (NYI)",
   "item.revamp.bone_essence": "Essence of Bone (NYI)",
@@ -237,5 +240,6 @@
   "block.revamp.magma_sign": "Magma Sign",
   "block.revamp.shulkstone_block": "Shulkstone Block",
   "block.revamp.embellished_shulkstone_block": "Embellished Shulkstone Block",
+  "block.revamp.chiseled_shulkstone_block": "Chiseled Shulkstone Block",
   "block.revamp.shulkstone_cannon": "Shulkstone Cannon"
 }

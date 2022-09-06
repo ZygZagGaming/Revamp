@@ -9,7 +9,7 @@
     "PistonStructureResolverMixin",
     "ServerPlayerMixin",
     "LivingEntityMixin",
-    "SurfaceRuleDataMixin"
+    "SurfaceRuleDataMixin",
   ],
   "minVersion": "0.8",
   "client": [

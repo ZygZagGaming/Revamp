@@ -11,8 +11,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,6 +35,17 @@ import java.util.function.*;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class GeneralUtil {
+    public static Vec3 vec3iToVec3(Vec3i vec3i) {
+        return new Vec3(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    }
+
+    public static Vec3 vec3iToVec3Centered(Vec3i vec3i) {
+        return new Vec3(vec3i.getX() + 0.5, vec3i.getY() + 0.5, vec3i.getZ() + 0.5);
+    }
+
+    public static Vec3 absolute(Vec3 vec) {
+        return new Vec3(Math.abs(vec.x), Math.abs(vec.y), Math.abs(vec.z));
+    }
 
     /**
      * RandomSource number generator.
@@ -773,5 +786,13 @@ public class GeneralUtil {
             queue.addAll(edges.get(nodeToCheck));
         }
         return checked;
+    }
+
+    public static boolean fullyContains(AABB a, AABB b) {
+        return a.minX < b.minX && a.maxX > b.maxX && a.minY < b.minY && a.maxY > b.maxY &&a .minZ < b.minZ && a.maxZ > b.maxZ;
+    }
+
+    public static float bobHeight(ItemEntity item) {
+        return Mth.sin(item.getAge() / 10.0F + item.bobOffs) * 0.1F + 0.1F;
     }
 }

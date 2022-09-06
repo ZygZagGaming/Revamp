@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "face=down": {
+      "model": "revamp:block/chiseled_shulkstone_block",
+      "x": 180
+    },
+    "face=east": {
+      "model": "revamp:block/chiseled_shulkstone_block",
+      "x": 90,
+      "y": 90
+    },
+    "face=north": {
+      "model": "revamp:block/chiseled_shulkstone_block",
+      "x": 90
+    },
+    "face=south": {
+      "model": "revamp:block/chiseled_shulkstone_block",
+      "x": 90,
+      "y": 180
+    },
+    "face=up": {
+      "model": "revamp:block/chiseled_shulkstone_block"
+    },
+    "face=west": {
+      "model": "revamp:block/chiseled_shulkstone_block",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

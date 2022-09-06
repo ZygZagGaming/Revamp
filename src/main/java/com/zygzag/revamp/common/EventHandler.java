@@ -2,6 +2,8 @@ package com.zygzag.revamp.common;
 
 import com.zygzag.revamp.common.capability.ChunkChargeHandler;
 import com.zygzag.revamp.common.capability.EntityChargeHandler;
+import com.zygzag.revamp.common.entity.GloidBubbleEntity;
+import com.zygzag.revamp.common.entity.effect.WeightlessnessEffect;
 import com.zygzag.revamp.common.item.iridium.IridiumChestplateItem;
 import com.zygzag.revamp.common.item.iridium.IridiumShovelItem;
 import com.zygzag.revamp.common.item.iridium.Socket;
@@ -21,6 +23,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -38,9 +41,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -234,6 +236,37 @@ public class EventHandler {
                 handler.update(event.getPos());
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void effectAdded(MobEffectEvent.Added event) {
+        LivingEntity entity = event.getEntity();
+        if (event.getEffectInstance().getEffect() instanceof WeightlessnessEffect) entity.setNoGravity(true);
+    }
+
+    @SubscribeEvent
+    public static void effectRemoved(MobEffectEvent.Remove event) {
+        LivingEntity entity = event.getEntity();
+        if (event.getEffect() instanceof WeightlessnessEffect) entity.setNoGravity(false);
+    }
+
+    @SubscribeEvent
+    public static void effectExpired(MobEffectEvent.Expired event) {
+        LivingEntity entity = event.getEntity();
+        MobEffectInstance inst = event.getEffectInstance();
+        if (inst != null && inst.getEffect() instanceof WeightlessnessEffect) entity.setNoGravity(false);
+    }
+
+    @SubscribeEvent
+    public static void itemPickedUp(EntityItemPickupEvent event) {
+        ItemEntity entity = event.getItem();
+        if (entity.getPassengers().stream().anyMatch((it) -> it instanceof GloidBubbleEntity)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void xpOrbPickedUp(PlayerXpEvent.PickupXp event) {
+        ExperienceOrb entity = event.getOrb();
+        if (entity.getPassengers().stream().anyMatch((it) -> it instanceof GloidBubbleEntity)) event.setCanceled(true);
     }
 }
 

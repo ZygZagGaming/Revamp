@@ -48,6 +48,9 @@ public class ItemRegistry extends Registry<Item> {
                             .build())));
 
     public static final RegistryObject<Item> TRANSMUTATION_CHARGE = INSTANCE.register("transmutation_charge", () -> new TransmutationCharge(new Item.Properties().tab(MAIN_TAB)));
+    public static final RegistryObject<Item> GLOID_BALL = INSTANCE.register("gloid_ball", () -> new GloidBallItem(new Item.Properties().tab(MAIN_TAB)));
+
+    public static final RegistryObject<Item> EXCALIBUR = INSTANCE.register("excalibur", () -> new ExcaliburItem(new Item.Properties().tab(MAIN_TAB).stacksTo(1)));
 
     public static final RegistryObject<Item> ROT_ESSENCE = basicEssenceItem("rot_essence");
     public static final RegistryObject<Item> BONE_ESSENCE = basicEssenceItem("bone_essence");
@@ -98,6 +101,7 @@ public class ItemRegistry extends Registry<Item> {
     public static final RegistryObject<Item> SHULKSTONE_BLOCK = registerBlockItem(BlockRegistry.SHULKSTONE_BLOCK);
     public static final RegistryObject<Item> SHULKSTONE_CANNON = registerBlockItem(BlockRegistry.SHULKSTONE_CANNON);
     public static final RegistryObject<Item> EMBELLISHED_SHULKSTONE_CANNON = registerBlockItem(BlockRegistry.EMBELLISHED_SHULKSTONE_BLOCK);
+    public static final RegistryObject<Item> CHISELED_SHULKSTONE_BLOCK = registerBlockItem(BlockRegistry.CHISELED_SHULKSTONE_BLOCK);
 
     public ItemRegistry(DeferredRegister<Item> register, String modid) {
         super(register, modid);

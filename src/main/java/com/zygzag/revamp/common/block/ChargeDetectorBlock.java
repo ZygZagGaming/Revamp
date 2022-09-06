@@ -66,7 +66,7 @@ public class ChargeDetectorBlock extends DiodeBlock implements EntityBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return world.isClientSide || type != BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get() ? null : helper(type, BlockEntityTypeRegistry.CHARGE_DETECTOR_BLOCK_ENTITY.get(), ChargeDetectorBlockEntity::serverTick);
+        return world.isClientSide || type != BlockEntityTypeRegistry.CHARGE_DETECTOR.get() ? null : helper(type, BlockEntityTypeRegistry.CHARGE_DETECTOR.get(), ChargeDetectorBlockEntity::serverTick);
     }
 
     @SuppressWarnings("unchecked")
