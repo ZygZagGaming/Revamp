@@ -22,6 +22,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -43,6 +44,7 @@ public class GloidBubbleEntity extends Entity {
     public List<Entity> contained = new ArrayList<>();
     public List<Entity> containedOld = new ArrayList<>();
     public float xWiggleOffset = level.random.nextFloat(), yWiggleOffset = level.random.nextFloat(), zWiggleOffset = level.random.nextFloat();
+    public static float BOAT_FRICTION = 0.05f / 0.9f;
 
     public GloidBubbleEntity(EntityType<?> type, Level world) {
         super(type, world);
@@ -101,13 +103,15 @@ public class GloidBubbleEntity extends Entity {
             }
             if (vehicle instanceof LivingEntity living && src instanceof EntityDamageSource eds) {
                 Entity a = eds.getEntity();
-                if (a instanceof LivingEntity attacker) {
+                if (a instanceof LivingEntity attacker && attacker != living) {
                     // copied code from Mob to calculate kb
-                    float f1 = (float)attacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + EnchantmentHelper.getKnockbackBonus(attacker);
+                    float f1 = (float)attacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + EnchantmentHelper.getKnockbackBonus(attacker) + 0.5f;
                     living.knockback(f1 * 0.7F, Mth.sin(attacker.getYRot() * ((float)Math.PI / 180F)), -Mth.cos(attacker.getYRot() * ((float)Math.PI / 180F)));
-                    System.out.println("kb " + f1);
                 }
             }
+        }
+        for (Entity e : contained) {
+            e.setNoGravity(false); // just to be sure
         }
         discard();
         // TODO: some 'pop' animation + sound
@@ -122,6 +126,7 @@ public class GloidBubbleEntity extends Entity {
     }
 
     public void surround(Entity entity) {
+        setPos(entity.position());
         startRiding(entity);
         float size = entity instanceof ItemEntity ? 0.625f : Math.max(entity.dimensions.width * PADDING_MULTIPLIER, entity.dimensions.height * PADDING_MULTIPLIER);
         setSize(size);
@@ -161,14 +166,19 @@ public class GloidBubbleEntity extends Entity {
         for (Entity e : contained) {
             if (e instanceof LivingEntity le) {
                 le.addEffect(new MobEffectInstance(MobEffectRegistry.WEIGHTLESSNESS_EFFECT.get(), 2, 0, false, false));
+            } else if (e instanceof Boat boat) {
+                if (boat.status == Boat.Status.IN_AIR) {
+                    Vec3 k = boat.getDeltaMovement().add(0, -BOAT_FRICTION, 0);
+                    k = new Vec3(k.x(), Math.max(0, k.y()), k.z());
+                    boat.setDeltaMovement(k);
+                }
             }
-            e.setNoGravity(true); // just to be sure
+            if (!containedOld.contains(e)) e.setNoGravity(true); // just to be sure
         }
         for (Entity e : containedOld) {
-            if (!contained.contains(e) && e != getVehicle()) {
+            if (!contained.contains(e) && e != getVehicle() && e.getPassengers().stream().noneMatch((it) -> it instanceof GloidBubbleEntity)) {
                 GloidBubbleEntity offshoot = new GloidBubbleEntity(level, e);
                 level.addFreshEntity(offshoot);
-                System.out.println(level.dimension());
                 Vec3 rand = GeneralUtil.randVectorNormalized(level.random);
                 rand = new Vec3(rand.x(), Math.abs(rand.y()) + 1 + level.random.nextFloat(), rand.z()).scale(0.1);
                 e.setDeltaMovement(e.getDeltaMovement().add(rand));
