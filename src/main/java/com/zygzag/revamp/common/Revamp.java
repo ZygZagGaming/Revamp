@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -107,7 +108,6 @@ public class Revamp {
         modEventBus.addListener(this::registerAttributes);
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(this::registerRenderers);
-        modEventBus.addListener(this::registerBlockColorHandlers);
         Registry.register(modEventBus);
 
         // forgeEventBus.addListener(this::doServerStuff);
@@ -364,8 +364,14 @@ public class Revamp {
         event.registerBlockEntityRenderer(BlockEntityTypeRegistry.CUSTOM_SIGN.get(), SignRenderer::new);
     }
 
-    private void registerBlockColorHandlers(final RegisterColorHandlersEvent.Block event) {
-        event.register(ArcCrystalBlock::getColor, BlockRegistry.ARC_CRYSTAL.get());
+    
+    @Mod.EventBusSubscriber(value = Dist.CLIENT)
+    public static class ClientEvents {
+    	
+    	@SubscribeEvent
+	    public static void registerBlockColorHandlers(final RegisterColorHandlersEvent.Block event) {
+	        event.register(ArcCrystalBlock::getColor, BlockRegistry.ARC_CRYSTAL.get());
+	    }
     }
 
     // private void doServerStuff(final FMLServerStartingEvent event) { }

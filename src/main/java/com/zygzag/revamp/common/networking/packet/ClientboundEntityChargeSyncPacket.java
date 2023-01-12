@@ -1,12 +1,7 @@
 package com.zygzag.revamp.common.networking.packet;
 
-import com.zygzag.revamp.common.Revamp;
 import com.zygzag.revamp.util.ClientUtils;
-import com.zygzag.revamp.util.GeneralUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
@@ -32,10 +27,12 @@ public class ClientboundEntityChargeSyncPacket {
 
     @Nullable
     public static ClientboundEntityChargeSyncPacket decode(FriendlyByteBuf buf) {
-        return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
+    	return ClientUtils.decodeClientboudnEntityChargeSyncPacket(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupplier) {
-        ClientUtils.syncEntityCharge(ctxSupplier, uuid, newCharge, newMaxCharge);
+    	NetworkEvent.Context ctx = ctxSupplier.get();
+    	ClientUtils.syncEntityCharge(uuid, newCharge, newMaxCharge);
+    	ctx.setPacketHandled(true);
     }
 }

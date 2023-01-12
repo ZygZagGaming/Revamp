@@ -2,7 +2,6 @@ package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.charge.Arc;
 import com.zygzag.revamp.util.ClientUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
@@ -37,6 +36,8 @@ public class ClientboundArcCreationPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctxSupp) {
-        ClientUtils.createArc(ctxSupp, arc);
+    	NetworkEvent.Context ctx = ctxSupp.get();
+    	ClientUtils.createArc(arc);
+    	ctx.setPacketHandled(true);
     }
 }

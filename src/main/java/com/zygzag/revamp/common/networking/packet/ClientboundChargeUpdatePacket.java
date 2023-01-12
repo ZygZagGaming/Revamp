@@ -2,17 +2,15 @@ package com.zygzag.revamp.common.networking.packet;
 
 import com.zygzag.revamp.common.charge.EnergyCharge;
 import com.zygzag.revamp.util.ClientUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+
 
 public class ClientboundChargeUpdatePacket {
     private final Map<BlockPos, EnergyCharge> toSync;
@@ -40,16 +38,12 @@ public class ClientboundChargeUpdatePacket {
     }
 
     public static ClientboundChargeUpdatePacket decode(FriendlyByteBuf buf) {
-        return ClientUtils.decodeClientboundChargeUpdatePacket(buf);
+    	return ClientUtils.decodeClientboundChargeUpdatePacket(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context ctx = contextSupplier.get();
-        ctx.enqueueWork(() ->
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                ClientUtils.chargeUpdate(toSync, toRemove);
-            })
-        );
+        ClientUtils.chargeUpdate(toSync, toRemove);
         ctx.setPacketHandled(true);
     }
 }
